@@ -1,0 +1,116 @@
+<?php
+
+namespace App\Actions\DataManagement\SdmManagement\DriverManagement;
+
+use App\Models\DataManagement\SdmManagement\DriverManagement\Driver;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class UpdateDriver
+{
+    public function handle(Driver $driver, array $data, array $documents = [], array $certificates = []): Driver
+    {
+        return DB::transaction(function () use ($driver, $data, $documents, $certificates) {
+
+            // ── Foto profil ────────────────────────────────────
+            if (!empty($data['remove_photo'])) {
+                if ($driver->photo_path) {
+                    Storage::disk('public')->delete($driver->photo_path);
+                }
+                $data['photo_path'] = null;
+
+            } elseif (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
+                if ($driver->photo_path) {
+                    Storage::disk('public')->delete($driver->photo_path);
+                }
+                $data['photo_path'] = $data['photo']->store('drivers/photos', 'public');
+            }
+            unset($data['photo'], $data['remove_photo']);
+
+            // ── File KTP ───────────────────────────────────────
+            if (isset($data['ktp_file']) && $data['ktp_file'] instanceof UploadedFile) {
+                if ($driver->ktp_file_path) {
+                    Storage::disk('public')->delete($driver->ktp_file_path);
+                }
+                $data['ktp_file_path'] = $data['ktp_file']->store('drivers/ktp', 'public');
+            }
+            unset($data['ktp_file']);
+
+            // ── Domisili = KTP ─────────────────────────────────
+            if (!empty($data['domicile_same_as_ktp'])) {
+                $data['domicile_address']     = $data['ktp_address']     ?? null;
+                $data['domicile_village']     = $data['ktp_village']     ?? null;
+                $data['domicile_district']    = $data['ktp_district']    ?? null;
+                $data['domicile_city']        = $data['ktp_city']        ?? null;
+                $data['domicile_province']    = $data['ktp_province']    ?? null;
+                $data['domicile_postal_code'] = $data['ktp_postal_code'] ?? null;
+            }
+
+            $driver->update($data);
+
+            // ── Dokumen baru ───────────────────────────────────
+            foreach ($documents as $doc) {
+                if (empty($doc['document_name'])) continue;
+
+                $filePath = null;
+                if (isset($doc['file']) && $doc['file'] instanceof UploadedFile) {
+                    $filePath = $doc['file']->store('drivers/documents', 'public');
+                }
+
+                $driver->documents()->create([
+                    'document_name'   => $doc['document_name'],
+                    'document_number' => $doc['document_number'] ?? null,
+                    'issued_date'     => $doc['issued_date']     ?? null,
+                    'expiry_date'     => $doc['expiry_date']     ?? null,
+                    'description'     => $doc['description']     ?? null,
+                    'file_path'       => $filePath,
+                ]);
+            }
+
+            // ── Sertifikat baru ────────────────────────────────
+            foreach ($certificates as $cert) {
+                if (empty($cert['certificate_name'])) continue;
+
+                $filePath = null;
+                if (isset($cert['file']) && $cert['file'] instanceof UploadedFile) {
+                    $filePath = $cert['file']->store('drivers/certificates', 'public');
+                }
+
+                $driver->certificates()->create([
+                    'certificate_name'   => $cert['certificate_name'],
+                    'certificate_number' => $cert['certificate_number'] ?? null,
+                    'issuer'             => $cert['issuer']             ?? null,
+                    'issued_date'        => $cert['issued_date']        ?? null,
+                    'expiry_date'        => $cert['expiry_date']        ?? null,
+                    'description'        => $cert['description']        ?? null,
+                    'file_path'          => $filePath,
+                ]);
+            }
+
+            return $driver->fresh();
+        });
+    }
+
+    public function deleteDocument(Driver $driver, int $documentId): void
+    {
+        $doc = $driver->documents()->findOrFail($documentId);
+
+        if ($doc->file_path) {
+            Storage::disk('public')->delete($doc->file_path);
+        }
+
+        $doc->delete();
+    }
+
+    public function deleteCertificate(Driver $driver, int $certificateId): void
+    {
+        $cert = $driver->certificates()->findOrFail($certificateId);
+
+        if ($cert->file_path) {
+            Storage::disk('public')->delete($cert->file_path);
+        }
+
+        $cert->delete();
+    }
+}
