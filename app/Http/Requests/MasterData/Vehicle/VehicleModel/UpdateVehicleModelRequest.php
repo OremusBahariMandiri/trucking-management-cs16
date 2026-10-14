@@ -17,13 +17,13 @@ class UpdateVehicleModelRequest extends FormRequest
         $id = $this->route('vehicle_model');
 
         return [
-            'vehicle_brand_id' => 'required|exists:vehicle_brands,id',
-            'vehicle_type_id'  => 'nullable|exists:vehicle_types,id',   // ← tambah ini
+            'vehicle_brand_id' => 'required|exists:aa02_vehicle_brands,id',
+            'vehicle_type_id'  => 'nullable|exists:aa01_vehicle_types,id',   // ← tambah ini
             'name'             => [
                 'required',
                 'string',
                 'max:100',
-                Rule::unique('vehicle_models')->where(
+                Rule::unique('aa03_vehicle_models')->where(
                     fn($q) => $q->where('vehicle_brand_id', $this->vehicle_brand_id)
                 )->ignore($id),
             ],

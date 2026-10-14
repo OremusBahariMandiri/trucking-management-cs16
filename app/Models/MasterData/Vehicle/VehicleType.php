@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class VehicleType extends Model
 {
+    protected $table = 'aa01_vehicle_types';
+    
     protected $fillable = ['code', 'name', 'description', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];

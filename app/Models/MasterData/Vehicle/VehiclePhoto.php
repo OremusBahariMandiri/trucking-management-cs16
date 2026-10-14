@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VehiclePhoto extends Model
 {
+    protected $table = 'aa07_vehicle_photos';
+    
     protected $fillable = [
         'vehicle_id', 'category', 'caption',
         'file_path', 'file_name', 'file_size_kb',
