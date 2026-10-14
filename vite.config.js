@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
@@ -8,7 +7,8 @@ export default defineConfig({
             input: [
                 'resources/sass/app.scss',
                 'resources/js/app.js',
-                'resources/js/admin.js',   // ← pastikan baris ini ada
+                'resources/js/admin.js',
+                'resources/js/pages/vehicle.js',   // ← tambahkan ini
             ],
             refresh: true,
         }),
