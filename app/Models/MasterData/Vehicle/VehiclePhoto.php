@@ -2,6 +2,7 @@
 
 namespace App\Models\MasterData\Vehicle;
 
+use App\Models\DataManagement\FleetManagement\Fleet;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,7 +41,7 @@ class VehiclePhoto extends Model
 
     public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(Vehicle::class);
+        return $this->belongsTo(Fleet::class);
     }
 
     public function uploader(): BelongsTo

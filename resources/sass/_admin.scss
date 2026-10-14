@@ -108,6 +108,17 @@
   color-scheme: dark;
 }
 
+/* ── Logo: invert ke putih saat dark mode ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-mark img {
+    filter: brightness(0) invert(1);
+  }
+}
+
+:root[data-theme="dark"] .logo-mark img {
+  filter: brightness(0) invert(1);
+}
+
 
 /* ─── BASE ───────────────────────────────────────────────────────────────────── */
 html,

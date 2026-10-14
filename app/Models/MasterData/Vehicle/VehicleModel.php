@@ -2,6 +2,7 @@
 
 namespace App\Models\MasterData\Vehicle;
 
+use App\Models\DataManagement\FleetManagement\Fleet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -37,7 +38,7 @@ class VehicleModel extends Model
 
     public function vehicles(): HasMany
     {
-        return $this->hasMany(Vehicle::class);
+        return $this->hasMany(Fleet::class);
     }
 
     public function scopeActive($query)

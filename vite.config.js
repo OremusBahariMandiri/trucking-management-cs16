@@ -8,7 +8,8 @@ export default defineConfig({
                 'resources/sass/app.scss',
                 'resources/js/app.js',
                 'resources/js/admin.js',
-                'resources/js/pages/vehicle.js',   // ← tambahkan ini
+                'resources/js/pages/vehicle.js',
+                'resources/js/pages/driver.js',
             ],
             refresh: true,
         }),
