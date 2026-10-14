@@ -1,0 +1,903 @@
+// ═══════════════════════════════════════════════════════════════
+//  Vehicle Pages — Modern Fleet Design
+//  Depends on CSS custom props defined in _admin.scss
+// ═══════════════════════════════════════════════════════════════
+
+// ── Local accent tokens (overrideable per-page if needed) ──────
+:root {
+  --veh-accent:        #3b6fd4;
+  --veh-accent-soft:   rgba(59, 111, 212, .12);
+  --veh-accent-hover:  #2a58b8;
+  --veh-radius:        14px;
+  --veh-radius-sm:     8px;
+  --veh-shadow:        0 2px 12px rgba(0,0,0,.07);
+  --veh-shadow-hover:  0 6px 24px rgba(0,0,0,.12);
+  --veh-transition:    .18s ease;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --veh-accent:        #5b8fe8;
+    --veh-accent-soft:   rgba(91, 143, 232, .15);
+    --veh-accent-hover:  #7aa8f0;
+    --veh-shadow:        0 2px 12px rgba(0,0,0,.25);
+    --veh-shadow-hover:  0 6px 28px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"] {
+  --veh-accent:        #5b8fe8;
+  --veh-accent-soft:   rgba(91, 143, 232, .15);
+  --veh-accent-hover:  #7aa8f0;
+  --veh-shadow:        0 2px 12px rgba(0,0,0,.25);
+  --veh-shadow-hover:  0 6px 28px rgba(0,0,0,.4);
+}
+
+// ── Bootstrap table dark-mode patch ───────────────────────────
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-hover-bg: var(--surface-2);
+  --bs-table-striped-bg: transparent;
+  --bs-table-border-color: var(--border);
+  color: var(--text);
+}
+
+// ── Form controls dark-mode ────────────────────────────────────
+.form-control,
+.form-select {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+  transition: border-color var(--veh-transition), box-shadow var(--veh-transition);
+
+  &::placeholder { color: var(--text-faint); }
+
+  &:focus {
+    background-color: var(--surface);
+    border-color: var(--veh-accent);
+    color: var(--text);
+    box-shadow: 0 0 0 3px var(--veh-accent-soft);
+  }
+}
+.form-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+.input-group-text {
+  background-color: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+// ── Page Header ────────────────────────────────────────────────
+.veh-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  box-shadow: var(--veh-shadow);
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    padding: 1rem;
+  }
+}
+
+.veh-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .25rem;
+
+  i, .fa, [class^="fa-"] {
+    color: var(--veh-accent);
+    font-size: 1.1em;
+  }
+}
+
+.breadcrumb {
+  font-size: .8rem;
+  margin-bottom: 0;
+
+  .breadcrumb-item a {
+    color: var(--veh-accent);
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+  .breadcrumb-item.active { color: var(--text-muted); }
+  .breadcrumb-item + .breadcrumb-item::before { color: var(--text-faint); }
+}
+
+// ── Stat Cards (index) ─────────────────────────────────────────
+.veh-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  padding: 1.25rem 1.25rem 1rem;
+  box-shadow: var(--veh-shadow);
+  transition: transform var(--veh-transition), box-shadow var(--veh-transition);
+  cursor: default;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--stat-color, var(--veh-accent));
+    border-radius: var(--veh-radius) var(--veh-radius) 0 0;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--veh-shadow-hover);
+  }
+
+  .stat-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--veh-radius-sm);
+    background: var(--stat-soft, var(--veh-accent-soft));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: .85rem;
+    font-size: 1.1rem;
+    color: var(--stat-color, var(--veh-accent));
+  }
+
+  .stat-number {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: .2rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-label {
+    font-size: .76rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+}
+
+// ── Filter / Search Bar ────────────────────────────────────────
+.veh-filter-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--veh-shadow);
+
+  .form-control,
+  .form-select {
+    border-radius: var(--veh-radius-sm);
+    font-size: .875rem;
+
+    &:focus { border-color: var(--veh-accent); }
+  }
+}
+
+// ── Main Table Card ────────────────────────────────────────────
+.veh-table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  box-shadow: var(--veh-shadow);
+  overflow: hidden;
+
+  .veh-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+
+    h6 {
+      margin: 0;
+      font-weight: 600;
+      color: var(--text);
+      font-size: .875rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+
+      i, [class*="fa-"] { color: var(--veh-accent); }
+    }
+  }
+}
+
+.table {
+  margin-bottom: 0;
+
+  thead th {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    padding: .75rem 1rem;
+    background: transparent;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: .8rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+    font-size: .875rem;
+    color: var(--text);
+  }
+
+  tbody tr {
+    transition: background var(--veh-transition);
+
+    &:hover td { background: var(--surface-2); }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+// ── Vehicle code / police number cells ─────────────────────────
+.vehicle-code {
+  font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text);
+  display: block;
+}
+.vehicle-police {
+  font-size: .76rem;
+  color: var(--text-muted);
+  display: block;
+}
+.vehicle-brand {
+  font-weight: 600;
+  color: var(--text);
+  display: block;
+  font-size: .875rem;
+}
+.vehicle-model {
+  font-size: .78rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+// ── Status & Ownership Badges ──────────────────────────────────
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: .3em;
+  padding: .3em .75em;
+  border-radius: 100px;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    display: inline-block;
+  }
+}
+
+// Light-mode badge colours
+.status-active      { color: #16a34a; background: #dcfce7; }
+.status-inactive    { color: #64748b; background: #f1f5f9; }
+.status-maintenance { color: #d97706; background: #fef3c7; }
+.status-standby     { color: #0ea5e9; background: #e0f2fe; }
+.status-scrapped    { color: #dc2626; background: #fee2e2; }
+
+// Dark-mode overrides — system preference
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .status-active      { color: #4ade80; background: rgba(22,163,74,.2); }
+    .status-inactive    { color: #94a3b8; background: rgba(100,116,139,.2); }
+    .status-maintenance { color: #fbbf24; background: rgba(217,119,6,.2); }
+    .status-standby     { color: #38bdf8; background: rgba(14,165,233,.2); }
+    .status-scrapped    { color: #f87171; background: rgba(220,38,38,.2); }
+  }
+}
+// Dark-mode overrides — explicit toggle
+:root[data-theme="dark"] {
+  .status-active      { color: #4ade80; background: rgba(22,163,74,.2); }
+  .status-inactive    { color: #94a3b8; background: rgba(100,116,139,.2); }
+  .status-maintenance { color: #fbbf24; background: rgba(217,119,6,.2); }
+  .status-standby     { color: #38bdf8; background: rgba(14,165,233,.2); }
+  .status-scrapped    { color: #f87171; background: rgba(220,38,38,.2); }
+}
+
+// ── Ownership badge variant ────────────────────────────────────
+.badge-ownership {
+  display: inline-block;
+  padding: .2em .6em;
+  border-radius: 6px;
+  font-size: .7rem;
+  font-weight: 600;
+  background: var(--veh-accent-soft);
+  color: var(--veh-accent);
+}
+
+// ── Table pagination row ───────────────────────────────────────
+.veh-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .8rem 1.25rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: .82rem;
+  color: var(--text-muted);
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+// ── Tab Navigation ─────────────────────────────────────────────
+.veh-tab-nav {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  padding: .5rem .75rem 0;
+  box-shadow: var(--veh-shadow);
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  .nav-tabs {
+    border-bottom: none;
+    flex-wrap: nowrap;
+    gap: .25rem;
+    min-width: max-content;
+  }
+
+  .nav-link {
+    border: none;
+    border-radius: var(--veh-radius-sm) var(--veh-radius-sm) 0 0;
+    color: var(--text-muted);
+    font-size: .82rem;
+    font-weight: 500;
+    padding: .6rem .9rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    transition: color var(--veh-transition), background var(--veh-transition);
+    position: relative;
+
+    i, [class*="fa-"] { font-size: .85em; }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: .9rem;
+      right: .9rem;
+      height: 2px;
+      border-radius: 2px 2px 0 0;
+      background: var(--veh-accent);
+      transform: scaleX(0);
+      transition: transform var(--veh-transition);
+    }
+
+    &:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    &.active {
+      color: var(--veh-accent);
+      background: transparent;
+      font-weight: 600;
+
+      &::after { transform: scaleX(1); }
+    }
+  }
+
+  .tab-error {
+    &::before {
+      content: '';
+      position: absolute;
+      top: .35rem;
+      right: .35rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+  }
+}
+
+// ── Form Card ──────────────────────────────────────────────────
+.veh-form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0 0 var(--veh-radius) var(--veh-radius);
+  padding: 1.5rem;
+  box-shadow: var(--veh-shadow);
+
+  @media (max-width: 576px) { padding: 1rem; }
+}
+
+// ── Form Section Title ─────────────────────────────────────────
+.form-section-title {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--veh-accent);
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+
+  &:not(:first-child) { margin-top: 1.75rem; }
+
+  i, [class*="fa-"] { font-size: 1em; }
+}
+
+// ── Info Label/Value (show page) ───────────────────────────────
+.info-label {
+  font-size: .7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  margin-bottom: .2rem;
+}
+.info-value {
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-word;
+}
+
+// ── Show Page Hero ─────────────────────────────────────────────
+.veh-show-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  overflow: hidden;
+  box-shadow: var(--veh-shadow);
+
+  .hero-photo {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+
+    @media (max-width: 576px) { height: 200px; }
+  }
+}
+
+// ── Action Bar ─────────────────────────────────────────────────
+.veh-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0 0 var(--veh-radius) var(--veh-radius);
+  margin-top: -1px;
+  box-shadow: var(--veh-shadow);
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 576px) {
+    padding: .875rem 1rem;
+    .d-flex { width: 100%; justify-content: flex-end; }
+  }
+}
+
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem 1.25rem;
+  border-radius: var(--veh-radius-sm);
+  border: none;
+  background: var(--veh-accent);
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--veh-transition), transform var(--veh-transition), box-shadow var(--veh-transition);
+
+  &:hover {
+    background: var(--veh-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59,111,212,.35);
+  }
+  &:active { transform: translateY(0); }
+}
+
+// ── Expiry Status Badges ───────────────────────────────────────
+.expiry-expired {
+  display: inline-flex;
+  align-items: center;
+  gap: .3em;
+  color: #dc2626;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.expiry-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: .3em;
+  color: #d97706;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.expiry-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: .3em;
+  color: #16a34a;
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+// ── Photo Grid ─────────────────────────────────────────────────
+.photo-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: .75rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+}
+
+.photo-item {
+  position: relative;
+  border-radius: var(--veh-radius-sm);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: var(--veh-shadow);
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .3s ease;
+  }
+
+  &:hover img { transform: scale(1.04); }
+  &:hover .photo-overlay { opacity: 1; }
+}
+
+.photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  opacity: 0;
+  transition: opacity var(--veh-transition);
+}
+
+.photo-badge-primary {
+  position: absolute;
+  top: .4rem;
+  left: .4rem;
+  background: var(--veh-accent);
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: .15em .5em;
+  border-radius: 4px;
+}
+
+.photo-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: .3rem .5rem;
+  background: linear-gradient(transparent, rgba(0,0,0,.65));
+  font-size: .72rem;
+  color: #fff;
+}
+
+// ── Photo Drop Zone ────────────────────────────────────────────
+.photo-drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--veh-radius);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--veh-transition), background var(--veh-transition);
+
+  i, [class*="fa-"] {
+    font-size: 2rem;
+    color: var(--veh-accent);
+    display: block;
+    margin-bottom: .75rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: .875rem;
+
+    strong { color: var(--veh-accent); }
+  }
+
+  &:hover, &.drag-over {
+    border-color: var(--veh-accent);
+    background: var(--veh-accent-soft);
+  }
+}
+
+// ── Empty state ────────────────────────────────────────────────
+.veh-empty {
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+
+  .veh-empty-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--veh-accent-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 1.5rem;
+    color: var(--veh-accent);
+  }
+
+  h6 {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .35rem;
+  }
+
+  p {
+    font-size: .825rem;
+    margin: 0;
+    color: var(--text-muted);
+  }
+}
+
+// ── Card (Bootstrap override for dark mode) ────────────────────
+.card {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+// ── Alert dismiss button ───────────────────────────────────────
+.btn-close { filter: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .btn-close {
+    filter: invert(1);
+  }
+}
+:root[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+// ── Responsive utility ─────────────────────────────────────────
+@media (max-width: 768px) {
+  .table-responsive { border-radius: 0; }
+
+  .veh-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .veh-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-card { padding: 1rem; }
+  .stat-number { font-size: 1.5rem; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  LOOKUP / REFERENCE DATA PAGES
+//  VehicleType · VehicleBrand · VehicleModel · FuelType · BodyType
+// ═══════════════════════════════════════════════════════════════
+
+// ── Compact stat row ──────────────────────────────────────────
+.lkp-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .875rem;
+  margin-bottom: 1.5rem;
+}
+
+.lkp-stat {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .875rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  box-shadow: var(--veh-shadow);
+  flex: 1 1 150px;
+  transition: box-shadow .2s, transform .2s;
+
+  &:hover { box-shadow: var(--veh-shadow-hover); transform: translateY(-1px); }
+
+  .lkp-stat-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .6rem;
+    font-size: .9rem;
+    flex-shrink: 0;
+    background: var(--stat-soft, rgba(59,111,212,.12));
+    color: var(--stat-color, #3b6fd4);
+  }
+
+  .lkp-stat-num {
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lkp-stat-label {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-faint);
+    margin-top: .1rem;
+  }
+}
+
+// ── Simple form card (no tabs) ────────────────────────────────
+.lkp-form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius);
+  box-shadow: var(--veh-shadow);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.lkp-form-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 1rem 1.5rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--text);
+
+  i { color: var(--veh-accent); font-size: .9rem; }
+}
+
+.lkp-form-body {
+  padding: 1.5rem;
+
+  .row > [class*="col"] { margin-bottom: .25rem; }
+}
+
+.lkp-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: .5rem;
+  padding: 1rem 1.5rem;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+}
+
+// ── Active/inactive toggle ─────────────────────────────────────
+.lkp-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: .875rem;
+  padding: .875rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--veh-radius-sm);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color .15s;
+
+  &:hover { border-color: var(--veh-accent); }
+
+  .form-check-input {
+    width: 2.75rem;
+    height: 1.4rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+
+  .lkp-toggle-label {
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+
+    small {
+      display: block;
+      font-size: .75rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      margin-top: .1rem;
+    }
+  }
+}
+
+// ── Lookup table enhancements ──────────────────────────────────
+.lkp-name {
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--text);
+}
+
+.lkp-sub {
+  font-size: .78rem;
+  color: var(--text-faint);
+  margin-top: .1rem;
+}
+
+.lkp-code-badge {
+  display: inline-block;
+  padding: .15rem .55rem;
+  border-radius: .35rem;
+  background: var(--veh-accent-soft);
+  color: var(--veh-accent);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
+}
+
+// ── Responsive ────────────────────────────────────────────────
+@media (max-width: 576px) {
+  .lkp-stats { gap: .625rem; }
+  .lkp-stat  { padding: .75rem 1rem; flex: 1 1 120px; }
+  .lkp-stat-num { font-size: 1.15rem; }
+  .lkp-form-body { padding: 1rem; }
+  .lkp-form-actions { padding: .875rem 1rem; }
+}

@@ -1,0 +1,82 @@
+<div class="veh-form-card">
+
+    <div class="form-section-title"><i class="fas fa-tachometer-alt"></i>
+        <span data-en="Odometer & Service Data">Data Odometer &amp; Servis</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        {{-- Odometer Terakhir --}}
+        <div class="col-md-4">
+            <label class="form-label" data-en="Last Odometer">Odometer Terakhir</label>
+            <div class="input-group">
+                <input type="number" name="last_odometer_km"
+                       class="form-control {{ $hasErr('last_odometer_km') }}"
+                       value="{{ $old('last_odometer_km') }}"
+                       min="0" placeholder="125000">
+                <span class="input-group-text">km</span>
+            </div>
+        </div>
+
+        {{-- Tanggal Servis Terakhir --}}
+        <div class="col-md-4">
+            <label class="form-label" data-en="Last Service Date">Tanggal Servis Terakhir</label>
+            <input type="date" name="last_service_date"
+                   class="form-control {{ $hasErr('last_service_date') }}"
+                   value="{{ $old('last_service_date') }}">
+        </div>
+
+        {{-- Interval Servis --}}
+        <div class="col-md-4">
+            <label class="form-label" data-en="Service Interval">Interval Servis</label>
+            <div class="input-group">
+                <input type="number" name="service_interval_km"
+                       class="form-control {{ $hasErr('service_interval_km') }}"
+                       value="{{ $old('service_interval_km', 10000) }}"
+                       min="0" placeholder="10000">
+                <span class="input-group-text">km</span>
+            </div>
+            <div class="form-text" data-en="Distance between periodic services">Jarak tempuh antar servis berkala</div>
+        </div>
+
+    </div>
+
+    <div class="form-section-title"><i class="fas fa-broadcast-tower"></i>
+        <span data-en="GPS Tracker">GPS Tracker</span>
+    </div>
+
+    <div class="row g-3">
+
+        {{-- ID GPS Tracker --}}
+        <div class="col-md-4">
+            <label class="form-label" data-en="GPS Tracker ID">ID GPS Tracker</label>
+            <input type="text" name="gps_tracker_id"
+                   class="form-control {{ $hasErr('gps_tracker_id') }}"
+                   value="{{ $old('gps_tracker_id') }}"
+                   placeholder="Nomor IMEI / Serial GPS">
+        </div>
+
+        {{-- Provider GPS --}}
+        <div class="col-md-4">
+            <label class="form-label" data-en="GPS Provider">Provider GPS</label>
+            <input type="text" name="gps_provider"
+                   class="form-control {{ $hasErr('gps_provider') }}"
+                   value="{{ $old('gps_provider') }}"
+                   placeholder="Nama penyedia layanan GPS">
+        </div>
+
+        {{-- Status GPS --}}
+        <div class="col-md-4">
+            <label class="form-label" data-en="GPS Status">Status GPS</label>
+            <select name="gps_status" class="form-select {{ $hasErr('gps_status') }}">
+                <option value="" data-en="-- Select Status --">-- Pilih Status --</option>
+                @foreach($options['gps_statuses'] as $val => $label)
+                    <option value="{{ $val }}" {{ $old('gps_status') === $val ? 'selected' : '' }}>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+    </div>
+</div>
