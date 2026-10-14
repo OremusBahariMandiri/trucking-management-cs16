@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FuelType extends Model
 {
+    protected $table = 'aa04_fuel_types';
+    
     protected $fillable = ['name', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];

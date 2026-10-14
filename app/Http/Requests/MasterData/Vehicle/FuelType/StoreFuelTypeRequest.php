@@ -14,7 +14,7 @@ class StoreFuelTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'      => 'required|string|max:100|unique:fuel_types,name',
+            'name'      => 'required|string|max:100|unique:aa04_fuel_types,name',
             'is_active' => 'boolean',
         ];
     }

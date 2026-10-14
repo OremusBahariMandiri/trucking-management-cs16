@@ -14,8 +14,8 @@ class StoreBodyTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code'      => 'nullable|string|max:20|unique:body_types,code',
-            'name'      => 'required|string|max:100|unique:body_types,name',
+            'code'      => 'nullable|string|max:20|unique:aa05_body_types,code',
+            'name'      => 'required|string|max:100|unique:aa05_body_types,name',
             'is_active' => 'boolean',
         ];
     }

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class VehicleBrand extends Model
 {
+    protected $table = 'aa02_vehicle_brands';
+
     protected $fillable = ['name', 'country_of_origin', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];

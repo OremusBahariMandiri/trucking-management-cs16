@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vehicle extends Model
 {
+    protected $table = 'aa06_vehicles';
+    
     use SoftDeletes;
 
     protected $fillable = [

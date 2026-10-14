@@ -17,28 +17,28 @@ class UpdateVehicleRequest extends FormRequest
 
         return [
             // ── Tab 1: Informasi Umum ──────────────────────────────────────
-            'vehicle_code'      => ['nullable', 'string', 'max:20', "unique:vehicles,vehicle_code,{$vehicleId}"],
-            'police_number'     => ['nullable', 'string', 'max:20', "unique:vehicles,police_number,{$vehicleId}"],
-            'hull_number'       => ['nullable', 'string', 'max:30', "unique:vehicles,hull_number,{$vehicleId}"],
-            'vehicle_type_id'   => ['nullable', 'exists:vehicle_types,id'],
-            'vehicle_brand_id'  => ['nullable', 'exists:vehicle_brands,id'],
-            'vehicle_model_id'  => ['nullable', 'exists:vehicle_models,id'],
+            'vehicle_code'      => ['nullable', 'string', 'max:20', "unique:aa06_vehicles,vehicle_code,{$vehicleId}"],
+            'police_number'     => ['nullable', 'string', 'max:20', "unique:aa06_vehicles,police_number,{$vehicleId}"],
+            'hull_number'       => ['nullable', 'string', 'max:30', "unique:aa06_vehicles,hull_number,{$vehicleId}"],
+            'vehicle_type_id'   => ['nullable', 'exists:aa01_vehicle_types,id'],
+            'vehicle_brand_id'  => ['nullable', 'exists:aa02_vehicle_brands,id'],
+            'vehicle_model_id'  => ['nullable', 'exists:aa03_vehicle_models,id'],
             'model_name'        => ['nullable', 'string', 'max:100'],
             'manufacture_year'  => ['nullable', 'integer', 'min:1980', 'max:' . now()->year],
             'color'             => ['nullable', 'string', 'max:50'],
             'vehicle_status'    => ['nullable', 'in:active,inactive,service,broken,sold'],
 
             // ── Tab 2: Spesifikasi Teknis ──────────────────────────────────
-            'chassis_number'            => ['nullable', 'string', 'max:50', "unique:vehicles,chassis_number,{$vehicleId}"],
-            'engine_number'             => ['nullable', 'string', 'max:50', "unique:vehicles,engine_number,{$vehicleId}"],
-            'fuel_type_id'              => ['nullable', 'exists:fuel_types,id'],
+            'chassis_number'            => ['nullable', 'string', 'max:50', "unique:aa06_vehicles,chassis_number,{$vehicleId}"],
+            'engine_number'             => ['nullable', 'string', 'max:50', "unique:aa06_vehicles,engine_number,{$vehicleId}"],
+            'fuel_type_id'              => ['nullable', 'exists:aa04_fuel_types,id'],
             'engine_capacity_cc'        => ['nullable', 'integer', 'min:0'],
             'axis_configuration'        => ['nullable', 'in:4x2,6x2,6x4,8x4,10x4,other'],
             'wheel_count'               => ['nullable', 'integer', 'min:2', 'max:24'],
             'load_capacity_ton'         => ['nullable', 'numeric', 'min:0'],
             'gross_vehicle_weight_ton'  => ['nullable', 'numeric', 'min:0'],
             'tare_weight_ton'           => ['nullable', 'numeric', 'min:0'],
-            'body_type_id'              => ['nullable', 'exists:body_types,id'],
+            'body_type_id'              => ['nullable', 'exists:aa05_body_types,id'],
             'body_dimension'            => ['nullable', 'string', 'max:50'],
 
             // ── Tab 3: Kepemilikan & Penugasan ─────────────────────────────
