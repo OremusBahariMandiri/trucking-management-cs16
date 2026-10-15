@@ -22,9 +22,9 @@ class User extends Authenticatable
         'position',
         'work_location',
         'password',
-        'role_id',
         'created_by',
         'updated_by',
+        // 'role_id' ← dihapus, diganti many-to-many
     ];
 
     protected $hidden = [
@@ -49,42 +49,72 @@ class User extends Authenticatable
         });
     }
 
-    // ── Relasi ──────────────────────────────────────────
+    // ── Relasi ────────────────────────────────────────────────────
 
-    public function role()
+    /**
+     * Many-to-many: satu user bisa punya banyak role.
+     */
+    public function roles()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
     }
 
-    // ── Permission Check ─────────────────────────────────
+    // ── RBAC Helpers ──────────────────────────────────────────────
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->roles()->where('slug', 'superadmin')->exists();
+    }
+
+    public function hasRole(string $slug): bool
+    {
+        return $this->roles()->where('slug', $slug)->exists();
+    }
 
     public function hasPermission(string $slug): bool
     {
-        return $this->role?->hasPermission($slug) ?? false;
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->roles()
+                    ->whereHas('permissions', fn ($q) => $q->where('slug', $slug))
+                    ->exists();
     }
 
     public function hasAccess(string $menu, string $action): bool
     {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
         $actionMap = [
-            'monitoring' => 'monitor',
-            'index'      => 'monitor',
-            'detail'     => 'view',
-            'tambah'     => 'create',
-            'ubah'       => 'update',
-            'hapus'      => 'delete',
-            'download'   => 'download',
+            'index'   => 'monitor',
+            'list'    => 'monitor',
+            'search'  => 'monitor',
+            'show'    => 'view',
+            'create'  => 'create',
+            'store'   => 'create',
+            'edit'    => 'update',
+            'update'  => 'update',
+            'destroy' => 'delete',
+            'delete'  => 'delete',
+            'toggle'  => 'toggle',
         ];
 
-        $mapped = $actionMap[$action] ?? $action;
-        $slug   = "{$menu}.{$mapped}"; // contoh: "users.create"
+        $permAction = $actionMap[$action] ?? $action;
 
-        return $this->hasPermission($slug);
+        return $this->hasPermission("{$menu}.{$permAction}");
     }
 
     public function hasAccessToMenu(string $menu): bool
     {
-        return $this->role?->permissions()
-            ->where('group', $menu)
-            ->exists() ?? false;
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->roles()
+                    ->whereHas('permissions', fn ($q) => $q->where('slug', 'like', "{$menu}.%"))
+                    ->exists();
     }
 }

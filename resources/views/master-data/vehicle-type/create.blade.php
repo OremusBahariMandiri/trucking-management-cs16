@@ -8,8 +8,7 @@
 
 @section('content')
 
-    <div class="veh-page-header mb-4"
-        style="background-image: url('{{ asset('images/bg-card3.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div class="veh-page-header mb-4">
         <div>
             <div class="veh-title">
                 <i class="fas fa-plus-circle"></i>
@@ -25,7 +24,7 @@
             </nav>
         </div>
         <a href="{{ route('master-data.vehicle-types.index') }}"
-            class="btn btn-sm btn-primary d-flex align-items-center gap-1">
+            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
             <i class="fas fa-arrow-left"></i>
             <span data-en="Back">Kembali</span>
         </a>
