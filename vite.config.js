@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/admin.js',
                 'resources/js/pages/vehicle.js',
                 'resources/js/pages/driver.js',
+                 'resources/js/pages/employee.js',
             ],
             refresh: true,
         }),
