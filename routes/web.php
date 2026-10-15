@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DataManagement\FleetManagement\FleetController;
 use App\Http\Controllers\DataManagement\SdmManagement\DriverManagement\DriverController;
+use App\Http\Controllers\DataManagement\SdmManagement\EmployeeManagement\EmployeeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MasterData\Vehicle\BodyTypeController;
 use App\Http\Controllers\MasterData\Vehicle\FuelTypeController;
@@ -98,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('fleet-data')->name('fleet-data.')->group(function () {
             Route::resource('/', FleetController::class)
-                ->parameters(['' => 'fleet'])   // ← ubah 'vehicle' → 'fleet'
+                ->parameters(['' => 'fleet'])
                 ->names([
                     'index'   => 'index',
                     'create'  => 'create',
@@ -116,11 +117,13 @@ Route::middleware(['auth'])->group(function () {
 
             Route::prefix('api')->name('api.')->group(function () {
                 Route::get('search',   [FleetController::class, 'apiSearch'])->name('search');
-                Route::get('{fleet}',  [FleetController::class, 'apiShow'])->name('show');  // ← {vehicle} → {fleet}
+                Route::get('{fleet}',  [FleetController::class, 'apiShow'])->name('show');
             });
         });
 
         Route::prefix('sdm-management')->name('sdm-management.')->group(function () {
+
+            // ── Data Sopir ─────────────────────────────────────
             Route::prefix('driver-data')->name('driver-data.')->group(function () {
                 Route::resource('/', DriverController::class)
                     ->parameters(['' => 'driver'])
@@ -141,6 +144,25 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::prefix('api')->name('api.')->group(function () {
                     Route::get('generate-code', [DriverController::class, 'apiGenerateCode'])->name('generate-code');
+                });
+            });
+
+            // ── Data Karyawan ──────────────────────────────────
+            Route::prefix('employee-data')->name('employee-data.')->group(function () {
+                Route::resource('/', EmployeeController::class)
+                    ->parameters(['' => 'employee'])
+                    ->names([
+                        'index'   => 'index',
+                        'create'  => 'create',
+                        'store'   => 'store',
+                        'show'    => 'show',
+                        'edit'    => 'edit',
+                        'update'  => 'update',
+                        'destroy' => 'destroy',
+                    ]);
+
+                Route::prefix('api')->name('api.')->group(function () {
+                    Route::get('generate-nrk', [EmployeeController::class, 'apiGenerateNrk'])->name('generate-nrk');
                 });
             });
         });

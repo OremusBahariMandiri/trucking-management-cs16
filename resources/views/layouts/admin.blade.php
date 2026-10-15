@@ -228,7 +228,7 @@
                             </svg>
                         </div>
                         <div class="sub-group-body {{ $sdmOpen ? 'open' : '' }}">
-                            <a href="#"
+                            <a href="{{ route('data-management.sdm-management.employee-data.index') }}"
                                 class="sub-link2 {{ request()->routeIs('data-management.sdm-management.employee-data.*') ? 'active' : '' }}"
                                 data-en="Employee Data">
                                 Data Karyawan
