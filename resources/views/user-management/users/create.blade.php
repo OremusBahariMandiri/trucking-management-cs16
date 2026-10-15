@@ -8,7 +8,7 @@
 
 <div class="um-page-header mb-3">
     <div>
-        <div class="um-title"><i class="fas fa-user-plus"></i> Tambah User</div>
+        <div class="um-title">Tambah User</div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
@@ -17,10 +17,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('user-management.users.index') }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <form method="POST" action="{{ route('user-management.users.store') }}"

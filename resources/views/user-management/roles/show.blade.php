@@ -9,7 +9,7 @@
 {{-- ── PAGE HEADER ── --}}
 <div class="um-page-header mb-3">
     <div>
-        <div class="um-title"><i class="fas fa-shield-alt"></i> Detail Role</div>
+        <div class="um-title"> Detail Role</div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
@@ -17,25 +17,6 @@
                 <li class="breadcrumb-item active">{{ $role->name }}</li>
             </ol>
         </nav>
-    </div>
-    <div class="d-flex gap-2">
-        @hasPermission('user-management.roles.update')
-        <a href="{{ route('user-management.roles.edit', $role) }}"
-           class="btn btn-sm btn-primary d-flex align-items-center gap-1">
-            <i class="fas fa-pen"></i> Edit
-        </a>
-        @endhasPermission
-        @hasPermission('user-management.roles.delete')
-        @if($role->slug !== 'superadmin')
-        <form method="POST" action="{{ route('user-management.roles.destroy', $role) }}"
-              onsubmit="return confirm('Hapus role ini?')">
-            @csrf @method('DELETE')
-            <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1">
-                <i class="fas fa-trash"></i> Hapus
-            </button>
-        </form>
-        @endif
-        @endhasPermission
     </div>
 </div>
 
@@ -242,7 +223,6 @@
                     <th class="col-menu" style="min-width:180px;text-align:left">Nama</th>
                     <th style="text-align:left">Kode</th>
                     <th style="text-align:left">Jabatan</th>
-                    <th style="text-align:right;padding-right:1.25rem">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -250,18 +230,11 @@
                 <tr>
                     <td class="col-menu">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="um-avatar">{{ strtoupper(substr($u->full_name, 0, 1)) }}</div>
                             <span class="um-name">{{ $u->full_name }}</span>
                         </div>
                     </td>
                     <td style="text-align:left;font-family:monospace;font-size:.82rem">{{ $u->employee_code ?? '—' }}</td>
                     <td style="text-align:left;color:var(--text-muted)">{{ $u->position ?? '—' }}</td>
-                    <td style="text-align:right;padding-right:1.25rem">
-                        <a href="{{ route('user-management.users.show', $u) }}"
-                           class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                    </td>
                 </tr>
                 @endforeach
             </tbody>

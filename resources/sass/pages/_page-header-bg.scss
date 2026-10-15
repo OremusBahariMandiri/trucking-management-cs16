@@ -14,7 +14,8 @@
 // ── Light mode (default) ───────────────────────────────────────
 .veh-page-header,
 .drv-page-header,
-.emp-page-header {
+.emp-page-header,
+.um-page-header {
   background-image: url('../../images/bg-card-light.png');
   background-size: cover;
   background-position: center;
@@ -27,7 +28,8 @@
 
     .veh-page-header,
     .drv-page-header,
-    .emp-page-header {
+    .emp-page-header,
+    .um-page-header {
       background-image: url('../../images/bg-card-dark.png');
     }
   }
@@ -38,7 +40,8 @@
 
   .veh-page-header,
   .drv-page-header,
-  .emp-page-header {
+  .emp-page-header,
+  .um-page-header {
     background-image: url('../../images/bg-card-dark.png');
   }
 }

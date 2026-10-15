@@ -7,7 +7,7 @@
 
 <div class="um-page-header mb-3">
     <div>
-        <div class="um-title"><i class="fas fa-edit"></i> Edit Role</div>
+        <div class="um-title"> Edit Role</div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
@@ -19,10 +19,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('user-management.roles.index', $role) }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <form method="POST" action="{{ route('user-management.roles.update', $role) }}" id="roleForm" novalidate>
