@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
 //  User Management Pages — Users, Roles, Permissions
 // ═══════════════════════════════════════════════════════════════
+@import './page-header-bg';
 
 // ── Accent tokens (teal) ──────────────────────────────────────
 :root {
-  --um-accent: #0d9488;
+  --um-accent: #0071c8;
   --um-accent-soft: rgba(13, 148, 136, .12);
   --um-accent-hover: #0f766e;
   --um-radius: 14px;
@@ -25,7 +26,7 @@
 }
 
 :root[data-theme="dark"] {
-  --um-accent: #2dd4bf;
+  --um-accent: #78ceff;
   --um-accent-soft: rgba(45, 212, 191, .14);
   --um-accent-hover: #5eead4;
   --um-shadow: 0 2px 12px rgba(0, 0, 0, .28);
@@ -83,7 +84,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
-  background: var(--surface);
+  background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--um-radius);
   box-shadow: var(--um-shadow);

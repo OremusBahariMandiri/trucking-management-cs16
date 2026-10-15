@@ -8,22 +8,18 @@
 
 <div class="um-page-header mb-3">
     <div>
-        <div class="um-title"><i class="fas fa-user-edit"></i> Edit User</div>
+        <div class="um-title"><span data-en="Edit User">Edit User</span></div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('user-management.users.index') }}">User</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('home') }}" data-en="Home">Beranda</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('user-management.users.index') }}" data-en="Users">User</a></li>
                 <li class="breadcrumb-item">
                     <a href="{{ route('user-management.users.show', $user) }}">{{ $user->full_name }}</a>
                 </li>
-                <li class="breadcrumb-item active">Edit</li>
+                <li class="breadcrumb-item active" data-en="Edit">Edit</li>
             </ol>
         </nav>
     </div>
-    <a href="{{ route('user-management.users.index', $user) }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <form method="POST" action="{{ route('user-management.users.update', $user) }}"
@@ -33,4 +29,8 @@
 </form>
 
 @include('user-management._partials._toast')
+
+@push('scripts')
+@vite('resources/js/pages/user-management.js')
+@endpush
 @endsection

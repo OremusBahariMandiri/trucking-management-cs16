@@ -9,31 +9,14 @@
 {{-- ── PAGE HEADER ── --}}
 <div class="um-page-header mb-3">
     <div>
-        <div class="um-title"><i class="fas fa-user-circle"></i> Detail User</div>
+        <div class="um-title"> <span data-en="User Detail">Detail User</span></div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('user-management.users.index') }}">User</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('home') }}" data-en="Home">Beranda</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('user-management.users.index') }}" data-en="Users">User</a></li>
                 <li class="breadcrumb-item active">{{ $user->full_name }}</li>
             </ol>
         </nav>
-    </div>
-    <div class="d-flex gap-2">
-        @hasPermission('user-management.users.update')
-        <a href="{{ route('user-management.users.edit', $user) }}"
-           class="btn btn-sm btn-primary d-flex align-items-center gap-1">
-            <i class="fas fa-pen"></i> Edit
-        </a>
-        @endhasPermission
-        @hasPermission('user-management.users.delete')
-        <form method="POST" action="{{ route('user-management.users.destroy', $user) }}"
-              onsubmit="return confirm('Hapus user ini?')">
-            @csrf @method('DELETE')
-            <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1">
-                <i class="fas fa-trash"></i> Hapus
-            </button>
-        </form>
-        @endhasPermission
     </div>
 </div>
 
@@ -59,10 +42,10 @@
     <div class="row g-4 px-3 py-3">
         @php
             $fields = [
-                ['label' => 'NIK',          'value' => $user->employee_id_number, 'icon' => 'fas fa-id-card'],
-                ['label' => 'Departemen',   'value' => $user->department,         'icon' => 'fas fa-building'],
-                ['label' => 'Jabatan',      'value' => $user->position,           'icon' => 'fas fa-briefcase'],
-                ['label' => 'Lokasi Kerja', 'value' => $user->work_location,      'icon' => 'fas fa-map-marker-alt'],
+                ['label' => 'NIK',          'label_en' => 'NIK',           'value' => $user->employee_id_number, 'icon' => 'fas fa-id-card'],
+                ['label' => 'Departemen',   'label_en' => 'Department',    'value' => $user->department,         'icon' => 'fas fa-building'],
+                ['label' => 'Jabatan',      'label_en' => 'Position',      'value' => $user->position,           'icon' => 'fas fa-briefcase'],
+                ['label' => 'Lokasi Kerja', 'label_en' => 'Work Location', 'value' => $user->work_location,      'icon' => 'fas fa-map-marker-alt'],
             ];
         @endphp
         @foreach($fields as $f)
@@ -70,7 +53,7 @@
             <div class="um-info-item">
                 <div class="um-info-icon"><i class="{{ $f['icon'] }}"></i></div>
                 <div>
-                    <div class="info-label">{{ $f['label'] }}</div>
+                    <div class="info-label" data-en="{{ $f['label_en'] }}">{{ $f['label'] }}</div>
                     <div class="info-value">{{ $f['value'] ?? '—' }}</div>
                 </div>
             </div>
@@ -78,8 +61,8 @@
         @endforeach
     </div>
     <div class="um-detail-footer">
-        <span><i class="fas fa-clock me-1"></i>Dibuat {{ $user->created_at?->format('d M Y H:i') ?? '—' }}</span>
-        <span><i class="fas fa-edit me-1"></i>Diperbarui {{ $user->updated_at?->format('d M Y H:i') ?? '—' }}</span>
+        <span><i class="fas fa-clock me-1"></i><span data-en="Created">Dibuat</span> {{ $user->created_at?->format('d M Y H:i') ?? '—' }}</span>
+        <span><i class="fas fa-edit me-1"></i><span data-en="Updated">Diperbarui</span> {{ $user->updated_at?->format('d M Y H:i') ?? '—' }}</span>
     </div>
 </div>
 
@@ -87,16 +70,16 @@
 <div class="um-section-card mb-3">
     <div class="um-section-head">
         <h6 class="um-section-title">
-            <i class="fas fa-user-shield"></i> Role Dimiliki
+            <i class="fas fa-user-shield"></i> <span data-en="Assigned Roles">Role Dimiliki</span>
         </h6>
-        <span class="um-section-count">{{ $user->roles->count() }} role</span>
+        <span class="um-section-count">{{ $user->roles->count() }} <span data-en="roles">role</span></span>
     </div>
 
     @if($user->roles->isEmpty())
         <div class="um-empty">
             <div class="um-empty-icon"><i class="fas fa-user-slash"></i></div>
-            <h6>Belum ada role</h6>
-            <p>User ini belum ditetapkan ke role manapun.</p>
+            <h6 data-en="No roles assigned">Belum ada role</h6>
+            <p data-en="This user has not been assigned to any role.">User ini belum ditetapkan ke role manapun.</p>
         </div>
     @else
         <div class="um-role-list">
@@ -117,12 +100,8 @@
                 <div class="d-flex align-items-center gap-3">
                     <span class="um-role-perm-count">
                         <i class="fas fa-key fa-xs me-1" style="color:var(--um-accent)"></i>
-                        {{ $role->permissions->count() }} permission
+                        {{ $role->permissions->count() }} <span data-en="permissions">permission</span>
                     </span>
-                    <a href="{{ route('user-management.roles.show', $role) }}"
-                       class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-eye"></i>
-                    </a>
                 </div>
             </div>
             @endforeach
@@ -134,23 +113,24 @@
 @php
     $actionOrder = ['monitor','view','create','update','delete','download','export','import','print'];
     $actionLabel = [
-        'monitor'  => 'Monitor',  'view'     => 'Detail',
-        'create'   => 'Tambah',   'update'   => 'Ubah',
-        'delete'   => 'Hapus',    'download' => 'Unduh',
-        'export'   => 'Export',   'import'   => 'Import',
-        'print'    => 'Cetak',
+        'monitor'  => ['id' => 'Monitor',  'en' => 'Monitor'],
+        'view'     => ['id' => 'Detail',   'en' => 'Detail'],
+        'create'   => ['id' => 'Tambah',   'en' => 'Create'],
+        'update'   => ['id' => 'Ubah',     'en' => 'Update'],
+        'delete'   => ['id' => 'Hapus',    'en' => 'Delete'],
+        'download' => ['id' => 'Unduh',    'en' => 'Download'],
+        'export'   => ['id' => 'Export',   'en' => 'Export'],
+        'import'   => ['id' => 'Import',   'en' => 'Import'],
+        'print'    => ['id' => 'Cetak',    'en' => 'Print'],
     ];
 
-    // Semua slug permission yang ada di sistem (untuk kolom & baris)
     $systemSlugs = collect($allPermissions)->flatten()->pluck('slug');
 
-    // Slug yang dimiliki user (untuk menentukan ✓ atau ✗)
     $userSlugs = $user->roles
         ->flatMap(fn($r) => $r->permissions)
         ->unique('id')
         ->pluck('slug');
 
-    // Kolom: dari sistem agar selalu lengkap
     $actions = $systemSlugs
         ->map(fn($s) => last(explode('.', $s)))
         ->unique()
@@ -161,7 +141,6 @@
         })
         ->values();
 
-    // Baris: dari sistem agar semua modul muncul
     $grouped = $systemSlugs->groupBy(function ($slug) {
         $parts = explode('.', $slug); array_pop($parts);
         return implode('.', $parts);
@@ -171,27 +150,29 @@
 <div class="um-section-card">
     <div class="um-section-head">
         <h6 class="um-section-title">
-            <i class="fas fa-key"></i> Permission Aktif
+            <i class="fas fa-key"></i> <span data-en="Active Permissions">Permission Aktif</span>
         </h6>
         <span class="um-section-count">
-            {{ $userSlugs->count() }} / {{ $systemSlugs->count() }} permission
+            {{ $userSlugs->count() }} / {{ $systemSlugs->count() }} <span data-en="permissions">permission</span>
         </span>
     </div>
 
     @if($grouped->isEmpty())
         <div class="um-empty">
             <div class="um-empty-icon"><i class="fas fa-lock"></i></div>
-            <h6>Tidak ada permission</h6>
-            <p>Belum ada permission terdaftar di sistem.</p>
+            <h6 data-en="No permissions">Tidak ada permission</h6>
+            <p data-en="No permissions registered in the system.">Belum ada permission terdaftar di sistem.</p>
         </div>
     @else
         <div class="um-perm-table-wrapper">
             <table class="um-perm-table">
                 <thead>
                     <tr>
-                        <th class="col-menu">Menu / Modul</th>
+                        <th class="col-menu" data-en="Menu / Module">Menu / Modul</th>
                         @foreach($actions as $act)
-                            <th>{{ $actionLabel[$act] ?? ucfirst($act) }}</th>
+                            <th data-en="{{ $actionLabel[$act]['en'] ?? ucfirst($act) }}">
+                                {{ $actionLabel[$act]['id'] ?? ucfirst($act) }}
+                            </th>
                         @endforeach
                     </tr>
                 </thead>
@@ -230,4 +211,8 @@
 </div>
 
 @include('user-management._partials._toast')
+
+@push('scripts')
+@vite('resources/js/pages/user-management.js')
+@endpush
 @endsection

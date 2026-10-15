@@ -7,7 +7,7 @@
 
 <div class="um-page-header mb-3">
     <div>
-        <div class="um-title"><i class="fas fa-plus-circle"></i> Tambah Permission</div>
+        <div class="um-title">Tambah Permission</div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
@@ -16,10 +16,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('user-management.permissions.index') }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <form method="POST" action="{{ route('user-management.permissions.store') }}" id="permForm" novalidate>
