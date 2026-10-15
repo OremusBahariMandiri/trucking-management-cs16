@@ -9,6 +9,9 @@ use App\Http\Controllers\MasterData\Vehicle\FuelTypeController;
 use App\Http\Controllers\MasterData\Vehicle\VehicleBrandController;
 use App\Http\Controllers\MasterData\Vehicle\VehicleModelController;
 use App\Http\Controllers\MasterData\Vehicle\VehicleTypeController;
+use App\Http\Controllers\UserManagement\PermissionController;
+use App\Http\Controllers\UserManagement\RoleController;
+use App\Http\Controllers\UserManagement\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +27,8 @@ Route::get('/', fn() => redirect()->route('login'));
 // AUTHENTICATED
 // ============================================================
 
-Route::middleware(['auth'])->group(function () {
+// Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'permission'])->group(function () {
 
     // Dashboard
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -93,6 +97,21 @@ Route::middleware(['auth'])->group(function () {
             Route::patch('/{body_type}/toggle',  [BodyTypeController::class, 'toggleActive'])->name('toggle');
             Route::get('/api/list',              [BodyTypeController::class, 'apiList'])->name('api.list');
         });
+    });
+
+    Route::prefix('user-management')->name('user-management.')->group(function () {
+
+        // ── Users ──────────────────────────────────────────────────
+        Route::resource('users', UserController::class);
+
+        // ── Roles ──────────────────────────────────────────────────
+        Route::resource('roles', RoleController::class);
+        Route::post('roles/{role}/sync-permissions', [RoleController::class, 'syncPermissions'])
+            ->name('roles.sync-permissions');
+
+        // ── Permissions ────────────────────────────────────────────
+        Route::resource('permissions', PermissionController::class)
+            ->except(['show']);
     });
 
     Route::prefix('data-management')->name('data-management.')->group(function () {

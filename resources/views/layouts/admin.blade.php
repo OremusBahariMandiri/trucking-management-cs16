@@ -6,11 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Beranda') — {{ config('app.name') }}</title>
-    {{-- Terapkan theme SEBELUM render supaya tidak flash --}}
     <script>
         (function() {
             var t = localStorage.getItem('theme') || 'light';
-            {{-- ← ubah ini --}}
             if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
             else if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
         })();
@@ -42,7 +40,7 @@
 
             <nav class="sb-nav">
 
-                {{-- Beranda --}}
+                {{-- ── Beranda ── --}}
                 <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
                     <span class="n-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -56,10 +54,21 @@
 
                 <div class="nav-sep"></div>
 
+                {{-- ══════════════════════════════════════════════════
+                     MANAJEMEN PENGGUNA
+                     Tampil hanya jika punya akses ke minimal 1 sub-menu
+                ═══════════════════════════════════════════════════════ --}}
+                @php
+                    $umOpen = request()->routeIs('user-management.*');
+                    $canUmUsers       = Auth::user()->hasAccessToMenu('user-management.users');
+                    $canUmRoles       = Auth::user()->hasAccessToMenu('user-management.roles');
+                    $canUmPermissions = Auth::user()->isSuperAdmin();
+                    $showUmGroup      = $canUmUsers || $canUmRoles || $canUmPermissions;
+                @endphp
 
-                {{-- Manajemen Pengguna --}}
+                @if($showUmGroup)
                 <div class="nav-group">
-                    <div class="nav-link has-sub" onclick="toggleSub(this)">
+                    <div class="nav-link has-sub {{ $umOpen ? 'active open' : '' }}" onclick="toggleSub(this)">
                         <span class="n-icon">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round">
@@ -68,38 +77,56 @@
                                 <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
                             </svg>
                         </span>
-                        <span class="n-label" data-en="Users">Pengguna</span>
-                        <svg class="n-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <span class="n-label" data-en="User Management">Manajemen Pengguna</span>
+                        <svg class="n-arrow {{ $umOpen ? 'open' : '' }}" width="14" height="14"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
                     </div>
-                    <div class="n-sub">
-                        <a href="#" class="sub-link" data-en="User List">Daftar Pengguna</a>
-                        <a href="#" class="sub-link" data-en="Roles & Permissions">Peran & Akses</a>
+                    <div class="n-sub {{ $umOpen ? 'open' : '' }}">
+                        @if($canUmUsers)
+                            <a href="{{ route('user-management.users.index') }}"
+                                class="sub-link {{ request()->routeIs('user-management.users.*') ? 'active' : '' }}"
+                                data-en="Users">Pengguna</a>
+                        @endif
+                        @if($canUmRoles)
+                            <a href="{{ route('user-management.roles.index') }}"
+                                class="sub-link {{ request()->routeIs('user-management.roles.*') ? 'active' : '' }}"
+                                data-en="Roles">Peran</a>
+                        @endif
+                        @if($canUmPermissions)
+                            <a href="{{ route('user-management.permissions.index') }}"
+                                class="sub-link {{ request()->routeIs('user-management.permissions.*') ? 'active' : '' }}"
+                                data-en="Permissions">Permission</a>
+                        @endif
                     </div>
                 </div>
+                @endif
+
+                {{-- ══════════════════════════════════════════════════
+                     DATA MASTER
+                     Tampil hanya jika punya akses ke minimal 1 sub-menu
+                ═══════════════════════════════════════════════════════ --}}
                 @php
-                    $masterOpen = request()->routeIs(
-                        'master-data.vehicle-types.*',
-                        'master-data.vehicle-brands.*',
-                        'master-data.vehicle-models.*',
-                        'master-data.fuel-types.*',
-                        'master-data.body-types.*',
+                    $canVehicleTypes  = Auth::user()->hasAccessToMenu('master-data.vehicle-types');
+                    $canVehicleBrands = Auth::user()->hasAccessToMenu('master-data.vehicle-brands');
+                    $canVehicleModels = Auth::user()->hasAccessToMenu('master-data.vehicle-models');
+                    $canFuelTypes     = Auth::user()->hasAccessToMenu('master-data.fuel-types');
+                    $canBodyTypes     = Auth::user()->hasAccessToMenu('master-data.body-types');
+                    $showKendaraanSub = $canVehicleTypes || $canVehicleBrands || $canVehicleModels
+                                     || $canFuelTypes || $canBodyTypes;
+                    $showMasterGroup  = $showKendaraanSub;
+
+                    $masterOpen    = request()->routeIs(
+                        'master-data.vehicle-types.*', 'master-data.vehicle-brands.*',
+                        'master-data.vehicle-models.*', 'master-data.fuel-types.*',
+                        'master-data.body-types.*'
                     );
-                    $kendaraanOpen = request()->routeIs(
-                        'master-data.vehicle-types.*',
-                        'master-data.vehicle-brands.*',
-                        'master-data.vehicle-models.*',
-                        'master-data.fuel-types.*',
-                        'master-data.body-types.*',
-                    );
-                    $manajemenOpen = request()->routeIs(
-                        'data-management.fleet-data.*',
-                        'data-management.sdm-management.*',
-                    );
+                    $kendaraanOpen = $masterOpen;
                 @endphp
 
+                @if($showMasterGroup)
                 <div class="nav-group">
                     <div class="nav-link has-sub {{ $masterOpen ? 'active open' : '' }}" onclick="toggleSub(this)">
                         <span class="n-icon">
@@ -119,8 +146,7 @@
                     </div>
 
                     <div class="n-sub {{ $masterOpen ? 'open' : '' }}">
-
-                        {{-- ── Kendaraan (sub-group) ── --}}
+                        @if($showKendaraanSub)
                         <div class="sub-group-hd {{ $kendaraanOpen ? 'open' : '' }}" onclick="toggleSubGroup(this)">
                             <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -139,39 +165,57 @@
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </div>
-
                         <div class="sub-group-body {{ $kendaraanOpen ? 'open' : '' }}">
+                            @if($canVehicleTypes)
                             <a href="{{ route('master-data.vehicle-types.index') }}"
                                 class="sub-link2 {{ request()->routeIs('master-data.vehicle-types.*') ? 'active' : '' }}"
-                                data-en="Vehicle Types">
-                                Tipe Kendaraan
-                            </a>
+                                data-en="Vehicle Types">Tipe Kendaraan</a>
+                            @endif
+                            @if($canVehicleBrands)
                             <a href="{{ route('master-data.vehicle-brands.index') }}"
                                 class="sub-link2 {{ request()->routeIs('master-data.vehicle-brands.*') ? 'active' : '' }}"
-                                data-en="Vehicle Brands">
-                                Merek Kendaraan
-                            </a>
+                                data-en="Vehicle Brands">Merek Kendaraan</a>
+                            @endif
+                            @if($canVehicleModels)
                             <a href="{{ route('master-data.vehicle-models.index') }}"
                                 class="sub-link2 {{ request()->routeIs('master-data.vehicle-models.*') ? 'active' : '' }}"
-                                data-en="Vehicle Models">
-                                Model Kendaraan
-                            </a>
+                                data-en="Vehicle Models">Model Kendaraan</a>
+                            @endif
+                            @if($canFuelTypes)
                             <a href="{{ route('master-data.fuel-types.index') }}"
                                 class="sub-link2 {{ request()->routeIs('master-data.fuel-types.*') ? 'active' : '' }}"
-                                data-en="Fuel Types">
-                                Bahan Bakar
-                            </a>
+                                data-en="Fuel Types">Bahan Bakar</a>
+                            @endif
+                            @if($canBodyTypes)
                             <a href="{{ route('master-data.body-types.index') }}"
                                 class="sub-link2 {{ request()->routeIs('master-data.body-types.*') ? 'active' : '' }}"
-                                data-en="Body Types">
-                                Jenis Karoseri
-                            </a>
+                                data-en="Body Types">Jenis Karoseri</a>
+                            @endif
                         </div>
-
+                        @endif
                     </div>
                 </div>
+                @endif
 
-                {{-- Manajemen Data --}}
+                {{-- ══════════════════════════════════════════════════
+                     MANAJEMEN DATA
+                     Tampil hanya jika punya akses ke minimal 1 sub-menu
+                ═══════════════════════════════════════════════════════ --}}
+                @php
+                    $canFleetData     = Auth::user()->hasAccessToMenu('data-management.fleet-data');
+                    $canEmployeeData  = Auth::user()->hasAccessToMenu('data-management.sdm-management.employee-data');
+                    $canDriverData    = Auth::user()->hasAccessToMenu('data-management.sdm-management.driver-data');
+                    $showSdmSub       = $canEmployeeData || $canDriverData;
+                    $showManajemenGroup = $canFleetData || $showSdmSub;
+
+                    $manajemenOpen = request()->routeIs(
+                        'data-management.fleet-data.*',
+                        'data-management.sdm-management.*'
+                    );
+                    $sdmOpen = request()->routeIs('data-management.sdm-management.*');
+                @endphp
+
+                @if($showManajemenGroup)
                 <div class="nav-group">
                     <div class="nav-link has-sub {{ $manajemenOpen ? 'active open' : '' }}"
                         onclick="toggleSub(this)">
@@ -194,6 +238,7 @@
                     </div>
 
                     <div class="n-sub {{ $manajemenOpen ? 'open' : '' }}">
+                        @if($canFleetData)
                         <a href="{{ route('data-management.fleet-data.index') }}"
                             class="sub-group-hd {{ request()->routeIs('data-management.fleet-data.*') ? 'active' : '' }}">
                             <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
@@ -206,11 +251,11 @@
                                     <circle cx="18.5" cy="18.5" r="2.5" />
                                 </svg>
                             </span>
-                            <span data-en="Vehicle Data">Data Kendaraan</span>
+                            <span data-en="Fleet">Kendaraan</span>
                         </a>
+                        @endif
 
-                        {{-- SDM sub-group --}}
-                        @php $sdmOpen = request()->routeIs('data-management.sdm-management.*'); @endphp
+                        @if($showSdmSub)
                         <div class="sub-group-hd {{ $sdmOpen ? 'open' : '' }}" onclick="toggleSubGroup(this)">
                             <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -220,7 +265,7 @@
                                     <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
                                 </svg>
                             </span>
-                            <span data-en="HR Management">Kelola SDM</span>
+                            <span data-en="HR">SDM</span>
                             <svg class="sub-arrow {{ $sdmOpen ? 'open' : '' }}" width="13" height="13"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                 stroke-linecap="round">
@@ -228,21 +273,23 @@
                             </svg>
                         </div>
                         <div class="sub-group-body {{ $sdmOpen ? 'open' : '' }}">
+                            @if($canEmployeeData)
                             <a href="{{ route('data-management.sdm-management.employee-data.index') }}"
                                 class="sub-link2 {{ request()->routeIs('data-management.sdm-management.employee-data.*') ? 'active' : '' }}"
-                                data-en="Employee Data">
-                                Data Karyawan
-                            </a>
+                                data-en="Employee Data">Data Karyawan</a>
+                            @endif
+                            @if($canDriverData)
                             <a href="{{ route('data-management.sdm-management.driver-data.index') }}"
                                 class="sub-link2 {{ request()->routeIs('data-management.sdm-management.driver-data.*') ? 'active' : '' }}"
-                                data-en="Driver Data">
-                                Data Supir
-                            </a>
+                                data-en="Driver Data">Data Supir</a>
+                            @endif
                         </div>
+                        @endif
                     </div>
                 </div>
+                @endif
 
-                {{-- Laporan --}}
+                {{-- ── Laporan ── --}}
                 <a href="#" class="nav-link">
                     <span class="n-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -259,14 +306,13 @@
 
                 <div class="nav-sep"></div>
 
-                {{-- Pengaturan --}}
+                {{-- ── Pengaturan ── --}}
                 <a href="#" class="nav-link">
                     <span class="n-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round">
                             <circle cx="12" cy="12" r="3" />
-                            <path
-                                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
                         </svg>
                     </span>
                     <span class="n-label" data-en="Settings">Pengaturan</span>
@@ -296,15 +342,6 @@
                 </div>
 
                 <div class="nav-actions">
-
-                    <button class="ic-btn" title="Notifikasi">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round">
-                            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                            <path d="M13.73 21a2 2 0 01-3.46 0" />
-                        </svg>
-                        <span class="notif-dot"></span>
-                    </button>
 
                     <div class="lang-pill">
                         <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
@@ -351,7 +388,9 @@
                         </div>
                         <div class="u-info">
                             <div class="u-name">{{ Auth::user()->full_name }}</div>
-                            <div class="u-role">{{ Auth::user()->role->name ?? 'Pengguna' }}</div>
+                            <div class="u-role">
+                                {{ Auth::user()->roles->first()?->name ?? 'Pengguna' }}
+                            </div>
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5" stroke-linecap="round"
@@ -372,8 +411,7 @@
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round">
                                     <circle cx="12" cy="12" r="3" />
-                                    <path
-                                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
                                 </svg>
                                 <span data-en="Settings">Pengaturan</span>
                             </a>

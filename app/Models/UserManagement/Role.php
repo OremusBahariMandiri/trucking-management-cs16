@@ -29,7 +29,7 @@ class Role extends Model
 
     public function users()
     {
-        return $this->hasMany(\App\Models\User::class);
+        return $this->belongsToMany(\App\Models\User::class, 'user_roles')->withTimestamps();
     }
 
     public function hasPermission(string $slug): bool

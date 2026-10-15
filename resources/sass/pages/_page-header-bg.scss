@@ -1,0 +1,44 @@
+// ═══════════════════════════════════════════════════════════════
+//  _page-header-bg.scss
+//  Shared background image untuk semua page-header card.
+//  Import di setiap SCSS halaman yang punya *-page-header:
+//    @import 'page-header-bg';  (atau @import './page-header-bg')
+//
+//  Tambah modul baru: cukup tambahkan selectornya di tiap blok.
+//
+//  Assets:
+//    public/images/bg-card-light.png  → light mode
+//    public/images/bg-card-dark.png   → dark mode
+// ═══════════════════════════════════════════════════════════════
+
+// ── Light mode (default) ───────────────────────────────────────
+.veh-page-header,
+.drv-page-header,
+.emp-page-header {
+  background-image: url('../../images/bg-card-light.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+// ── Dark mode — system preference ─────────────────────────────
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+
+    .veh-page-header,
+    .drv-page-header,
+    .emp-page-header {
+      background-image: url('../../images/bg-card-dark.png');
+    }
+  }
+}
+
+// ── Dark mode — explicit [data-theme="dark"] toggle ────────────
+:root[data-theme="dark"] {
+
+  .veh-page-header,
+  .drv-page-header,
+  .emp-page-header {
+    background-image: url('../../images/bg-card-dark.png');
+  }
+}
