@@ -17,6 +17,7 @@ class UpdateAxisConfigurationRequest extends FormRequest
         $id = $this->route('axis_configuration')?->id ?? $this->route('axis_configuration');
 
         return [
+            'code'        => ['nullable', 'string', 'max:10', Rule::unique('aa09_vehicle_axis_configurations', 'code')->ignore($id)],
             'name'        => ['required', 'string', 'max:30',  Rule::unique('aa09_vehicle_axis_configurations', 'name')->ignore($id)],
             'description' => 'nullable|string|max:200',
             'is_active'   => 'boolean',

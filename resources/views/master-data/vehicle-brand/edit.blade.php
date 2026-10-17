@@ -11,7 +11,6 @@
 <div class="veh-page-header mb-4">
     <div>
         <div class="veh-title">
-            <i class="fas fa-pen"></i>
             <span data-en="Edit Vehicle Brand">Edit Merek Kendaraan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -39,6 +38,20 @@
         </div>
         <div class="lkp-form-body">
             <div class="row g-3">
+
+                <div class="col-12 col-md-12">
+                    <label class="form-label" data-en="Code">
+                        Kode
+                    </label>
+                    <input type="text" name="code" id="code"
+                           class="form-control @error('code') is-invalid @enderror"
+                           value="{{ old('code', $vehicleBrand->code) }}"
+                           placeholder="maks. 10 karakter"
+                           maxlength="10">
+                    @error('code')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
                 <div class="col-12 col-md-12">
                     <label class="form-label" data-en="Brand Name">

@@ -14,6 +14,7 @@ class StoreOwnershipStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'code'        => 'nullable|string|max:10|unique:aa10_ownership_statuses,code',
             'name'        => 'required|string|max:100|unique:aa10_ownership_statuses,name',
             'description' => 'nullable|string|max:200',
             'is_active'   => 'boolean',
