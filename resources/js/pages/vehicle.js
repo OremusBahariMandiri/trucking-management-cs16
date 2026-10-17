@@ -68,7 +68,12 @@ function initBrandModelSelect() {
     }
 
     brandSel.addEventListener('change', () => filterModels(brandSel.value));
-    filterModels(brandSel.value); // init
+    // Hanya filter on init jika brand sudah ter-pilih (edit mode / old() ada nilai).
+    // Jika fresh create (brandSel.value kosong), biarkan opsi Blade tetap tampil
+    // agar model tidak blank saat allModels belum/gagal ter-parse.
+    if (brandSel.value) {
+        filterModels(brandSel.value);
+    }
 }
 
 // ============================================================

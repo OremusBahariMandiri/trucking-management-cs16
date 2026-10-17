@@ -46,24 +46,6 @@
             <div class="invalid-feedback">{{ $err('last_odometer_date') }}</div>
         </div>
 
-        {{-- Tanggal Servis Terakhir --}}
-        <div class="col-md-6">
-            <label class="form-label" data-en="Last Service Date">Tanggal Servis Terakhir</label>
-            <input type="date" name="last_service_date" class="form-control {{ $hasErr('last_service_date') }}"
-                value="{{ $old('last_service_date') }}">
-        </div>
-
-        {{-- Interval Servis --}}
-        <div class="col-md-6">
-            <label class="form-label" data-en="Service Interval">Interval Servis</label>
-            <div class="input-group">
-                <input type="number" name="service_interval_km"
-                    class="form-control {{ $hasErr('service_interval_km') }}"
-                    value="{{ $old('service_interval_km', 10000) }}" min="0" placeholder="10000">
-                <span class="input-group-text">km</span>
-            </div>
-        </div>
-
     </div>
 
     <div class="form-section-title"><i class="fas fa-broadcast-tower"></i>

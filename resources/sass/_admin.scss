@@ -1112,3 +1112,91 @@ tbody tr:hover td {
   background: var(--border);
   border-radius: 4px;
 }
+/* ─── MODAL THEMING (light & dark) ──────────────────────────────────────────── */
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+
+  .modal-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+
+    .modal-title {
+      color: var(--text);
+    }
+
+    .btn-close {
+      filter: none;
+    }
+  }
+
+  .modal-body {
+    background: var(--surface);
+    color: var(--text);
+
+    .form-label {
+      color: var(--text);
+    }
+
+    .form-control,
+    .form-select {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+
+      &::placeholder {
+        color: var(--text-faint);
+      }
+
+      &:focus {
+        background: var(--surface-2);
+        border-color: #3b82f6;
+        color: var(--text);
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+      }
+    }
+
+    .form-select option {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    /* Export card options */
+    .export-option {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: border-color 0.15s;
+
+      &:hover {
+        border-color: #3b82f6;
+        background: var(--surface-2);
+      }
+
+      .text-muted {
+        color: var(--text-muted) !important;
+      }
+    }
+  }
+
+  .modal-footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* Dark mode: invert btn-close icon */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .modal-content .btn-close {
+    filter: invert(1) grayscale(100%) brightness(2);
+  }
+}
+:root[data-theme="dark"] .modal-content .btn-close {
+  filter: invert(1) grayscale(100%) brightness(2);
+}
+
+/* Modal backdrop blur */
+.modal-backdrop {
+  backdrop-filter: blur(2px);
+}

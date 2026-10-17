@@ -21,10 +21,23 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('master-data.vehicle-types.create') }}"
-            class="btn btn-primary btn-sm d-flex align-items-center gap-2">
-            <i class="fas fa-plus"></i>Tambah
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#filterModal">
+                <i class="fas fa-filter"></i> <span data-en="Filter">Filter</span>
+                @if(request()->hasAny(['q','status']))
+                    <span class="badge bg-primary rounded-pill">{{ collect(['q','status'])->filter(fn($k)=>request()->filled($k))->count() }}</span>
+                @endif
+            </button>
+            <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
+            </button>
+            <a href="{{ route('master-data.vehicle-types.create') }}"
+                class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                <i class="fas fa-plus"></i>Tambah
+            </a>
+        </div>
     </div>
 
     {{-- ── Table Card ───────────────────────────────────────────── --}}
@@ -108,6 +121,92 @@
                 {{ $vehicleTypes->withQueryString()->links() }}
             </div>
         @endif
+    </div>
+
+    {{-- ── Modal Filter ─────────────────────────────────────────── --}}
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="GET" action="{{ route('master-data.vehicle-types.index') }}">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="filterModalLabel">
+                            <i class="fas fa-filter me-2"></i>Filter Jenis Kendaraan
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            {{-- Pencarian --}}
+                            <div class="col-12">
+                                <label class="form-label" data-en="Keyword">Kata Kunci</label>
+                                <input type="text" name="q" class="form-control"
+                                       placeholder="Cari nama atau deskripsi…"
+                                       value="{{ request('q') }}">
+                            </div>
+                            {{-- Status --}}
+                            <div class="col-12">
+                                <label class="form-label" data-en="Status">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value=""><span data-en="— All Status —">— Semua Status —</span></option>
+                                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }} data-en="Active">Aktif</option>
+                                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }} data-en="Inactive">Tidak Aktif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <a href="{{ route('master-data.vehicle-types.index') }}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times me-1"></i><span data-en="Reset">Reset</span>
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-search me-1"></i><span data-en="Apply Filter">Terapkan Filter</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Modal Export ─────────────────────────────────────────── --}}
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exportModalLabel">
+                        <i class="fas fa-file-export me-2"></i>Export Data Jenis Kendaraan
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        <span data-en="Export will include active filters.">Export akan menyertakan filter yang sedang aktif.</span>
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('master-data.vehicle-types.index') }}?{{ http_build_query(array_merge(request()->query(), ['export' => 'pdf'])) }}"
+                           target="_blank"
+                           class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-file-pdf fa-lg"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold" data-en="Export PDF">Export PDF</div>
+                                <small class="text-muted" data-en="Print-ready format">Format siap cetak</small>
+                            </div>
+                        </a>
+                        <a href="{{ route('master-data.vehicle-types.index') }}?{{ http_build_query(array_merge(request()->query(), ['export' => 'excel'])) }}"
+                           class="btn btn-outline-success d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-file-excel fa-lg"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold" data-en="Export Excel">Export Excel</div>
+                                <small class="text-muted" data-en="Spreadsheet format (.xlsx)">Format spreadsheet (.xlsx)</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" data-en="Close">Tutup</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection

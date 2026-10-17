@@ -9,11 +9,36 @@ use App\Models\MasterData\Vehicle\FuelType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Exports\MasterData\Vehicle\FuelTypeExport;
 
 class FuelTypeController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
+        // ── Export ─────────────────────────────────────────────────
+        $filters = [
+            'q' => $request->input('q'),
+            'status' => $request->input('status'),
+        ];
+
+        if ($request->input('export') === 'pdf') {
+            $items = (new FuelTypeExport($filters))->collection();
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+                'exports.master-data.fuel-type',
+                compact('items')
+            )->setPaper('a4', 'landscape');
+
+            return $pdf->stream('bahan-bakar-' . now()->format('Ymd') . '.pdf');
+        }
+
+        if ($request->input('export') === 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new FuelTypeExport($filters),
+                'bahan-bakar-' . now()->format('Ymd') . '.xlsx'
+            );
+        }
+
+        // ── Normal index ────────────────────────────────────────────
         $fuelTypes = FuelType::query()
             ->when($request->input('q'), fn($q, $s) =>
                 $q->where('name', 'like', "%{$s}%")

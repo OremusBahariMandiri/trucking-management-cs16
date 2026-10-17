@@ -9,11 +9,36 @@ use App\Models\MasterData\Vehicle\VehicleAxisConfiguration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Exports\MasterData\Vehicle\AxisConfigurationExport;
 
 class VehicleAxisConfigurationController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
+        // ── Export ─────────────────────────────────────────────────
+        $filters = [
+            'q' => $request->input('q'),
+            'status' => $request->input('status'),
+        ];
+
+        if ($request->input('export') === 'pdf') {
+            $items = (new AxisConfigurationExport($filters))->collection();
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+                'exports.master-data.axis-configuration',
+                compact('items')
+            )->setPaper('a4', 'landscape');
+
+            return $pdf->stream('konfigurasi-sumbu-' . now()->format('Ymd') . '.pdf');
+        }
+
+        if ($request->input('export') === 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new AxisConfigurationExport($filters),
+                'konfigurasi-sumbu-' . now()->format('Ymd') . '.xlsx'
+            );
+        }
+
+        // ── Normal index ────────────────────────────────────────────
         $items = VehicleAxisConfiguration::query()
             ->when($request->input('q'), fn($q, $s) =>
                 $q->where('name', 'like', "%{$s}%")
