@@ -11,11 +11,37 @@ use App\Models\MasterData\Vehicle\VehicleType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Exports\MasterData\Vehicle\VehicleModelExport;
 
 class VehicleModelController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
+        // ── Export ─────────────────────────────────────────────────
+        $filters = [
+            'q' => $request->input('q'),
+            'status' => $request->input('status'),
+            'brand_id' => $request->input('brand_id'),
+        ];
+
+        if ($request->input('export') === 'pdf') {
+            $items = (new VehicleModelExport($filters))->collection();
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+                'exports.master-data.vehicle-model',
+                compact('items')
+            )->setPaper('a4', 'landscape');
+
+            return $pdf->stream('model-kendaraan-' . now()->format('Ymd') . '.pdf');
+        }
+
+        if ($request->input('export') === 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new VehicleModelExport($filters),
+                'model-kendaraan-' . now()->format('Ymd') . '.xlsx'
+            );
+        }
+
+        // ── Normal index ────────────────────────────────────────────
         $vehicleModels = VehicleModel::query()
             ->with(['brand', 'vehicleType'])
             ->when($request->input('q'), fn($q, $s) =>

@@ -9,11 +9,36 @@ use App\Models\MasterData\Vehicle\BodyType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Exports\MasterData\Vehicle\BodyTypeExport;
 
 class BodyTypeController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
+        // ── Export ─────────────────────────────────────────────────
+        $filters = [
+            'q' => $request->input('q'),
+            'status' => $request->input('status'),
+        ];
+
+        if ($request->input('export') === 'pdf') {
+            $items = (new BodyTypeExport($filters))->collection();
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+                'exports.master-data.body-type',
+                compact('items')
+            )->setPaper('a4', 'landscape');
+
+            return $pdf->stream('jenis-karoseri-' . now()->format('Ymd') . '.pdf');
+        }
+
+        if ($request->input('export') === 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new BodyTypeExport($filters),
+                'jenis-karoseri-' . now()->format('Ymd') . '.xlsx'
+            );
+        }
+
+        // ── Normal index ────────────────────────────────────────────
         $bodyTypes = BodyType::query()
             ->when($request->input('q'), fn($q, $s) =>
                 $q->where('name', 'like', "%{$s}%")
