@@ -60,48 +60,48 @@
                 ═══════════════════════════════════════════════════════ --}}
                 @php
                     $umOpen = request()->routeIs('user-management.*');
-                    $canUmUsers       = Auth::user()->hasAccessToMenu('user-management.users');
-                    $canUmRoles       = Auth::user()->hasAccessToMenu('user-management.roles');
+                    $canUmUsers = Auth::user()->hasAccessToMenu('user-management.users');
+                    $canUmRoles = Auth::user()->hasAccessToMenu('user-management.roles');
                     $canUmPermissions = Auth::user()->isSuperAdmin();
-                    $showUmGroup      = $canUmUsers || $canUmRoles || $canUmPermissions;
+                    $showUmGroup = $canUmUsers || $canUmRoles || $canUmPermissions;
                 @endphp
 
-                @if($showUmGroup)
-                <div class="nav-group">
-                    <div class="nav-link has-sub {{ $umOpen ? 'active open' : '' }}" onclick="toggleSub(this)">
-                        <span class="n-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round">
-                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                                <circle cx="9" cy="7" r="4" />
-                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                @if ($showUmGroup)
+                    <div class="nav-group">
+                        <div class="nav-link has-sub {{ $umOpen ? 'active open' : '' }}" onclick="toggleSub(this)">
+                            <span class="n-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                                </svg>
+                            </span>
+                            <span class="n-label" data-en="User Management">Manajemen Pengguna</span>
+                            <svg class="n-arrow {{ $umOpen ? 'open' : '' }}" width="14" height="14"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round">
+                                <polyline points="9 18 15 12 9 6" />
                             </svg>
-                        </span>
-                        <span class="n-label" data-en="User Management">Manajemen Pengguna</span>
-                        <svg class="n-arrow {{ $umOpen ? 'open' : '' }}" width="14" height="14"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
+                        </div>
+                        <div class="n-sub {{ $umOpen ? 'open' : '' }}">
+                            @if ($canUmUsers)
+                                <a href="{{ route('user-management.users.index') }}"
+                                    class="sub-link {{ request()->routeIs('user-management.users.*') ? 'active' : '' }}"
+                                    data-en="Users">Pengguna</a>
+                            @endif
+                            @if ($canUmRoles)
+                                <a href="{{ route('user-management.roles.index') }}"
+                                    class="sub-link {{ request()->routeIs('user-management.roles.*') ? 'active' : '' }}"
+                                    data-en="Roles">Peran</a>
+                            @endif
+                            @if ($canUmPermissions)
+                                <a href="{{ route('user-management.permissions.index') }}"
+                                    class="sub-link {{ request()->routeIs('user-management.permissions.*') ? 'active' : '' }}"
+                                    data-en="Permissions">Permission</a>
+                            @endif
+                        </div>
                     </div>
-                    <div class="n-sub {{ $umOpen ? 'open' : '' }}">
-                        @if($canUmUsers)
-                            <a href="{{ route('user-management.users.index') }}"
-                                class="sub-link {{ request()->routeIs('user-management.users.*') ? 'active' : '' }}"
-                                data-en="Users">Pengguna</a>
-                        @endif
-                        @if($canUmRoles)
-                            <a href="{{ route('user-management.roles.index') }}"
-                                class="sub-link {{ request()->routeIs('user-management.roles.*') ? 'active' : '' }}"
-                                data-en="Roles">Peran</a>
-                        @endif
-                        @if($canUmPermissions)
-                            <a href="{{ route('user-management.permissions.index') }}"
-                                class="sub-link {{ request()->routeIs('user-management.permissions.*') ? 'active' : '' }}"
-                                data-en="Permissions">Permission</a>
-                        @endif
-                    </div>
-                </div>
                 @endif
 
                 {{-- ══════════════════════════════════════════════════
@@ -109,92 +109,115 @@
                      Tampil hanya jika punya akses ke minimal 1 sub-menu
                 ═══════════════════════════════════════════════════════ --}}
                 @php
-                    $canVehicleTypes  = Auth::user()->hasAccessToMenu('master-data.vehicle-types');
+                    $canVehicleTypes = Auth::user()->hasAccessToMenu('master-data.vehicle-types');
                     $canVehicleBrands = Auth::user()->hasAccessToMenu('master-data.vehicle-brands');
                     $canVehicleModels = Auth::user()->hasAccessToMenu('master-data.vehicle-models');
-                    $canFuelTypes     = Auth::user()->hasAccessToMenu('master-data.fuel-types');
-                    $canBodyTypes     = Auth::user()->hasAccessToMenu('master-data.body-types');
-                    $showKendaraanSub = $canVehicleTypes || $canVehicleBrands || $canVehicleModels
-                                     || $canFuelTypes || $canBodyTypes;
-                    $showMasterGroup  = $showKendaraanSub;
+                    $canFuelTypes = Auth::user()->hasAccessToMenu('master-data.fuel-types');
+                    $canBodyTypes = Auth::user()->hasAccessToMenu('master-data.body-types');
+                    $canAxisConfigurations = Auth::user()->hasAccessToMenu('master-data.axis-configurations');
+                    $canOwnershipStatuses = Auth::user()->hasAccessToMenu('master-data.ownership-statuses');
+                    $showKendaraanSub =
+                        $canVehicleTypes ||
+                        $canVehicleBrands ||
+                        $canVehicleModels ||
+                        $canFuelTypes ||
+                        $canBodyTypes ||
+                        $canAxisConfigurations ||
+                        $canOwnershipStatuses;
+                    $showMasterGroup = $showKendaraanSub;
 
-                    $masterOpen    = request()->routeIs(
-                        'master-data.vehicle-types.*', 'master-data.vehicle-brands.*',
-                        'master-data.vehicle-models.*', 'master-data.fuel-types.*',
-                        'master-data.body-types.*'
+                    $masterOpen = request()->routeIs(
+                        'master-data.vehicle-types.*',
+                        'master-data.vehicle-brands.*',
+                        'master-data.vehicle-models.*',
+                        'master-data.fuel-types.*',
+                        'master-data.body-types.*',
+                        'master-data.axis-configurations.*',
+                        'master-data.ownership-statuses.*',
                     );
                     $kendaraanOpen = $masterOpen;
                 @endphp
 
-                @if($showMasterGroup)
-                <div class="nav-group">
-                    <div class="nav-link has-sub {{ $masterOpen ? 'active open' : '' }}" onclick="toggleSub(this)">
-                        <span class="n-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round">
-                                <ellipse cx="12" cy="5" rx="9" ry="3" />
-                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
-                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-                            </svg>
-                        </span>
-                        <span class="n-label" data-en="Master Data">Data Master</span>
-                        <svg class="n-arrow {{ $masterOpen ? 'open' : '' }}" width="14" height="14"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </div>
-
-                    <div class="n-sub {{ $masterOpen ? 'open' : '' }}">
-                        @if($showKendaraanSub)
-                        <div class="sub-group-hd {{ $kendaraanOpen ? 'open' : '' }}" onclick="toggleSubGroup(this)">
-                            <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <rect x="1" y="3" width="15" height="13" />
-                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                                    <circle cx="5.5" cy="18.5" r="2.5" />
-                                    <circle cx="18.5" cy="18.5" r="2.5" />
+                @if ($showMasterGroup)
+                    <div class="nav-group">
+                        <div class="nav-link has-sub {{ $masterOpen ? 'active open' : '' }}" onclick="toggleSub(this)">
+                            <span class="n-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
                                 </svg>
                             </span>
-                            <span data-en="Vehicles">Kendaraan</span>
-                            <svg class="sub-arrow {{ $kendaraanOpen ? 'open' : '' }}" width="13" height="13"
+                            <span class="n-label" data-en="Master Data">Data Master</span>
+                            <svg class="n-arrow {{ $masterOpen ? 'open' : '' }}" width="14" height="14"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                 stroke-linecap="round">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </div>
-                        <div class="sub-group-body {{ $kendaraanOpen ? 'open' : '' }}">
-                            @if($canVehicleTypes)
-                            <a href="{{ route('master-data.vehicle-types.index') }}"
-                                class="sub-link2 {{ request()->routeIs('master-data.vehicle-types.*') ? 'active' : '' }}"
-                                data-en="Vehicle Types">Tipe Kendaraan</a>
-                            @endif
-                            @if($canVehicleBrands)
-                            <a href="{{ route('master-data.vehicle-brands.index') }}"
-                                class="sub-link2 {{ request()->routeIs('master-data.vehicle-brands.*') ? 'active' : '' }}"
-                                data-en="Vehicle Brands">Merek Kendaraan</a>
-                            @endif
-                            @if($canVehicleModels)
-                            <a href="{{ route('master-data.vehicle-models.index') }}"
-                                class="sub-link2 {{ request()->routeIs('master-data.vehicle-models.*') ? 'active' : '' }}"
-                                data-en="Vehicle Models">Model Kendaraan</a>
-                            @endif
-                            @if($canFuelTypes)
-                            <a href="{{ route('master-data.fuel-types.index') }}"
-                                class="sub-link2 {{ request()->routeIs('master-data.fuel-types.*') ? 'active' : '' }}"
-                                data-en="Fuel Types">Bahan Bakar</a>
-                            @endif
-                            @if($canBodyTypes)
-                            <a href="{{ route('master-data.body-types.index') }}"
-                                class="sub-link2 {{ request()->routeIs('master-data.body-types.*') ? 'active' : '' }}"
-                                data-en="Body Types">Jenis Karoseri</a>
+
+                        <div class="n-sub {{ $masterOpen ? 'open' : '' }}">
+                            @if ($showKendaraanSub)
+                                <div class="sub-group-hd {{ $kendaraanOpen ? 'open' : '' }}"
+                                    onclick="toggleSubGroup(this)">
+                                    <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <rect x="1" y="3" width="15" height="13" />
+                                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                                            <circle cx="5.5" cy="18.5" r="2.5" />
+                                            <circle cx="18.5" cy="18.5" r="2.5" />
+                                        </svg>
+                                    </span>
+                                    <span data-en="Vehicles">Kendaraan</span>
+                                    <svg class="sub-arrow {{ $kendaraanOpen ? 'open' : '' }}" width="13"
+                                        height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
+                                </div>
+                                <div class="sub-group-body {{ $kendaraanOpen ? 'open' : '' }}">
+                                    @if ($canVehicleTypes)
+                                        <a href="{{ route('master-data.vehicle-types.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.vehicle-types.*') ? 'active' : '' }}"
+                                            data-en="Vehicle Types">Tipe Kendaraan</a>
+                                    @endif
+                                    @if ($canVehicleBrands)
+                                        <a href="{{ route('master-data.vehicle-brands.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.vehicle-brands.*') ? 'active' : '' }}"
+                                            data-en="Vehicle Brands">Merek Kendaraan</a>
+                                    @endif
+                                    @if ($canVehicleModels)
+                                        <a href="{{ route('master-data.vehicle-models.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.vehicle-models.*') ? 'active' : '' }}"
+                                            data-en="Vehicle Models">Model Kendaraan</a>
+                                    @endif
+                                    @if ($canFuelTypes)
+                                        <a href="{{ route('master-data.fuel-types.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.fuel-types.*') ? 'active' : '' }}"
+                                            data-en="Fuel Types">Bahan Bakar</a>
+                                    @endif
+                                    @if ($canBodyTypes)
+                                        <a href="{{ route('master-data.body-types.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.body-types.*') ? 'active' : '' }}"
+                                            data-en="Body Types">Jenis Karoseri</a>
+                                    @endif
+                                    @if ($canAxisConfigurations)
+                                        <a href="{{ route('master-data.axis-configurations.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.axis-configurations.*') ? 'active' : '' }}"
+                                            data-en="Axis Configurations">Konfigurasi Sumbu</a>
+                                    @endif
+                                    @if ($canOwnershipStatuses)
+                                        <a href="{{ route('master-data.ownership-statuses.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.ownership-statuses.*') ? 'active' : '' }}"
+                                            data-en="Ownership Statuses">Status Kepemilikan</a>
+                                    @endif
+                                </div>
                             @endif
                         </div>
-                        @endif
                     </div>
-                </div>
                 @endif
 
                 {{-- ══════════════════════════════════════════════════
@@ -202,91 +225,92 @@
                      Tampil hanya jika punya akses ke minimal 1 sub-menu
                 ═══════════════════════════════════════════════════════ --}}
                 @php
-                    $canFleetData     = Auth::user()->hasAccessToMenu('data-management.fleet-data');
-                    $canEmployeeData  = Auth::user()->hasAccessToMenu('data-management.sdm-management.employee-data');
-                    $canDriverData    = Auth::user()->hasAccessToMenu('data-management.sdm-management.driver-data');
-                    $showSdmSub       = $canEmployeeData || $canDriverData;
+                    $canFleetData = Auth::user()->hasAccessToMenu('data-management.fleet-data');
+                    $canEmployeeData = Auth::user()->hasAccessToMenu('data-management.sdm-management.employee-data');
+                    $canDriverData = Auth::user()->hasAccessToMenu('data-management.sdm-management.driver-data');
+                    $showSdmSub = $canEmployeeData || $canDriverData;
                     $showManajemenGroup = $canFleetData || $showSdmSub;
 
                     $manajemenOpen = request()->routeIs(
                         'data-management.fleet-data.*',
-                        'data-management.sdm-management.*'
+                        'data-management.sdm-management.*',
                     );
                     $sdmOpen = request()->routeIs('data-management.sdm-management.*');
                 @endphp
 
-                @if($showManajemenGroup)
-                <div class="nav-group">
-                    <div class="nav-link has-sub {{ $manajemenOpen ? 'active open' : '' }}"
-                        onclick="toggleSub(this)">
-                        <span class="n-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <rect x="2" y="3" width="20" height="14" rx="2" />
-                                <line x1="8" y1="21" x2="16" y2="21" />
-                                <line x1="12" y1="17" x2="12" y2="21" />
-                                <path d="M9 8l3 3 3-3" />
-                            </svg>
-                        </span>
-                        <span class="n-label" data-en="Data Management">Manajemen Data</span>
-                        <svg class="n-arrow {{ $manajemenOpen ? 'open' : '' }}" width="14" height="14"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </div>
-
-                    <div class="n-sub {{ $manajemenOpen ? 'open' : '' }}">
-                        @if($canFleetData)
-                        <a href="{{ route('data-management.fleet-data.index') }}"
-                            class="sub-group-hd {{ request()->routeIs('data-management.fleet-data.*') ? 'active' : '' }}">
-                            <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                @if ($showManajemenGroup)
+                    <div class="nav-group">
+                        <div class="nav-link has-sub {{ $manajemenOpen ? 'active open' : '' }}"
+                            onclick="toggleSub(this)">
+                            <span class="n-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
-                                    <rect x="1" y="3" width="15" height="13" />
-                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                                    <circle cx="5.5" cy="18.5" r="2.5" />
-                                    <circle cx="18.5" cy="18.5" r="2.5" />
+                                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                                    <line x1="8" y1="21" x2="16" y2="21" />
+                                    <line x1="12" y1="17" x2="12" y2="21" />
+                                    <path d="M9 8l3 3 3-3" />
                                 </svg>
                             </span>
-                            <span data-en="Fleet">Kendaraan</span>
-                        </a>
-                        @endif
-
-                        @if($showSdmSub)
-                        <div class="sub-group-hd {{ $sdmOpen ? 'open' : '' }}" onclick="toggleSubGroup(this)">
-                            <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-                                </svg>
-                            </span>
-                            <span data-en="HR">SDM</span>
-                            <svg class="sub-arrow {{ $sdmOpen ? 'open' : '' }}" width="13" height="13"
+                            <span class="n-label" data-en="Data Management">Manajemen Data</span>
+                            <svg class="n-arrow {{ $manajemenOpen ? 'open' : '' }}" width="14" height="14"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                 stroke-linecap="round">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </div>
-                        <div class="sub-group-body {{ $sdmOpen ? 'open' : '' }}">
-                            @if($canEmployeeData)
-                            <a href="{{ route('data-management.sdm-management.employee-data.index') }}"
-                                class="sub-link2 {{ request()->routeIs('data-management.sdm-management.employee-data.*') ? 'active' : '' }}"
-                                data-en="Employee Data">Data Karyawan</a>
+
+                        <div class="n-sub {{ $manajemenOpen ? 'open' : '' }}">
+                            @if ($canFleetData)
+                                <a href="{{ route('data-management.fleet-data.index') }}"
+                                    class="sub-group-hd {{ request()->routeIs('data-management.fleet-data.*') ? 'active' : '' }}">
+                                    <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <rect x="1" y="3" width="15" height="13" />
+                                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                                            <circle cx="5.5" cy="18.5" r="2.5" />
+                                            <circle cx="18.5" cy="18.5" r="2.5" />
+                                        </svg>
+                                    </span>
+                                    <span data-en="Fleet">Kendaraan</span>
+                                </a>
                             @endif
-                            @if($canDriverData)
-                            <a href="{{ route('data-management.sdm-management.driver-data.index') }}"
-                                class="sub-link2 {{ request()->routeIs('data-management.sdm-management.driver-data.*') ? 'active' : '' }}"
-                                data-en="Driver Data">Data Supir</a>
+
+                            @if ($showSdmSub)
+                                <div class="sub-group-hd {{ $sdmOpen ? 'open' : '' }}"
+                                    onclick="toggleSubGroup(this)">
+                                    <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                                        </svg>
+                                    </span>
+                                    <span data-en="HR">SDM</span>
+                                    <svg class="sub-arrow {{ $sdmOpen ? 'open' : '' }}" width="13"
+                                        height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
+                                </div>
+                                <div class="sub-group-body {{ $sdmOpen ? 'open' : '' }}">
+                                    @if ($canEmployeeData)
+                                        <a href="{{ route('data-management.sdm-management.employee-data.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('data-management.sdm-management.employee-data.*') ? 'active' : '' }}"
+                                            data-en="Employee Data">Data Karyawan</a>
+                                    @endif
+                                    @if ($canDriverData)
+                                        <a href="{{ route('data-management.sdm-management.driver-data.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('data-management.sdm-management.driver-data.*') ? 'active' : '' }}"
+                                            data-en="Driver Data">Data Supir</a>
+                                    @endif
+                                </div>
                             @endif
                         </div>
-                        @endif
                     </div>
-                </div>
                 @endif
 
                 {{-- ── Laporan ── --}}
@@ -312,7 +336,8 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round">
                             <circle cx="12" cy="12" r="3" />
-                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
                         </svg>
                     </span>
                     <span class="n-label" data-en="Settings">Pengaturan</span>
@@ -411,7 +436,8 @@
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round">
                                     <circle cx="12" cy="12" r="3" />
-                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                                    <path
+                                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
                                 </svg>
                                 <span data-en="Settings">Pengaturan</span>
                             </a>

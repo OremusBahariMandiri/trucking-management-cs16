@@ -12,7 +12,6 @@
 <div class="veh-page-header mb-3">
     <div>
         <div class="veh-title">
-            <i class="fas fa-truck"></i>
             <span data-en="Vehicle Detail">Detail Kendaraan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -22,21 +21,6 @@
                 <li class="breadcrumb-item active">{{ $fleet->vehicle_code ?? $fleet->police_number }}</li>
             </ol>
         </nav>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('data-management.fleet-data.edit', $fleet) }}"
-           class="btn btn-sm btn-primary d-flex align-items-center gap-1">
-            <i class="fas fa-pen"></i>
-            <span data-en="Edit">Edit</span>
-        </a>
-        <form method="POST" action="{{ route('data-management.fleet-data.destroy', $fleet) }}"
-              onsubmit="return confirm('Hapus kendaraan ini?')">
-            @csrf @method('DELETE')
-            <button type="submit" class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-                <span data-en="Delete">Hapus</span>
-            </button>
-        </form>
     </div>
 </div>
 
@@ -179,7 +163,6 @@
                         ['label'=>'Nilai Perolehan',    'label_en'=>'Acquisition Value',  'value'=>$fleet->acquisition_value ? 'Rp '.number_format($fleet->acquisition_value,0,',','.') : null],
                         ['label'=>'Perusahaan Leasing', 'label_en'=>'Leasing Company',    'value'=>$fleet->leasing_company],
                         ['label'=>'Akhir Leasing',      'label_en'=>'Leasing End',        'value'=>$fleet->leasing_end_date?->format('d M Y')],
-                        ['label'=>'Pengemudi',          'label_en'=>'Driver',             'value'=>$fleet->driver?->name],
                     ];
                 @endphp
                 @foreach($kepFields as $f)
@@ -219,26 +202,62 @@
     {{-- Tab: Dokumen --}}
     <div class="tab-pane fade" id="tab-dokumen">
         <div class="veh-form-card">
+
+            @php
+                // Index dokumen dari relasi supaya mudah di-lookup per tipe
+                $docFiles = $fleet->documents->keyBy('document_type');
+
+                $docs = [
+                    [
+                        'label'    => 'STNK',
+                        'label_en' => 'STNK',
+                        'type'     => 'stnk',
+                        'number'   => $fleet->stnk_number,
+                        'expiry'   => $fleet->tax_expiry_date,
+                    ],
+                    [
+                        'label'    => 'KIR',
+                        'label_en' => 'KIR',
+                        'type'     => 'kir',
+                        'number'   => $fleet->kir_number,
+                        'expiry'   => $fleet->kir_expiry_date,
+                    ],
+                    [
+                        'label'    => 'BPKB',
+                        'label_en' => 'BPKB',
+                        'type'     => 'bpkb',
+                        'number'   => $fleet->bpkb_number,
+                        'expiry'   => null,
+                    ],
+                    [
+                        'label'    => 'Asuransi',
+                        'label_en' => 'Insurance',
+                        'type'     => 'asuransi',
+                        'number'   => $fleet->insurance_policy_number,
+                        'expiry'   => $fleet->insurance_expiry_date,
+                    ],
+                ];
+            @endphp
+
             <div class="table-responsive">
-                <table class="table table-hover" style="font-size:.87rem">
+                <table class="table table-hover align-middle" style="font-size:.87rem">
                     <thead>
                         <tr>
                             <th data-en="Document">Dokumen</th>
                             <th data-en="Number">Nomor</th>
                             <th data-en="Valid Until">Berlaku Hingga</th>
                             <th data-en="Status">Status</th>
+                            <th data-en="File" class="text-center">File</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $docs = [
-                                ['label'=>'STNK',      'number'=>$fleet->stnk_number,             'expiry'=>$fleet->tax_expiry_date],
-                                ['label'=>'KIR',       'number'=>$fleet->kir_number,               'expiry'=>$fleet->kir_expiry_date],
-                                ['label'=>'BPKB',      'number'=>$fleet->bpkb_number,             'expiry'=>null],
-                                ['label'=>'Asuransi',  'number'=>$fleet->insurance_policy_number, 'expiry'=>$fleet->insurance_expiry_date],
-                            ];
-                        @endphp
                         @foreach($docs as $doc)
+                        @php
+                            $docRecord = $docFiles->get($doc['type']);
+                            $fileUrl   = $docRecord?->file_url;
+                            $fileName  = $docRecord?->file_name;
+                            $isPdf     = $fileName && str_ends_with(strtolower($fileName), '.pdf');
+                        @endphp
                         <tr>
                             <td class="fw-semibold">{{ $doc['label'] }}</td>
                             <td style="font-family:monospace">{{ $doc['number'] ?? '-' }}</td>
@@ -246,20 +265,39 @@
                             <td>
                                 @if($doc['expiry'])
                                     @if($doc['expiry']->isPast())
-                                        <span class="expiry-expired"><i class="fas fa-times-circle"></i>
+                                        <span class="expiry-expired">
+                                            <i class="fas fa-times-circle"></i>
                                             <span data-en="Expired">Kedaluwarsa</span>
                                         </span>
                                     @elseif($doc['expiry']->diffInDays(now()) <= 30)
-                                        <span class="expiry-soon"><i class="fas fa-history"></i>
+                                        <span class="expiry-soon">
+                                            <i class="fas fa-history"></i>
                                             <span data-en="Expiring soon">Segera habis</span>
                                         </span>
                                     @else
-                                        <span class="expiry-ok"><i class="fas fa-check-circle"></i>
+                                        <span class="expiry-ok">
+                                            <i class="fas fa-check-circle"></i>
                                             <span data-en="Active">Aktif</span>
                                         </span>
                                     @endif
                                 @else
                                     <span style="color:var(--text-faint)">—</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($fileUrl)
+                                    <a href="{{ $fileUrl }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1"
+                                       title="{{ $fileName }}">
+                                        <i class="fas {{ $isPdf ? 'fa-file-pdf' : 'fa-file-image' }}"></i>
+                                        <span data-en="Open">Buka</span>
+                                    </a>
+                                @else
+                                    <span class="text-muted" style="font-size:.8rem">
+                                        <i class="fas fa-minus"></i>
+                                    </span>
                                 @endif
                             </td>
                         </tr>
@@ -273,43 +311,78 @@
     {{-- Tab: Foto --}}
     <div class="tab-pane fade" id="tab-foto">
         <div class="veh-form-card">
-            @if($fleet->photos->count())
-                <div class="photo-preview-grid">
-                    @foreach($fleet->photos->sortByDesc('is_primary')->sortBy('sort_order') as $photo)
-                    <div class="photo-item">
-                        <img src="{{ Storage::url($photo->file_path) }}" alt="{{ $photo->caption }}">
-                        @if($photo->is_primary)
-                            <span class="photo-badge-primary" data-en="PRIMARY">UTAMA</span>
-                        @endif
-                        @if($photo->caption)
-                            <div class="photo-caption">{{ $photo->caption }}</div>
-                        @endif
-                        <div class="photo-overlay">
-                            <a href="{{ Storage::url($photo->file_path) }}" target="_blank"
-                               class="btn btn-sm btn-light" title="Lihat asli">
-                                <i class="fas fa-expand"></i>
-                            </a>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                <div class="mt-3 text-end">
-                    <a href="{{ route('data-management.fleet-data.edit', $fleet) }}#tab-foto"
-                       class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-plus"></i>
-                        <span data-en="Manage Photos">Kelola Foto</span>
-                    </a>
-                </div>
+
+            @php
+                $photos    = $fleet->photos->sortByDesc('is_primary')->sortBy('sort_order');
+                $catLabels = \App\Models\MasterData\Vehicle\VehiclePhoto::CATEGORIES;
+            @endphp
+
+            @if($photos->count())
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" style="font-size:.87rem">
+                    <thead>
+                        <tr>
+                            <th data-en="Category">Kategori</th>
+                            <th data-en="Caption">Keterangan</th>
+                            <th data-en="File" class="text-center">File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($photos as $photo)
+                        @php
+                            $catLabel = $catLabels[$photo->category] ?? ucfirst($photo->category ?? 'lainnya');
+                            $sizeStr  = $photo->file_size_kb
+                                ? ($photo->file_size_kb >= 1024
+                                    ? number_format($photo->file_size_kb / 1024, 1).' MB'
+                                    : $photo->file_size_kb.' KB')
+                                : '-';
+                        @endphp
+                        <tr>
+                            <td class="fw-semibold">{{ $catLabel }}</td>
+
+                            {{-- Keterangan --}}
+                            <td style="color:{{ $photo->caption ? 'var(--text)' : 'var(--text-faint)' }};
+                                       font-style:{{ $photo->caption ? 'normal' : 'italic' }}">
+                                {{ $photo->caption ?? 'Tanpa keterangan' }}
+                            </td>
+
+                            {{-- Buka --}}
+                            <td class="text-center">
+                                <a href="{{ Storage::url($photo->file_path) }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1"
+                                   title="{{ $photo->file_name }}">
+                                    <i class="fas fa-file-image"></i>
+                                    <span data-en="Open">Buka</span>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-2 text-end">
+                <a href="{{ route('data-management.fleet-data.edit', $fleet) }}"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-pen me-1"></i>
+                    <span data-en="Manage Photos">Kelola Foto</span>
+                </a>
+            </div>
+
             @else
-                <div class="veh-empty">
-                    <div class="veh-empty-icon"><i class="fas fa-images"></i></div>
-                    <h6 data-en="No photos yet">Belum ada foto</h6>
-                    <p>
-                        <a href="{{ route('data-management.fleet-data.edit', $fleet) }}#tab-foto"
-                           data-en="Upload now">Upload sekarang</a>
-                    </p>
-                </div>
+            <div class="veh-empty">
+                <div class="veh-empty-icon"><i class="fas fa-images"></i></div>
+                <h6 data-en="No photos yet">Belum ada foto</h6>
+                <p>
+                    <a href="{{ route('data-management.fleet-data.edit', $fleet) }}"
+                       data-en="Upload now">Upload sekarang</a>
+                </p>
+            </div>
             @endif
+
         </div>
     </div>
 

@@ -6,6 +6,8 @@ use App\Models\DataManagement\FleetManagement\Fleet;
 use App\Models\DataManagement\FleetManagement\Vehicle;
 use App\Models\MasterData\Vehicle\BodyType;
 use App\Models\MasterData\Vehicle\FuelType;
+use App\Models\MasterData\Vehicle\OwnershipStatus;
+use App\Models\MasterData\Vehicle\VehicleAxisConfiguration;
 use App\Models\MasterData\Vehicle\VehicleBrand;
 use App\Models\MasterData\Vehicle\VehicleModel;
 use App\Models\MasterData\Vehicle\VehicleType;
@@ -46,9 +48,16 @@ class FleetService
     public function findWithRelations(int $id): Fleet
     {
         return Fleet::with([
-            'type', 'brand', 'model', 'fuelType', 'bodyType',
-            'driver', 'photos', 'documents',
-            'createdBy', 'updatedBy',
+            'type',
+            'brand',
+            'model',
+            'fuelType',
+            'bodyType',
+            'driver',
+            'photos',
+            'documents',
+            'createdBy',
+            'updatedBy',
         ])->findOrFail($id);
     }
 
@@ -63,7 +72,7 @@ class FleetService
             'vehicle_models' => VehicleModel::active()->with('brand')->orderBy('name')->get(),
             'fuel_types'     => FuelType::active()->orderBy('name')->get(),
             'body_types'     => BodyType::active()->orderBy('name')->get(),
-            'axis_configs'   => ['4x2', '6x2', '6x4', '8x4', '10x4', 'other'],
+            'axis_configs'       => VehicleAxisConfiguration::active()->orderBy('name')->pluck('name', 'id'),
             'statuses'       => [
                 'active'   => 'Aktif',
                 'inactive' => 'Tidak Aktif',
@@ -71,12 +80,7 @@ class FleetService
                 'broken'   => 'Rusak',
                 'sold'     => 'Terjual',
             ],
-            'ownership_statuses' => [
-                'company'   => 'Milik Perusahaan',
-                'rental'    => 'Sewa',
-                'leasing'   => 'Leasing',
-                'kerjasama' => 'Kerjasama',
-            ],
+            'ownership_statuses' => OwnershipStatus::active()->orderBy('name')->pluck('name', 'id'),
             'gps_statuses' => [
                 'active'        => 'Aktif',
                 'offline'       => 'Offline',

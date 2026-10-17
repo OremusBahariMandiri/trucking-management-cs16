@@ -44,10 +44,15 @@ class FleetController extends Controller
 
     public function store(StoreFleetRequest $request): RedirectResponse
     {
-        $data   = $request->except(['photos', '_token', '_method']);
-        $photos = $this->preparePhotos($request);
+        $data = collect($request->validated())
+            ->except(['photos', 'document_files'])
+            ->toArray();
 
-        $fleet = $this->createAction->handle($data, $photos);
+        $fleet = $this->createAction->handle(
+            $data,
+            $request->preparedPhotos(),
+            $request->preparedDocumentFiles(),
+        );
 
         return redirect()
             ->route('data-management.fleet-data.index')
@@ -71,10 +76,16 @@ class FleetController extends Controller
 
     public function update(UpdateFleetRequest $request, Fleet $fleet): RedirectResponse
     {
-        $data   = $request->except(['photos', '_token', '_method']);
-        $photos = $this->preparePhotos($request);
+        $data = collect($request->validated())
+            ->except(['photos', 'document_files'])
+            ->toArray();
 
-        $fleet = $this->updateAction->handle($fleet, $data, $photos);
+        $fleet = $this->updateAction->handle(
+            $fleet,
+            $data,
+            $request->preparedPhotos(),
+            $request->preparedDocumentFiles(),
+        );
 
         return redirect()
             ->route('data-management.fleet-data.index')
@@ -92,6 +103,8 @@ class FleetController extends Controller
             ->with('success', "Kendaraan {$code} berhasil dihapus.");
     }
 
+    // ── Photo routes ────────────────────────────────────────────────────────
+
     public function destroyPhoto(Fleet $fleet, int $photoId): RedirectResponse
     {
         $this->updateAction->deletePhoto($fleet, $photoId);
@@ -105,6 +118,21 @@ class FleetController extends Controller
 
         return back()->with('success', 'Foto utama berhasil diubah.');
     }
+
+    // ── Document file routes ────────────────────────────────────────────────
+
+    /**
+     * Hapus file lampiran satu dokumen (STNK / KIR / BPKB / Asuransi).
+     * Route: DELETE fleet/{fleet}/document-file/{type}
+     */
+    public function destroyDocumentFile(Fleet $fleet, string $documentType): RedirectResponse
+    {
+        $this->updateAction->deleteDocumentFile($fleet, $documentType);
+
+        return back()->with('success', 'File dokumen berhasil dihapus.');
+    }
+
+    // ── API endpoints ───────────────────────────────────────────────────────
 
     public function apiSearch(Request $request)
     {
@@ -123,26 +151,5 @@ class FleetController extends Controller
         $fleet = $this->service->findWithRelations($fleet->id);
 
         return new FleetResource($fleet);
-    }
-
-    private function preparePhotos(Request $request): array
-    {
-        if (! $request->hasFile('photos')) {
-            return [];
-        }
-
-        $photos = [];
-        foreach ($request->file('photos') as $index => $item) {
-            if (! isset($item['file'])) {
-                continue;
-            }
-            $photos[] = [
-                'file'     => $item['file'],
-                'category' => $request->input("photos.{$index}.category"),
-                'caption'  => $request->input("photos.{$index}.caption"),
-            ];
-        }
-
-        return $photos;
     }
 }

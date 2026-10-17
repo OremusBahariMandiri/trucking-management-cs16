@@ -25,7 +25,6 @@
     <a href="{{ route('master-data.vehicle-types.create') }}"
        class="btn btn-primary btn-sm d-flex align-items-center gap-2">
         <i class="fas fa-plus"></i>
-        <span data-en="Add Type">Tambah Jenis</span>
     </a>
 </div>
 
