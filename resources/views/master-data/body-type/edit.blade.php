@@ -11,7 +11,6 @@
 <div class="veh-page-header mb-4">
     <div>
         <div class="veh-title">
-            <i class="fas fa-pen"></i>
             <span data-en="Edit Body Type">Edit Jenis Karoseri</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -40,6 +39,22 @@
         <div class="lkp-form-body">
             <div class="row g-3">
 
+                {{-- Code --}}
+                <div class="col-12 col-md-12">
+                    <label class="form-label" data-en="Code">Kode</label>
+                    <input type="text"
+                           class="form-control @error('code') is-invalid @enderror"
+                           id="code"
+                           name="code"
+                           value="{{ old('code', $bodyType->code) }}"
+                           maxlength="10"
+                           placeholder="Maks 10 karakter">
+                    @error('code')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Name --}}
                 <div class="col-12 col-md-12">
                     <label class="form-label" data-en="Body Type Name">
                         Nama Karoseri <span class="text-danger">*</span>
@@ -50,6 +65,20 @@
                            required autofocus>
                     @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                
+
+                {-- Description --}
+                <div class="col-12">
+                    <label class="form-label" data-en="Description">Deskripsi</label>
+                    <textarea name="description" id="description"
+                              class="form-control @error('description') is-invalid @enderror"
+                              rows="3"
+                              placeholder="Deskripsi singkat (opsional)…">{ old('description', $bodyType->description) }</textarea>
+                    @error('description')
+                        <div class="invalid-feedback">{ $message }</div>
                     @enderror
                 </div>
 

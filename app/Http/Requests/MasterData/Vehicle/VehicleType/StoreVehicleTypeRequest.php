@@ -14,8 +14,8 @@ class StoreVehicleTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code'        => 'nullable|string|max:20|unique:vehicle_types,code',
-            'name'        => 'required|string|max:100|unique:vehicle_types,name',
+            'code'        => 'nullable|string|max:20|unique:aa01_vehicle_types,code',
+            'name'        => 'required|string|max:100|unique:aa01_vehicle_types,name',
             'description' => 'nullable|string|max:500',
             'is_active'   => 'boolean',
         ];

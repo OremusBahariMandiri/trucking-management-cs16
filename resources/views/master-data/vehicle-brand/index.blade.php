@@ -11,7 +11,6 @@
 <div class="veh-page-header mb-4">
     <div>
         <div class="veh-title">
-            <i class="fas fa-trademark"></i>
             <span data-en="Vehicle Brands">Merek Kendaraan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -21,76 +20,29 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('master-data.vehicle-brands.create') }}"
-       class="btn btn-primary btn-sm d-flex align-items-center gap-2">
-        <i class="fas fa-plus"></i>
-        <span data-en="Add Brand">Tambah Merek</span>
-    </a>
-</div>
-
-{{-- Stats --}}
-<div class="lkp-stats mb-4">
-    @php
-        $statsConfig = [
-            ['label'=>'Total Merek', 'label_en'=>'Total Brands', 'key'=>'total',    'icon'=>'fas fa-trademark',   'color'=>'#3b6fd4','soft'=>'rgba(59,111,212,.12)'],
-            ['label'=>'Aktif',       'label_en'=>'Active',       'key'=>'active',   'icon'=>'fas fa-check-circle','color'=>'#16a34a','soft'=>'rgba(22,163,74,.12)'],
-            ['label'=>'Tidak Aktif', 'label_en'=>'Inactive',     'key'=>'inactive', 'icon'=>'fas fa-ban',        'color'=>'#64748b','soft'=>'rgba(100,116,139,.12)'],
-        ];
-    @endphp
-    @foreach($statsConfig as $s)
-    <div class="lkp-stat" style="--stat-color:{{ $s['color'] }};--stat-soft:{{ $s['soft'] }}">
-        <div class="lkp-stat-icon"><i class="{{ $s['icon'] }}"></i></div>
-        <div>
-            <div class="lkp-stat-num">{{ $statCounts[$s['key']] ?? 0 }}</div>
-            <div class="lkp-stat-label" data-en="{{ $s['label_en'] }}">{{ $s['label'] }}</div>
-        </div>
+    <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+                data-bs-toggle="modal" data-bs-target="#filterModal">
+            <i class="fas fa-filter"></i> <span data-en="Filter">Filter</span>
+            @if(request()->hasAny(['q','status']))
+                <span class="badge bg-primary rounded-pill">{{ collect(['q','status'])->filter(fn($k)=>request()->filled($k))->count() }}</span>
+            @endif
+        </button>
+        <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-2"
+                data-bs-toggle="modal" data-bs-target="#exportModal">
+            <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
+        </button>
+        <a href="{{ route('master-data.vehicle-brands.create') }}"
+           class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+            <i class="fas fa-plus"></i>
+            <span data-en="Add Brand">Tambah</span>
+        </a>
     </div>
-    @endforeach
-</div>
-
-{{-- Filter --}}
-<div class="veh-filter-bar mb-3">
-    <form method="GET" action="{{ route('master-data.vehicle-brands.index') }}"
-          class="row g-2 align-items-end">
-        <div class="col-12 col-sm-6 col-md-4">
-            <label class="form-label form-label-sm" data-en="Search">Cari</label>
-            <div class="input-group input-group-sm">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" name="q" class="form-control"
-                       value="{{ request('q') }}"
-                       placeholder="Nama merek, negara…"
-                       data-en-placeholder="Brand name, country…">
-            </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label form-label-sm" data-en="Status">Status</label>
-            <select name="status" class="form-select form-select-sm">
-                <option value="" data-en="All">Semua</option>
-                <option value="1" {{ request('status') === '1' ? 'selected' : '' }} data-en="Active">Aktif</option>
-                <option value="0" {{ request('status') === '0' ? 'selected' : '' }} data-en="Inactive">Tidak Aktif</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-auto">
-            <button type="submit" class="btn btn-primary btn-sm w-100">
-                <i class="fas fa-filter me-1"></i>
-                <span data-en="Filter">Filter</span>
-            </button>
-        </div>
-        @if(request()->hasAny(['q','status']))
-        <div class="col-6 col-md-auto">
-            <a href="{{ route('master-data.vehicle-brands.index') }}" class="btn btn-outline-secondary btn-sm w-100">
-                <i class="fas fa-times-circle me-1"></i>
-                <span data-en="Reset">Reset</span>
-            </a>
-        </div>
-        @endif
-    </form>
 </div>
 
 {{-- Table --}}
 <div class="veh-table-card">
     <div class="veh-table-header">
-        <h6><i class="fas fa-trademark"></i>
             <span data-en="Brand List">Daftar Merek Kendaraan</span>
         </h6>
         <small style="color:var(--text-faint)">
@@ -109,9 +61,12 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th data-en="No">No</th>
+                    <th data-en="Code">Kode</th>
                     <th data-en="Brand Name">Nama Merek</th>
                     <th data-en="Country of Origin">Negara Asal</th>
                     <th data-en="Models Count">Jml Model</th>
+                    <th data-en="Description">Deskripsi</th>
                     <th data-en="Status">Status</th>
                     <th class="text-end" data-en="Actions">Aksi</th>
                 </tr>
@@ -119,20 +74,25 @@
             <tbody>
                 @foreach($vehicleBrands as $item)
                 <tr>
-                    <td><span class="lkp-name">{{ $item->name }}</span></td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>
-                        <span class="lkp-sub">
-                            {{ $item->country_of_origin ?: '—' }}
-                        </span>
+                        @if($item->code)
+                            {{ $item->code }}
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td>{{ $item->name }}</td>
+                    <td>
+                        {{ $item->country_of_origin ?: '—' }}
                     </td>
                     <td>
-                        <span class="lkp-code-badge">{{ $item->vehicle_models_count ?? 0 }}</span>
+                        {{ $item->vehicle_models_count ?? 0 }}
                     </td>
+                    <td>—</td>
                     <td>
-                        <span class="badge-status {{ $item->is_active ? 'status-active' : 'status-inactive' }}">
-                            <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">
+                        <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">
                                 {{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                            </span>
                         </span>
                     </td>
                     <td>
@@ -167,5 +127,87 @@
     </div>
     @endif
 </div>
+
+    {{-- ── Modal Filter ─────────────────────────────────────────── --}}
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="GET" action="{{ route('master-data.vehicle-brands.index') }}">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="filterModalLabel">
+                            <i class="fas fa-filter me-2"></i>Filter Merek Kendaraan
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                                                <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" data-en="Keyword">Kata Kunci</label>
+                                <input type="text" name="q" class="form-control"
+                                       placeholder="Cari nama atau negara asal…"
+                                       value="{{ request('q') }}">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" data-en="Status">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value=""><span data-en="— All Status —">— Semua Status —</span></option>
+                                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }} data-en="Active">Aktif</option>
+                                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }} data-en="Inactive">Tidak Aktif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <a href="{{ route('master-data.vehicle-brands.index') }}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times me-1"></i><span data-en="Reset">Reset</span>
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-search me-1"></i><span data-en="Apply Filter">Terapkan Filter</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Modal Export ─────────────────────────────────────────── --}}
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exportModalLabel">
+                        <i class="fas fa-file-export me-2"></i>Export Data Merek Kendaraan
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3"><span data-en="Export will include active filters.">Export akan menyertakan filter yang sedang aktif.</span></p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('master-data.vehicle-brands.index') }}?{{ http_build_query(array_merge(request()->query(), ['export' => 'pdf'])) }}"
+                           target="_blank"
+                           class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-file-pdf fa-lg"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold" data-en="Export PDF">Export PDF</div>
+                                <small class="text-muted" data-en="Print-ready format">Format siap cetak</small>
+                            </div>
+                        </a>
+                        <a href="{{ route('master-data.vehicle-brands.index') }}?{{ http_build_query(array_merge(request()->query(), ['export' => 'excel'])) }}"
+                           class="btn btn-outline-success d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-file-excel fa-lg"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold" data-en="Export Excel">Export Excel</div>
+                                <small class="text-muted" data-en="Spreadsheet format (.xlsx)">Format spreadsheet (.xlsx)</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" data-en="Close">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection

@@ -3,170 +3,210 @@
 @section('title', 'Jenis Kendaraan')
 
 @push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 @endpush
 
 @section('content')
 
-{{-- ── Page Header ─────────────────────────────────────────── --}}
-<div class="veh-page-header mb-4">
-    <div>
-        <div class="veh-title">
-            <i class="fas fa-tags"></i>
-            <span data-en="Vehicle Types">Jenis Kendaraan</span>
-        </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}" data-en="Home">Beranda</a></li>
-                <li class="breadcrumb-item active" data-en="Vehicle Types">Jenis Kendaraan</li>
-            </ol>
-        </nav>
-    </div>
-    <a href="{{ route('master-data.vehicle-types.create') }}"
-       class="btn btn-primary btn-sm d-flex align-items-center gap-2">
-        <i class="fas fa-plus"></i>
-        <span data-en="Add Type">Tambah Jenis</span>
-    </a>
-</div>
-
-{{-- ── Stats ──────────────────────────────────────────────── --}}
-<div class="lkp-stats mb-4">
-    @php
-        $stats = [
-            ['label'=>'Total Jenis',  'label_en'=>'Total Types',  'key'=>'total',    'icon'=>'fas fa-tags',       'color'=>'#3b6fd4','soft'=>'rgba(59,111,212,.12)'],
-            ['label'=>'Aktif',        'label_en'=>'Active',       'key'=>'active',   'icon'=>'fas fa-check-circle','color'=>'#16a34a','soft'=>'rgba(22,163,74,.12)'],
-            ['label'=>'Tidak Aktif',  'label_en'=>'Inactive',     'key'=>'inactive', 'icon'=>'fas fa-ban',        'color'=>'#64748b','soft'=>'rgba(100,116,139,.12)'],
-        ];
-    @endphp
-    @foreach($stats as $s)
-    <div class="lkp-stat" style="--stat-color:{{ $s['color'] }};--stat-soft:{{ $s['soft'] }}">
-        <div class="lkp-stat-icon"><i class="{{ $s['icon'] }}"></i></div>
+    {{-- ── Page Header ─────────────────────────────────────────── --}}
+    <div class="veh-page-header mb-4">
         <div>
-            <div class="lkp-stat-num">{{ $statCounts[$s['key']] ?? 0 }}</div>
-            <div class="lkp-stat-label" data-en="{{ $s['label_en'] }}">{{ $s['label'] }}</div>
-        </div>
-    </div>
-    @endforeach
-</div>
-
-{{-- ── Filter Bar ───────────────────────────────────────────── --}}
-<div class="veh-filter-bar mb-3">
-    <form method="GET" action="{{ route('master-data.vehicle-types.index') }}"
-          class="row g-2 align-items-end">
-        <div class="col-12 col-sm-6 col-md-4">
-            <label class="form-label form-label-sm" data-en="Search">Cari</label>
-            <div class="input-group input-group-sm">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" name="q" class="form-control"
-                       value="{{ request('q') }}"
-                       placeholder="Nama jenis…"
-                       data-en-placeholder="Type name…">
+            <div class="veh-title">
+                <span data-en="Vehicle Types">Jenis Kendaraan</span>
             </div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}" data-en="Home">Beranda</a></li>
+                    <li class="breadcrumb-item active" data-en="Vehicle Types">Jenis Kendaraan</li>
+                </ol>
+            </nav>
         </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label form-label-sm" data-en="Status">Status</label>
-            <select name="status" class="form-select form-select-sm">
-                <option value="" data-en="All">Semua</option>
-                <option value="1" {{ request('status') === '1' ? 'selected' : '' }} data-en="Active">Aktif</option>
-                <option value="0" {{ request('status') === '0' ? 'selected' : '' }} data-en="Inactive">Tidak Aktif</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-auto">
-            <button type="submit" class="btn btn-primary btn-sm w-100">
-                <i class="fas fa-filter me-1"></i>
-                <span data-en="Filter">Filter</span>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#filterModal">
+                <i class="fas fa-filter"></i> <span data-en="Filter">Filter</span>
+                @if(request()->hasAny(['q','status']))
+                    <span class="badge bg-primary rounded-pill">{{ collect(['q','status'])->filter(fn($k)=>request()->filled($k))->count() }}</span>
+                @endif
             </button>
-        </div>
-        @if(request()->hasAny(['q','status']))
-        <div class="col-6 col-md-auto">
-            <a href="{{ route('master-data.vehicle-types.index') }}" class="btn btn-outline-secondary btn-sm w-100">
-                <i class="fas fa-times-circle me-1"></i>
-                <span data-en="Reset">Reset</span>
+            <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
+            </button>
+            <a href="{{ route('master-data.vehicle-types.create') }}"
+                class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                <i class="fas fa-plus"></i>Tambah
             </a>
         </div>
+    </div>
+
+    {{-- ── Table Card ───────────────────────────────────────────── --}}
+    <div class="veh-table-card">
+        <div class="veh-table-header">
+            <h6><i class="fas fa-tags"></i>
+                <span data-en="Vehicle Type List">Daftar Jenis Kendaraan</span>
+            </h6>
+            <small style="color:var(--text-faint)">
+                {{ $vehicleTypes->total() }} <span data-en="records">data</span>
+            </small>
+        </div>
+
+        @if ($vehicleTypes->isEmpty())
+            <div class="veh-empty">
+                <div class="veh-empty-icon"><i class="fas fa-tags"></i></div>
+                <h6 data-en="No types found">Belum ada jenis kendaraan</h6>
+                <p data-en="Add the first vehicle type.">Tambah jenis kendaraan pertama.</p>
+            </div>
+        @else
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th data-en="No">No</th>
+                            <th data-en="Code">Kode</th>
+                            <th data-en="Name">Nama</th>
+                            <th data-en="Description">Deskripsi</th>
+                            <th data-en="Status">Status</th>
+                            <th class="text-end" data-en="Actions">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($vehicleTypes as $item)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    @if ($item->code)
+                                        {{ $item->code }}
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                                <td>
+                                    {{ $item->name }}
+                                </td>
+                                <td>{{ Str::limit($item->description, 60) ?: '—' }}</td>
+                                <td>
+                                    <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">
+                                            {{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a href="{{ route('master-data.vehicle-types.edit', $item) }}"
+                                            class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+                                        <form method="POST"
+                                            action="{{ route('master-data.vehicle-types.destroy', $item) }}"
+                                            onsubmit="return confirm('{{ __('Hapus jenis ini?') }}')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="veh-table-footer">
+                <span>
+                    <span data-en="Showing">Menampilkan</span>
+                    {{ $vehicleTypes->firstItem() }}–{{ $vehicleTypes->lastItem() }}
+                    <span data-en="of">dari</span>
+                    {{ $vehicleTypes->total() }}
+                </span>
+                {{ $vehicleTypes->withQueryString()->links() }}
+            </div>
         @endif
-    </form>
-</div>
-
-{{-- ── Table Card ───────────────────────────────────────────── --}}
-<div class="veh-table-card">
-    <div class="veh-table-header">
-        <h6><i class="fas fa-tags"></i>
-            <span data-en="Vehicle Type List">Daftar Jenis Kendaraan</span>
-        </h6>
-        <small style="color:var(--text-faint)">
-            {{ $vehicleTypes->total() }} <span data-en="records">data</span>
-        </small>
     </div>
 
-    @if($vehicleTypes->isEmpty())
-    <div class="veh-empty">
-        <div class="veh-empty-icon"><i class="fas fa-tags"></i></div>
-        <h6 data-en="No types found">Belum ada jenis kendaraan</h6>
-        <p data-en="Add the first vehicle type.">Tambah jenis kendaraan pertama.</p>
-    </div>
-    @else
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th data-en="Name">Nama</th>
-                    <th data-en="Description">Deskripsi</th>
-                    <th data-en="Status">Status</th>
-                    <th data-en="Created">Dibuat</th>
-                    <th class="text-end" data-en="Actions">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($vehicleTypes as $item)
-                <tr>
-                    <td>
-                        <span class="lkp-name">{{ $item->name }}</span>
-                    </td>
-                    <td style="max-width:260px">
-                        <span class="lkp-sub" style="white-space:normal">
-                            {{ Str::limit($item->description, 60) ?: '—' }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="badge-status {{ $item->is_active ? 'status-active' : 'status-inactive' }}">
-                            <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">
-                                {{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                            </span>
-                        </span>
-                    </td>
-                    <td class="lkp-sub">{{ $item->created_at->format('d M Y') }}</td>
-                    <td>
-                        <div class="d-flex justify-content-end gap-1">
-                            <a href="{{ route('master-data.vehicle-types.edit', $item) }}"
-                               class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <form method="POST"
-                                  action="{{ route('master-data.vehicle-types.destroy', $item) }}"
-                                  onsubmit="return confirm('{{ __('Hapus jenis ini?') }}')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+    {{-- ── Modal Filter ─────────────────────────────────────────── --}}
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="GET" action="{{ route('master-data.vehicle-types.index') }}">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="filterModalLabel">
+                            <i class="fas fa-filter me-2"></i>Filter Jenis Kendaraan
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            {{-- Pencarian --}}
+                            <div class="col-12">
+                                <label class="form-label" data-en="Keyword">Kata Kunci</label>
+                                <input type="text" name="q" class="form-control"
+                                       placeholder="Cari nama atau deskripsi…"
+                                       value="{{ request('q') }}">
+                            </div>
+                            {{-- Status --}}
+                            <div class="col-12">
+                                <label class="form-label" data-en="Status">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value=""><span data-en="— All Status —">— Semua Status —</span></option>
+                                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }} data-en="Active">Aktif</option>
+                                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }} data-en="Inactive">Tidak Aktif</option>
+                                </select>
+                            </div>
                         </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <a href="{{ route('master-data.vehicle-types.index') }}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times me-1"></i><span data-en="Reset">Reset</span>
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-search me-1"></i><span data-en="Apply Filter">Terapkan Filter</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="veh-table-footer">
-        <span>
-            <span data-en="Showing">Menampilkan</span>
-            {{ $vehicleTypes->firstItem() }}–{{ $vehicleTypes->lastItem() }}
-            <span data-en="of">dari</span>
-            {{ $vehicleTypes->total() }}
-        </span>
-        {{ $vehicleTypes->withQueryString()->links() }}
+
+    {{-- ── Modal Export ─────────────────────────────────────────── --}}
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exportModalLabel">
+                        <i class="fas fa-file-export me-2"></i>Export Data Jenis Kendaraan
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        <span data-en="Export will include active filters.">Export akan menyertakan filter yang sedang aktif.</span>
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('master-data.vehicle-types.index') }}?{{ http_build_query(array_merge(request()->query(), ['export' => 'pdf'])) }}"
+                           target="_blank"
+                           class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-file-pdf fa-lg"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold" data-en="Export PDF">Export PDF</div>
+                                <small class="text-muted" data-en="Print-ready format">Format siap cetak</small>
+                            </div>
+                        </a>
+                        <a href="{{ route('master-data.vehicle-types.index') }}?{{ http_build_query(array_merge(request()->query(), ['export' => 'excel'])) }}"
+                           class="btn btn-outline-success d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-file-excel fa-lg"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold" data-en="Export Excel">Export Excel</div>
+                                <small class="text-muted" data-en="Spreadsheet format (.xlsx)">Format spreadsheet (.xlsx)</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" data-en="Close">Tutup</button>
+                </div>
+            </div>
+        </div>
     </div>
-    @endif
-</div>
 
 @endsection

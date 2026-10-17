@@ -2,12 +2,15 @@
 
 namespace App\Models\MasterData\Vehicle;
 
+use App\Models\DataManagement\FleetManagement\Fleet;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VehicleDocument extends Model
 {
+    protected $table = 'aa08_vehicle_documents';
+    
     protected $fillable = [
         'vehicle_id', 'document_type', 'document_number',
         'issued_by', 'issue_date', 'expiry_date',
@@ -33,7 +36,7 @@ class VehicleDocument extends Model
 
     public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(Vehicle::class);
+        return $this->belongsTo(Fleet::class);
     }
 
     public function uploader(): BelongsTo

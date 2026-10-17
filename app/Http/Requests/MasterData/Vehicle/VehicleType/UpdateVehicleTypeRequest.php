@@ -17,8 +17,8 @@ class UpdateVehicleTypeRequest extends FormRequest
         $id = $this->route('vehicle_type');
 
         return [
-            'code'        => ['nullable', 'string', 'max:20', Rule::unique('vehicle_types', 'code')->ignore($id)],
-            'name'        => ['required', 'string', 'max:100', Rule::unique('vehicle_types', 'name')->ignore($id)],
+            'code'        => ['nullable', 'string', 'max:20', Rule::unique('aa01_vehicle_types', 'code')->ignore($id)],
+            'name'        => ['required', 'string', 'max:100', Rule::unique('aa01_vehicle_types', 'name')->ignore($id)],
             'description' => 'nullable|string|max:500',
             'is_active'   => 'boolean',
         ];

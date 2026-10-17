@@ -15,16 +15,18 @@ class StoreVehicleModelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vehicle_brand_id' => 'required|exists:vehicle_brands,id',
-            'vehicle_type_id'  => 'nullable|exists:vehicle_types,id',   // ← tambah ini
+            'vehicle_brand_id' => 'required|exists:aa02_vehicle_brands,id',
+            'vehicle_type_id'  => 'nullable|exists:aa01_vehicle_types,id',   // ← tambah ini
+            'code'        => 'nullable|string|max:10|unique:aa03_vehicle_models,code',
             'name'             => [
                 'required',
                 'string',
                 'max:100',
-                Rule::unique('vehicle_models')->where(
+                Rule::unique('aa03_vehicle_models')->where(
                     fn($q) => $q->where('vehicle_brand_id', $this->vehicle_brand_id)
                 ),
             ],
+            'description' => 'nullable|string|max:1000',
             'year_start'       => 'nullable|integer|min:1900|max:' . (date('Y') + 2),
             'year_end'         => 'nullable|integer|min:1900|max:' . (date('Y') + 5) . '|gte:year_start',
             'is_active'        => 'boolean',

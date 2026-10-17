@@ -11,7 +11,6 @@
     <div class="veh-page-header mb-4">
         <div>
             <div class="veh-title">
-                <i class="fas fa-pen"></i>
                 <span data-en="Edit Fuel Type">Edit Jenis Bahan Bakar</span>
             </div>
             <nav aria-label="breadcrumb">
@@ -42,6 +41,20 @@
                 <div class="row g-3">
 
                     <div class="col-12 col-md-12">
+                        <label class="form-label" data-en="Code">
+                            Kode
+                        </label>
+                        <input type="text" name="code" id="code"
+                            class="form-control @error('code') is-invalid @enderror"
+                            value="{{ old('code', $fuelType->code) }}"
+                            placeholder="maks. 10 karakter"
+                            maxlength="10">
+                        @error('code')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12 col-md-12">
                         <label class="form-label" data-en="Fuel Type Name">
                             Nama Jenis BBM <span class="text-danger">*</span>
                         </label>
@@ -53,7 +66,21 @@
                     </div>
 
 
-                    <div class="col-12 col-md-12 d-flex align-items-end">
+
+
+                {-- Description --}
+                <div class="col-12">
+                    <label class="form-label" data-en="Description">Deskripsi</label>
+                    <textarea name="description" id="description"
+                              class="form-control @error('description') is-invalid @enderror"
+                              rows="3"
+                              placeholder="Deskripsi singkat (opsional)…">{ old('description', $fuelType->description) }</textarea>
+                    @error('description')
+                        <div class="invalid-feedback">{ $message }</div>
+                    @enderror
+                </div>
+
+                <div class="col-12 col-md-12 d-flex align-items-end">
                         <div class="lkp-toggle-wrap w-100">
                             <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1"
                                 {{ old('is_active', $fuelType->is_active) ? 'checked' : '' }}>

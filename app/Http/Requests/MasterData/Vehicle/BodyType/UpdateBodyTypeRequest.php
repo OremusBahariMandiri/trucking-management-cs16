@@ -17,8 +17,9 @@ class UpdateBodyTypeRequest extends FormRequest
         $id = $this->route('body_type');
 
         return [
-            'code'      => ['nullable', 'string', 'max:20', Rule::unique('body_types', 'code')->ignore($id)],
-            'name'      => ['required', 'string', 'max:100', Rule::unique('body_types', 'name')->ignore($id)],
+            'code'      => ['nullable', 'string', 'max:20', Rule::unique('aa05_body_types', 'code')->ignore($id)],
+            'name'      => ['required', 'string', 'max:100', Rule::unique('aa05_body_types', 'name')->ignore($id)],
+            'description' => 'nullable|string|max:1000',
             'is_active' => 'boolean',
         ];
     }

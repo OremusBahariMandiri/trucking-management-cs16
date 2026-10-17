@@ -11,7 +11,6 @@
 <div class="veh-page-header mb-4">
     <div>
         <div class="veh-title">
-            <i class="fas fa-plus-circle"></i>
             <span data-en="Add Vehicle Model">Tambah Model Kendaraan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -60,6 +59,20 @@
                     @enderror
                 </div>
 
+                <div class="col-12 col-md-12">
+                    <label class="form-label" data-en="Code">
+                        Kode
+                    </label>
+                    <input type="text" name="code" id="code"
+                           class="form-control @error('code') is-invalid @enderror"
+                           value="{{ old('code') }}"
+                           placeholder="maks. 10 karakter"
+                           maxlength="10">
+                    @error('code')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 {{-- Model Name --}}
                 <div class="col-12 col-md-12">
                     <label class="form-label" data-en="Model Name">
@@ -90,6 +103,20 @@
                         @endforeach
                     </select>
                     @error('vehicle_type_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+
+
+                {{-- Description --}}
+                <div class="col-12">
+                    <label class="form-label" data-en="Description">Deskripsi</label>
+                    <textarea name="description" id="description"
+                              class="form-control @error('description') is-invalid @enderror"
+                              rows="3"
+                              placeholder="Deskripsi singkat (opsional)…">{{ old('description') }}</textarea>
+                    @error('description')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

@@ -2,16 +2,21 @@
 
 namespace App\Models\MasterData\Vehicle;
 
+use App\Models\DataManagement\FleetManagement\Fleet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class VehicleModel extends Model
 {
+    protected $table = 'aa03_vehicle_models';
+
     protected $fillable = [
+        'code',
         'vehicle_brand_id',
         'vehicle_type_id',
         'name',
+        'description',
         'year_start',
         'year_end',
         'is_active',
@@ -35,7 +40,7 @@ class VehicleModel extends Model
 
     public function vehicles(): HasMany
     {
-        return $this->hasMany(Vehicle::class);
+        return $this->hasMany(Fleet::class);
     }
 
     public function scopeActive($query)

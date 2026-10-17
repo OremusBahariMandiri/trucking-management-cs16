@@ -3,32 +3,36 @@
 //  Depends on CSS custom props defined in _admin.scss
 // ═══════════════════════════════════════════════════════════════
 
+@import './page-header-bg';
+
 // ── Local accent tokens (overrideable per-page if needed) ──────
 :root {
-  --veh-accent:        #3b6fd4;
-  --veh-accent-soft:   rgba(59, 111, 212, .12);
-  --veh-accent-hover:  #2a58b8;
-  --veh-radius:        14px;
-  --veh-radius-sm:     8px;
-  --veh-shadow:        0 2px 12px rgba(0,0,0,.07);
-  --veh-shadow-hover:  0 6px 24px rgba(0,0,0,.12);
-  --veh-transition:    .18s ease;
+  --veh-accent: #3b6fd4;
+  --veh-accent-soft: rgba(59, 111, 212, .12);
+  --veh-accent-hover: #2a58b8;
+  --veh-radius: 14px;
+  --veh-radius-sm: 8px;
+  --veh-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+  --veh-shadow-hover: 0 6px 24px rgba(0, 0, 0, .12);
+  --veh-transition: .18s ease;
 }
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --veh-accent:        #5b8fe8;
-    --veh-accent-soft:   rgba(91, 143, 232, .15);
-    --veh-accent-hover:  #7aa8f0;
-    --veh-shadow:        0 2px 12px rgba(0,0,0,.25);
-    --veh-shadow-hover:  0 6px 28px rgba(0,0,0,.4);
+    --veh-accent: #5b8fe8;
+    --veh-accent-soft: rgba(91, 143, 232, .15);
+    --veh-accent-hover: #7aa8f0;
+    --veh-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+    --veh-shadow-hover: 0 6px 28px rgba(0, 0, 0, .4);
   }
 }
+
 :root[data-theme="dark"] {
-  --veh-accent:        #5b8fe8;
-  --veh-accent-soft:   rgba(91, 143, 232, .15);
-  --veh-accent-hover:  #7aa8f0;
-  --veh-shadow:        0 2px 12px rgba(0,0,0,.25);
-  --veh-shadow-hover:  0 6px 28px rgba(0,0,0,.4);
+  --veh-accent: #5b8fe8;
+  --veh-accent-soft: rgba(91, 143, 232, .15);
+  --veh-accent-hover: #7aa8f0;
+  --veh-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+  --veh-shadow-hover: 0 6px 28px rgba(0, 0, 0, .4);
 }
 
 // ── Bootstrap table dark-mode patch ───────────────────────────
@@ -48,7 +52,9 @@
   color: var(--text);
   transition: border-color var(--veh-transition), box-shadow var(--veh-transition);
 
-  &::placeholder { color: var(--text-faint); }
+  &::placeholder {
+    color: var(--text-faint);
+  }
 
   &:focus {
     background-color: var(--surface);
@@ -57,10 +63,12 @@
     box-shadow: 0 0 0 3px var(--veh-accent-soft);
   }
 }
+
 .form-select option {
   background: var(--surface);
   color: var(--text);
 }
+
 .input-group-text {
   background-color: var(--surface-2);
   border-color: var(--border);
@@ -74,7 +82,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
-  background: var(--surface);
+  background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--veh-radius);
   box-shadow: var(--veh-shadow);
@@ -94,7 +102,9 @@
   gap: .5rem;
   margin-bottom: .25rem;
 
-  i, .fa, [class^="fa-"] {
+  i,
+  .fa,
+  [class^="fa-"] {
     color: var(--veh-accent);
     font-size: 1.1em;
   }
@@ -108,10 +118,18 @@
     color: var(--veh-accent);
     text-decoration: none;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
-  .breadcrumb-item.active { color: var(--text-muted); }
-  .breadcrumb-item + .breadcrumb-item::before { color: var(--text-faint); }
+
+  .breadcrumb-item.active {
+    color: var(--text-muted);
+  }
+
+  .breadcrumb-item+.breadcrumb-item::before {
+    color: var(--text-faint);
+  }
 }
 
 // ── Stat Cards (index) ─────────────────────────────────────────
@@ -194,7 +212,9 @@
     border-radius: var(--veh-radius-sm);
     font-size: .875rem;
 
-    &:focus { border-color: var(--veh-accent); }
+    &:focus {
+      border-color: var(--veh-accent);
+    }
   }
 }
 
@@ -223,7 +243,10 @@
       align-items: center;
       gap: .4rem;
 
-      i, [class*="fa-"] { color: var(--veh-accent); }
+      i,
+      [class*="fa-"] {
+        color: var(--veh-accent);
+      }
     }
   }
 }
@@ -254,8 +277,13 @@
   tbody tr {
     transition: background var(--veh-transition);
 
-    &:hover td { background: var(--surface-2); }
-    &:last-child td { border-bottom: none; }
+    &:hover td {
+      background: var(--surface-2);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
   }
 }
 
@@ -267,17 +295,20 @@
   color: var(--text);
   display: block;
 }
+
 .vehicle-police {
   font-size: .76rem;
   color: var(--text-muted);
   display: block;
 }
+
 .vehicle-brand {
   font-weight: 600;
   color: var(--text);
   display: block;
   font-size: .875rem;
 }
+
 .vehicle-model {
   font-size: .78rem;
   color: var(--text-muted);
@@ -307,29 +338,87 @@
 }
 
 // Light-mode badge colours
-.status-active      { color: #16a34a; background: #dcfce7; }
-.status-inactive    { color: #64748b; background: #f1f5f9; }
-.status-maintenance { color: #d97706; background: #fef3c7; }
-.status-standby     { color: #0ea5e9; background: #e0f2fe; }
-.status-scrapped    { color: #dc2626; background: #fee2e2; }
+.status-active {
+  color: #16a34a;
+  background: #dcfce7;
+}
+
+.status-inactive {
+  color: #64748b;
+  background: #f1f5f9;
+}
+
+.status-maintenance {
+  color: #d97706;
+  background: #fef3c7;
+}
+
+.status-standby {
+  color: #0ea5e9;
+  background: #e0f2fe;
+}
+
+.status-scrapped {
+  color: #dc2626;
+  background: #fee2e2;
+}
 
 // Dark-mode overrides — system preference
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    .status-active      { color: #4ade80; background: rgba(22,163,74,.2); }
-    .status-inactive    { color: #94a3b8; background: rgba(100,116,139,.2); }
-    .status-maintenance { color: #fbbf24; background: rgba(217,119,6,.2); }
-    .status-standby     { color: #38bdf8; background: rgba(14,165,233,.2); }
-    .status-scrapped    { color: #f87171; background: rgba(220,38,38,.2); }
+    .status-active {
+      color: #4ade80;
+      background: rgba(22, 163, 74, .2);
+    }
+
+    .status-inactive {
+      color: #94a3b8;
+      background: rgba(100, 116, 139, .2);
+    }
+
+    .status-maintenance {
+      color: #fbbf24;
+      background: rgba(217, 119, 6, .2);
+    }
+
+    .status-standby {
+      color: #38bdf8;
+      background: rgba(14, 165, 233, .2);
+    }
+
+    .status-scrapped {
+      color: #f87171;
+      background: rgba(220, 38, 38, .2);
+    }
   }
 }
+
 // Dark-mode overrides — explicit toggle
 :root[data-theme="dark"] {
-  .status-active      { color: #4ade80; background: rgba(22,163,74,.2); }
-  .status-inactive    { color: #94a3b8; background: rgba(100,116,139,.2); }
-  .status-maintenance { color: #fbbf24; background: rgba(217,119,6,.2); }
-  .status-standby     { color: #38bdf8; background: rgba(14,165,233,.2); }
-  .status-scrapped    { color: #f87171; background: rgba(220,38,38,.2); }
+  .status-active {
+    color: #4ade80;
+    background: rgba(22, 163, 74, .2);
+  }
+
+  .status-inactive {
+    color: #94a3b8;
+    background: rgba(100, 116, 139, .2);
+  }
+
+  .status-maintenance {
+    color: #fbbf24;
+    background: rgba(217, 119, 6, .2);
+  }
+
+  .status-standby {
+    color: #38bdf8;
+    background: rgba(14, 165, 233, .2);
+  }
+
+  .status-scrapped {
+    color: #f87171;
+    background: rgba(220, 38, 38, .2);
+  }
 }
 
 // ── Ownership badge variant ────────────────────────────────────
@@ -366,7 +455,10 @@
   box-shadow: var(--veh-shadow);
   overflow-x: auto;
   scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .nav-tabs {
     border-bottom: none;
@@ -389,7 +481,10 @@
     transition: color var(--veh-transition), background var(--veh-transition);
     position: relative;
 
-    i, [class*="fa-"] { font-size: .85em; }
+    i,
+    [class*="fa-"] {
+      font-size: .85em;
+    }
 
     &::after {
       content: '';
@@ -414,7 +509,9 @@
       background: transparent;
       font-weight: 600;
 
-      &::after { transform: scaleX(1); }
+      &::after {
+        transform: scaleX(1);
+      }
     }
   }
 
@@ -440,7 +537,9 @@
   padding: 1.5rem;
   box-shadow: var(--veh-shadow);
 
-  @media (max-width: 576px) { padding: 1rem; }
+  @media (max-width: 576px) {
+    padding: 1rem;
+  }
 }
 
 // ── Form Section Title ─────────────────────────────────────────
@@ -457,9 +556,14 @@
   align-items: center;
   gap: .5rem;
 
-  &:not(:first-child) { margin-top: 1.75rem; }
+  &:not(:first-child) {
+    margin-top: 1.75rem;
+  }
 
-  i, [class*="fa-"] { font-size: 1em; }
+  i,
+  [class*="fa-"] {
+    font-size: 1em;
+  }
 }
 
 // ── Info Label/Value (show page) ───────────────────────────────
@@ -471,6 +575,7 @@
   color: var(--text-muted);
   margin-bottom: .2rem;
 }
+
 .info-value {
   font-size: .9rem;
   font-weight: 500;
@@ -492,7 +597,9 @@
     object-fit: cover;
     display: block;
 
-    @media (max-width: 576px) { height: 200px; }
+    @media (max-width: 576px) {
+      height: 200px;
+    }
   }
 }
 
@@ -512,7 +619,11 @@
 
   @media (max-width: 576px) {
     padding: .875rem 1rem;
-    .d-flex { width: 100%; justify-content: flex-end; }
+
+    .d-flex {
+      width: 100%;
+      justify-content: flex-end;
+    }
   }
 }
 
@@ -533,9 +644,12 @@
   &:hover {
     background: var(--veh-accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59,111,212,.35);
+    box-shadow: 0 4px 12px rgba(59, 111, 212, .35);
   }
-  &:active { transform: translateY(0); }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 // ── Expiry Status Badges ───────────────────────────────────────
@@ -547,6 +661,7 @@
   font-size: .78rem;
   font-weight: 600;
 }
+
 .expiry-soon {
   display: inline-flex;
   align-items: center;
@@ -555,6 +670,7 @@
   font-size: .78rem;
   font-weight: 600;
 }
+
 .expiry-ok {
   display: inline-flex;
   align-items: center;
@@ -593,14 +709,19 @@
     transition: transform .3s ease;
   }
 
-  &:hover img { transform: scale(1.04); }
-  &:hover .photo-overlay { opacity: 1; }
+  &:hover img {
+    transform: scale(1.04);
+  }
+
+  &:hover .photo-overlay {
+    opacity: 1;
+  }
 }
 
 .photo-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.5);
+  background: rgba(0, 0, 0, .5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -628,7 +749,7 @@
   left: 0;
   right: 0;
   padding: .3rem .5rem;
-  background: linear-gradient(transparent, rgba(0,0,0,.65));
+  background: linear-gradient(transparent, rgba(0, 0, 0, .65));
   font-size: .72rem;
   color: #fff;
 }
@@ -643,7 +764,8 @@
   cursor: pointer;
   transition: border-color var(--veh-transition), background var(--veh-transition);
 
-  i, [class*="fa-"] {
+  i,
+  [class*="fa-"] {
     font-size: 2rem;
     color: var(--veh-accent);
     display: block;
@@ -654,10 +776,13 @@
     margin: 0;
     font-size: .875rem;
 
-    strong { color: var(--veh-accent); }
+    strong {
+      color: var(--veh-accent);
+    }
   }
 
-  &:hover, &.drag-over {
+  &:hover,
+  &.drag-over {
     border-color: var(--veh-accent);
     background: var(--veh-accent-soft);
   }
@@ -704,19 +829,25 @@
 }
 
 // ── Alert dismiss button ───────────────────────────────────────
-.btn-close { filter: none; }
+.btn-close {
+  filter: none;
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .btn-close {
     filter: invert(1);
   }
 }
+
 :root[data-theme="dark"] .btn-close {
   filter: invert(1);
 }
 
 // ── Responsive utility ─────────────────────────────────────────
 @media (max-width: 768px) {
-  .table-responsive { border-radius: 0; }
+  .table-responsive {
+    border-radius: 0;
+  }
 
   .veh-stats {
     grid-template-columns: repeat(2, 1fr);
@@ -728,8 +859,13 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .stat-card { padding: 1rem; }
-  .stat-number { font-size: 1.5rem; }
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -757,7 +893,10 @@
   flex: 1 1 150px;
   transition: box-shadow .2s, transform .2s;
 
-  &:hover { box-shadow: var(--veh-shadow-hover); transform: translateY(-1px); }
+  &:hover {
+    box-shadow: var(--veh-shadow-hover);
+    transform: translateY(-1px);
+  }
 
   .lkp-stat-icon {
     width: 2.25rem;
@@ -768,7 +907,7 @@
     border-radius: .6rem;
     font-size: .9rem;
     flex-shrink: 0;
-    background: var(--stat-soft, rgba(59,111,212,.12));
+    background: var(--stat-soft, rgba(59, 111, 212, .12));
     color: var(--stat-color, #3b6fd4);
   }
 
@@ -810,13 +949,18 @@
   font-size: .9rem;
   color: var(--text);
 
-  i { color: var(--veh-accent); font-size: .9rem; }
+  i {
+    color: var(--veh-accent);
+    font-size: .9rem;
+  }
 }
 
 .lkp-form-body {
   padding: 1.5rem;
 
-  .row > [class*="col"] { margin-bottom: .25rem; }
+  .row>[class*="col"] {
+    margin-bottom: .25rem;
+  }
 }
 
 .lkp-form-actions {
@@ -841,7 +985,9 @@
   cursor: pointer;
   transition: border-color .15s;
 
-  &:hover { border-color: var(--veh-accent); }
+  &:hover {
+    border-color: var(--veh-accent);
+  }
 
   .form-check-input {
     width: 2.75rem;
@@ -895,9 +1041,24 @@
 
 // ── Responsive ────────────────────────────────────────────────
 @media (max-width: 576px) {
-  .lkp-stats { gap: .625rem; }
-  .lkp-stat  { padding: .75rem 1rem; flex: 1 1 120px; }
-  .lkp-stat-num { font-size: 1.15rem; }
-  .lkp-form-body { padding: 1rem; }
-  .lkp-form-actions { padding: .875rem 1rem; }
+  .lkp-stats {
+    gap: .625rem;
+  }
+
+  .lkp-stat {
+    padding: .75rem 1rem;
+    flex: 1 1 120px;
+  }
+
+  .lkp-stat-num {
+    font-size: 1.15rem;
+  }
+
+  .lkp-form-body {
+    padding: 1rem;
+  }
+
+  .lkp-form-actions {
+    padding: .875rem 1rem;
+  }
 }

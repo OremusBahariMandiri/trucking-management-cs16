@@ -2,18 +2,21 @@
 
 namespace App\Models\MasterData\Vehicle;
 
+use App\Models\DataManagement\FleetManagement\Fleet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FuelType extends Model
 {
-    protected $fillable = ['name', 'is_active'];
+    protected $table = 'aa04_fuel_types';
+    
+    protected $fillable = ['code', 'name', 'description', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 
     public function vehicles(): HasMany
     {
-        return $this->hasMany(Vehicle::class);
+        return $this->hasMany(Fleet::class);
     }
 
     public function scopeActive($query)

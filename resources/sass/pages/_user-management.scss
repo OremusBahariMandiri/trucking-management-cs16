@@ -1,0 +1,1054 @@
+// ═══════════════════════════════════════════════════════════════
+//  User Management Pages — Users, Roles, Permissions
+// ═══════════════════════════════════════════════════════════════
+@import './page-header-bg';
+
+// ── Accent tokens (teal) ──────────────────────────────────────
+:root {
+  --um-accent: #0071c8;
+  --um-accent-soft: rgba(13, 148, 136, .12);
+  --um-accent-hover: #0f766e;
+  --um-radius: 14px;
+  --um-radius-sm: 8px;
+  --um-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+  --um-shadow-hover: 0 6px 24px rgba(0, 0, 0, .12);
+  --um-transition: .18s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --um-accent: #2dd4bf;
+    --um-accent-soft: rgba(45, 212, 191, .14);
+    --um-accent-hover: #5eead4;
+    --um-shadow: 0 2px 12px rgba(0, 0, 0, .28);
+    --um-shadow-hover: 0 6px 28px rgba(0, 0, 0, .42);
+  }
+}
+
+:root[data-theme="dark"] {
+  --um-accent: #78ceff;
+  --um-accent-soft: rgba(45, 212, 191, .14);
+  --um-accent-hover: #5eead4;
+  --um-shadow: 0 2px 12px rgba(0, 0, 0, .28);
+  --um-shadow-hover: 0 6px 28px rgba(0, 0, 0, .42);
+}
+
+// ── Bootstrap overrides ────────────────────────────────────────
+.form-control,
+.form-select {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+  transition: border-color var(--um-transition), box-shadow var(--um-transition);
+
+  &::placeholder {
+    color: var(--text-faint);
+  }
+
+  &:focus {
+    background-color: var(--surface);
+    border-color: var(--um-accent);
+    color: var(--text);
+    box-shadow: 0 0 0 3px var(--um-accent-soft);
+  }
+
+  &:disabled {
+    background-color: var(--surface-2);
+    opacity: .65;
+  }
+}
+
+.input-group-text {
+  background-color: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.card {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-hover-bg: var(--surface-2);
+  --bs-table-border-color: var(--border);
+  color: var(--text);
+}
+
+// ── Page Header ───────────────────────────────────────────────
+.um-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius);
+  box-shadow: var(--um-shadow);
+
+  @media (max-width:576px) {
+    flex-direction: column;
+    padding: 1rem;
+  }
+}
+
+.um-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .25rem;
+
+  i,
+  [class^="fa-"] {
+    color: var(--um-accent);
+    font-size: 1.1em;
+  }
+}
+
+.breadcrumb {
+  font-size: .8rem;
+  margin-bottom: 0;
+
+  .breadcrumb-item a {
+    color: var(--um-accent);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .breadcrumb-item.active {
+    color: var(--text-muted);
+  }
+
+  .breadcrumb-item+.breadcrumb-item::before {
+    color: var(--text-faint);
+  }
+}
+
+// ── Stat Cards ────────────────────────────────────────────────
+.um-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 220px));
+  gap: 1rem;
+}
+
+.um-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius);
+  padding: 1.25rem 1.25rem 1rem;
+  box-shadow: var(--um-shadow);
+  transition: transform var(--um-transition), box-shadow var(--um-transition);
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--stat-color, var(--um-accent));
+    border-radius: var(--um-radius) var(--um-radius) 0 0;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--um-shadow-hover);
+  }
+
+  .stat-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--um-radius-sm);
+    background: var(--stat-soft, var(--um-accent-soft));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: .85rem;
+    font-size: 1.1rem;
+    color: var(--stat-color, var(--um-accent));
+  }
+
+  .stat-number {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: .2rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-label {
+    font-size: .76rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+}
+
+// ── Filter Bar ────────────────────────────────────────────────
+.um-filter-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--um-shadow);
+}
+
+// ── Table Card ────────────────────────────────────────────────
+.um-table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius);
+  box-shadow: var(--um-shadow);
+  overflow: hidden;
+
+  .um-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+
+    h6 {
+      margin: 0;
+      font-weight: 600;
+      color: var(--text);
+      font-size: .875rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+
+      i,
+      [class*="fa-"] {
+        color: var(--um-accent);
+      }
+    }
+  }
+}
+
+.table {
+  margin-bottom: 0;
+
+  thead th {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    padding: .75rem 1rem;
+    background: transparent;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: .8rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+    font-size: .875rem;
+    color: var(--text);
+  }
+
+  tbody tr {
+    transition: background var(--um-transition);
+
+    &:hover td {
+      background: var(--surface-2);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+// ── Avatar ────────────────────────────────────────────────────
+.um-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--um-accent-soft);
+  color: var(--um-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  font-weight: 700;
+}
+
+.um-name {
+  font-weight: 600;
+  color: var(--text);
+  font-size: .875rem;
+}
+
+// ── Table Footer ──────────────────────────────────────────────
+.um-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .8rem 1.25rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: .82rem;
+  color: var(--text-muted);
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+// ── Empty State ───────────────────────────────────────────────
+.um-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+
+  .um-empty-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--um-accent-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.1rem;
+    font-size: 1.35rem;
+    color: var(--um-accent);
+  }
+
+  h6 {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .3rem;
+  }
+
+  p {
+    font-size: .825rem;
+    margin: 0;
+    color: var(--text-muted);
+  }
+}
+
+// ── Detail Card ───────────────────────────────────────────────
+.um-detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius);
+  box-shadow: var(--um-shadow);
+  overflow: hidden;
+}
+
+.um-detail-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+.um-show-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--um-accent-soft);
+  color: var(--um-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: 3px solid var(--border);
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.um-show-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: .25rem;
+}
+
+.um-show-code {
+  font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+  font-size: .82rem;
+  color: var(--um-accent);
+  background: var(--um-accent-soft);
+  padding: .2em .7em;
+  border-radius: 100px;
+}
+
+.um-detail-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 1.5rem;
+}
+
+// Info items
+.um-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+.um-info-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--um-radius-sm);
+  background: var(--um-accent-soft);
+  color: var(--um-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  flex-shrink: 0;
+  margin-top: .1rem;
+}
+
+.um-detail-footer {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: .85rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: .78rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+// ── Info Label/Value ──────────────────────────────────────────
+.info-label {
+  font-size: .7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  margin-bottom: .2rem;
+}
+
+.info-value {
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-word;
+}
+
+// ── Form Card ─────────────────────────────────────────────────
+.um-form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius) var(--um-radius) 0 0;
+  padding: 1.5rem;
+  box-shadow: var(--um-shadow);
+
+  @media (max-width:576px) {
+    padding: 1rem;
+  }
+}
+
+.form-section-title {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--um-accent);
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+
+  &:not(:first-child) {
+    margin-top: 1.75rem;
+  }
+}
+
+// ── Action Bar ────────────────────────────────────────────────
+.um-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0 0 var(--um-radius) var(--um-radius);
+  margin-top: -1px;
+  box-shadow: var(--um-shadow);
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (max-width:576px) {
+    padding: .875rem 1rem;
+  }
+}
+
+.btn-save-um {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem 1.25rem;
+  border-radius: var(--um-radius-sm);
+  border: none;
+  background: var(--um-accent);
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--um-transition), transform var(--um-transition), box-shadow var(--um-transition);
+
+  &:hover {
+    background: var(--um-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, .35);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ── Permission Checkbox Grid (form edit) ──────────────────────
+.perm-group {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius-sm);
+  overflow: hidden;
+  margin-bottom: .75rem;
+}
+
+.perm-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .6rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: var(--surface-2);
+  }
+
+  i {
+    color: var(--um-accent);
+  }
+}
+
+.perm-group-body {
+  padding: .75rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .5rem;
+}
+
+.perm-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  transition: background var(--um-transition);
+
+  &:hover {
+    background: var(--surface);
+  }
+
+  .form-check-input {
+    margin-top: 2px;
+    flex-shrink: 0;
+
+    &:checked {
+      background-color: var(--um-accent);
+      border-color: var(--um-accent);
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--um-accent-soft);
+    }
+  }
+
+  .perm-check-label {
+    font-size: .82rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .perm-slug {
+    font-size: .7rem;
+    color: var(--text-faint);
+    font-family: monospace;
+  }
+}
+
+// ── Role Badge ────────────────────────────────────────────────
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .2em .65em;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 600;
+  background: var(--um-accent-soft);
+  color: var(--um-accent);
+  border: 1px solid transparent;
+}
+
+// ── Responsive Table: Desktop / Mobile ────────────────────────
+.um-desktop-table {
+  display: block;
+}
+
+.um-mobile-list {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .um-desktop-table {
+    display: none;
+  }
+
+  .um-mobile-list {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// Mobile card list
+.um-mobile-list {
+  padding: .5rem .75rem;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.um-mobile-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius-sm);
+  padding: .85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.um-mobile-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+.um-mobile-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.um-mobile-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem .9rem;
+  margin-top: .2rem;
+  font-size: .75rem;
+  color: var(--text-muted);
+
+  i {
+    color: var(--um-accent);
+  }
+}
+
+.um-mobile-card-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  padding-top: .6rem;
+  border-top: 1px solid var(--border);
+
+  form {
+    margin: 0;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Permission Table (halaman show: users/show & roles/show)
+// ═══════════════════════════════════════════════════════════════
+
+.um-section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius);
+  box-shadow: var(--um-shadow);
+  overflow: hidden;
+  margin-top: 1.25rem;
+}
+
+.um-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+
+  .um-section-title {
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin: 0;
+
+    i {
+      color: var(--um-accent);
+    }
+  }
+
+  .um-section-count {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--um-accent);
+    background: var(--um-accent-soft);
+    padding: .15em .6em;
+    border-radius: 100px;
+  }
+}
+
+// ── Role list (inside users/show) ─────────────────────────────
+.um-role-list {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.um-role-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--um-radius-sm);
+  background: var(--surface);
+  transition: box-shadow var(--um-transition), border-color var(--um-transition);
+  gap: 1rem;
+
+  &:hover {
+    border-color: var(--um-accent);
+    box-shadow: 0 0 0 3px var(--um-accent-soft);
+  }
+
+  .um-role-item-info {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 0;
+  }
+
+  .um-role-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--um-radius-sm);
+    background: var(--um-accent-soft);
+    color: var(--um-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    flex-shrink: 0;
+  }
+
+  .um-role-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: .875rem;
+  }
+
+  .um-role-slug {
+    font-size: .72rem;
+    color: var(--text-muted);
+    font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    background: var(--surface-2);
+    padding: .1em .45em;
+    border-radius: 4px;
+    margin-left: .35rem;
+  }
+
+  .um-role-desc {
+    font-size: .78rem;
+    color: var(--text-muted);
+    margin-top: .15rem;
+  }
+
+  .um-role-perm-count {
+    font-size: .75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+// ── Permission Table ──────────────────────────────────────────
+.um-perm-table-wrapper {
+  overflow-x: auto;
+}
+
+.um-perm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .82rem;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    tr {
+      background: var(--surface-2);
+    }
+  }
+
+  th {
+    padding: .65rem .85rem;
+    font-weight: 700;
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    text-align: center;
+
+    &.col-menu {
+      text-align: left;
+      min-width: 210px;
+      padding-left: 1.25rem;
+    }
+  }
+
+  td {
+    padding: .6rem .85rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    vertical-align: middle;
+
+    &.col-menu {
+      text-align: left;
+      padding-left: 1.25rem;
+    }
+  }
+
+  tbody tr {
+    transition: background var(--um-transition);
+
+    &:hover td {
+      background: var(--surface-2);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  .menu-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: .83rem;
+    line-height: 1.3;
+  }
+
+  .menu-slug {
+    font-size: .7rem;
+    color: var(--text-faint);
+    font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    margin-top: 2px;
+  }
+
+  // ✓ / – indicators
+  .perm-yes {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #d1fae5;
+    color: #065f46;
+    font-size: .8rem;
+    font-weight: 800;
+  }
+
+  .perm-no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--border);
+    font-size: .9rem;
+    font-weight: 700;
+  }
+
+  // Tambahkan ini:
+  .perm-no.perm-x {
+    background: rgba(220, 38, 38, .08);
+    color: #dc2626;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .um-perm-table .perm-no.perm-x {
+      background: rgba(248, 113, 113, .15);
+      color: #f87171;
+    }
+  }
+
+  :root[data-theme="dark"] .um-perm-table .perm-no.perm-x {
+    background: rgba(248, 113, 113, .15);
+    color: #f87171;
+  }
+}
+
+// dark mode fix for perm-yes
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .um-perm-table .perm-yes {
+    background: rgba(5, 150, 105, .25);
+    color: #34d399;
+  }
+}
+
+:root[data-theme="dark"] .um-perm-table .perm-yes {
+  background: rgba(5, 150, 105, .25);
+  color: #34d399;
+}
+
+// ── Responsive ────────────────────────────────────────────────
+@media (max-width:768px) {
+  .um-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .perm-group-body {
+    grid-template-columns: 1fr;
+  }
+
+  .um-role-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width:480px) {
+  .um-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-close {
+  filter: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .btn-close {
+    filter: invert(1);
+  }
+}
+
+:root[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+// ── Permission Toggle (checkbox di tabel form) ────────────────
+.um-perm-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 2px;
+
+  .perm-toggle-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--um-transition), border-color var(--um-transition);
+    position: relative;
+
+    &::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background var(--um-transition);
+    }
+  }
+
+  input:checked+.perm-toggle-dot {
+    border-color: var(--um-accent);
+    background: var(--um-accent-soft);
+
+    &::after {
+      background: var(--um-accent);
+    }
+  }
+
+  &:hover .perm-toggle-dot {
+    border-color: var(--um-accent);
+  }
+}
+
+.perm-na {
+  color: var(--border);
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: inline-block;
+  line-height: 1;
+}
+
+.btn-row-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  transition: background var(--um-transition), color var(--um-transition),
+    border-color var(--um-transition);
+
+  &:hover {
+    background: var(--um-accent-soft);
+    border-color: var(--um-accent);
+    color: var(--um-accent);
+  }
+}

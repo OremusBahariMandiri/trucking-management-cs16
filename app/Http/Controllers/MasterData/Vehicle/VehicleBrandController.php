@@ -9,11 +9,36 @@ use App\Models\MasterData\Vehicle\VehicleBrand;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Exports\MasterData\Vehicle\VehicleBrandExport;
 
 class VehicleBrandController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
+        // ── Export ─────────────────────────────────────────────────
+        $filters = [
+            'q' => $request->input('q'),
+            'status' => $request->input('status'),
+        ];
+
+        if ($request->input('export') === 'pdf') {
+            $items = (new VehicleBrandExport($filters))->collection();
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+                'exports.master-data.vehicle-brand',
+                compact('items')
+            )->setPaper('a4', 'landscape');
+
+            return $pdf->stream('merek-kendaraan-' . now()->format('Ymd') . '.pdf');
+        }
+
+        if ($request->input('export') === 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new VehicleBrandExport($filters),
+                'merek-kendaraan-' . now()->format('Ymd') . '.xlsx'
+            );
+        }
+
+        // ── Normal index ────────────────────────────────────────────
         $vehicleBrands = VehicleBrand::query()
             ->withCount('models')
             ->when($request->input('q'), fn($q, $s) =>
