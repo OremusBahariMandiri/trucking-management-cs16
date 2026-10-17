@@ -26,6 +26,7 @@ class StoreVehicleModelRequest extends FormRequest
                     fn($q) => $q->where('vehicle_brand_id', $this->vehicle_brand_id)
                 ),
             ],
+            'description' => 'nullable|string|max:1000',
             'year_start'       => 'nullable|integer|min:1900|max:' . (date('Y') + 2),
             'year_end'         => 'nullable|integer|min:1900|max:' . (date('Y') + 5) . '|gte:year_start',
             'is_active'        => 'boolean',

@@ -19,6 +19,7 @@ class UpdateBodyTypeRequest extends FormRequest
         return [
             'code'      => ['nullable', 'string', 'max:20', Rule::unique('aa05_body_types', 'code')->ignore($id)],
             'name'      => ['required', 'string', 'max:100', Rule::unique('aa05_body_types', 'name')->ignore($id)],
+            'description' => 'nullable|string|max:1000',
             'is_active' => 'boolean',
         ];
     }

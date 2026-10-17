@@ -16,6 +16,7 @@ class VehicleModel extends Model
         'vehicle_brand_id',
         'vehicle_type_id',
         'name',
+        'description',
         'year_start',
         'year_end',
         'is_active',

@@ -10,7 +10,7 @@ class VehicleBrand extends Model
 {
     protected $table = 'aa02_vehicle_brands';
 
-    protected $fillable = ['code', 'name', 'country_of_origin', 'is_active'];
+    protected $fillable = ['code', 'name', 'description', 'country_of_origin', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 

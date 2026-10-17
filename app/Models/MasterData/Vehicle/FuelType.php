@@ -10,7 +10,7 @@ class FuelType extends Model
 {
     protected $table = 'aa04_fuel_types';
     
-    protected $fillable = ['code', 'name', 'is_active'];
+    protected $fillable = ['code', 'name', 'description', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 
