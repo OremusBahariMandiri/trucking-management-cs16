@@ -4,6 +4,8 @@ namespace App\Models\DataManagement\FleetManagement;
 
 use App\Models\MasterData\Vehicle\BodyType;
 use App\Models\MasterData\Vehicle\FuelType;
+use App\Models\MasterData\Vehicle\OwnershipStatus;
+use App\Models\MasterData\Vehicle\VehicleAxisConfiguration;
 use App\Models\MasterData\Vehicle\VehicleBrand;
 use App\Models\MasterData\Vehicle\VehicleDocument;
 use App\Models\MasterData\Vehicle\VehicleModel;
@@ -18,8 +20,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Fleet extends Model
 {
     protected $table = 'aa06_vehicles';
-
-    use SoftDeletes;
 
     protected $fillable = [
         // Tab 1: Informasi Umum
@@ -58,7 +58,10 @@ class Fleet extends Model
         'driver_id',
 
         // Tab 4: Operasional
+        'initial_odometer_km',
+        'initial_odometer_date',
         'last_odometer_km',
+        'last_odometer_date',
         'last_service_date',
         'service_interval_km',
         'gps_tracker_id',
@@ -86,14 +89,19 @@ class Fleet extends Model
     protected $casts = [
         'manufacture_year'          => 'integer',
         'engine_capacity_cc'        => 'integer',
+        'axis_configuration'        => 'integer',   // ← tambah
         'wheel_count'               => 'integer',
         'load_capacity_ton'         => 'decimal:2',
         'gross_vehicle_weight_ton'  => 'decimal:2',
         'tare_weight_ton'           => 'decimal:2',
+        'ownership_status'          => 'integer',   // ← tambah
         'acquisition_year'          => 'integer',
         'acquisition_value'         => 'decimal:2',
         'leasing_end_date'          => 'date',
+        'initial_odometer_km'       => 'integer',
+        'initial_odometer_date'     => 'date',
         'last_odometer_km'          => 'integer',
+        'last_odometer_date'        => 'date',
         'last_service_date'         => 'date',
         'service_interval_km'       => 'integer',
         'tax_expiry_date'           => 'date',
@@ -126,6 +134,16 @@ class Fleet extends Model
     public function bodyType(): BelongsTo
     {
         return $this->belongsTo(BodyType::class, 'body_type_id');
+    }
+
+    public function axisConfiguration(): BelongsTo  // ← tambah
+    {
+        return $this->belongsTo(VehicleAxisConfiguration::class, 'axis_configuration');
+    }
+
+    public function ownershipStatus(): BelongsTo    // ← tambah
+    {
+        return $this->belongsTo(OwnershipStatus::class, 'ownership_status');
     }
 
     // ── Relasi ke user ────────────────────────────────────────────────────────
@@ -188,15 +206,9 @@ class Fleet extends Model
         };
     }
 
-    public function getOwnershipLabelAttribute(): string
+    public function getOwnershipLabelAttribute(): string  // ← fix: pakai relasi
     {
-        return match ($this->ownership_status) {
-            'company'    => 'Milik Perusahaan',
-            'rental'     => 'Sewa',
-            'leasing'    => 'Leasing',
-            'kerjasama'  => 'Kerjasama',
-            default      => ucfirst($this->ownership_status ?? '-'),
-        };
+        return $this->ownershipStatus?->name ?? '-';
     }
 
     // ── Scope ─────────────────────────────────────────────────────────────────

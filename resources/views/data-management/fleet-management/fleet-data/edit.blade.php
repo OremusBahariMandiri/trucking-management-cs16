@@ -11,7 +11,6 @@
 <div class="veh-page-header mb-3">
     <div>
         <div class="veh-title">
-            <i class="fas fa-edit"></i>
             <span data-en="Edit Vehicle">Edit Kendaraan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -27,11 +26,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('data-management.fleet-data.show', $fleet) }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i>
-        <span data-en="Back">Kembali</span>
-    </a>
 </div>
 
 <form method="POST"

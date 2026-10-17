@@ -11,7 +11,6 @@
     <div class="veh-page-header mb-3">
         <div>
             <div class="veh-title">
-                <i class="fas fa-plus-circle"></i>
                 <span data-en="Add Vehicle">Tambah Kendaraan</span>
             </div>
             <nav aria-label="breadcrumb">

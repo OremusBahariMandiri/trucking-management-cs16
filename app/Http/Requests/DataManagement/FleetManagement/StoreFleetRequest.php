@@ -31,7 +31,7 @@ class StoreFleetRequest extends FormRequest
             'engine_number'             => ['nullable', 'string', 'max:50', 'unique:aa06_vehicles,engine_number'],
             'fuel_type_id'              => ['nullable', 'exists:aa04_fuel_types,id'],
             'engine_capacity_cc'        => ['nullable', 'integer', 'min:0'],
-            'axis_configuration'        => ['nullable', 'in:4x2,6x2,6x4,8x4,10x4,other'],
+            'axis_configuration' => ['nullable', 'exists:aa09_vehicle_axis_configurations,id'],
             'wheel_count'               => ['nullable', 'integer', 'min:2', 'max:24'],
             'load_capacity_ton'         => ['nullable', 'numeric', 'min:0'],
             'gross_vehicle_weight_ton'  => ['nullable', 'numeric', 'min:0'],
@@ -40,17 +40,17 @@ class StoreFleetRequest extends FormRequest
             'body_dimension'            => ['nullable', 'string', 'max:50'],
 
             // ── Tab 3: Kepemilikan & Penugasan ─────────────────────────────
-            'ownership_status'  => ['nullable', 'in:company,rental,leasing,kerjasama'],
+            'ownership_status' => ['nullable', 'exists:aa10_ownership_statuses,id'],
             'acquisition_year'  => ['nullable', 'integer', 'min:1980', 'max:' . now()->year],
             'acquisition_value' => ['nullable', 'numeric', 'min:0'],
             'leasing_company'   => ['nullable', 'string', 'max:100'],
             'leasing_end_date'  => ['nullable', 'date'],
-            'department_id'     => ['nullable', 'integer'],
-            'branch_id'         => ['nullable', 'integer'],
-            'driver_id'         => ['nullable', 'exists:users,id'],
 
             // ── Tab 4: Operasional ─────────────────────────────────────────
+            'initial_odometer_km'   => ['nullable', 'integer', 'min:0'],
+            'initial_odometer_date' => ['nullable', 'date'],
             'last_odometer_km'      => ['nullable', 'integer', 'min:0'],
+            'last_odometer_date'    => ['nullable', 'date'],
             'last_service_date'     => ['nullable', 'date'],
             'service_interval_km'   => ['nullable', 'integer', 'min:0'],
             'gps_tracker_id'        => ['nullable', 'string', 'max:100'],
@@ -67,11 +67,21 @@ class StoreFleetRequest extends FormRequest
             'insurance_company'         => ['nullable', 'string', 'max:100'],
             'insurance_expiry_date'     => ['nullable', 'date'],
 
+            // ── Tab 5: File Lampiran Dokumen ───────────────────────────────
+            'document_files'              => ['nullable', 'array'],
+            'document_files.stnk'         => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
+            'document_files.kir'          => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
+            'document_files.bpkb'         => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
+            'document_files.asuransi'     => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
+
             // ── Tab 6: Foto Kendaraan ──────────────────────────────────────
+            // nullable (bukan required_with) — persis seperti document_files.*
+            // Slot yang tidak diisi (file kosong) diabaikan di preparedPhotos()
             'photos'                => ['nullable', 'array', 'max:20'],
-            'photos.*.file'         => ['required_with:photos', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'], // max 5MB
+            'photos.*.file'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'photos.*.category'     => ['nullable', 'string'],
             'photos.*.caption'      => ['nullable', 'string', 'max:255'],
+            'photos_primary'        => ['nullable', 'integer', 'min:0'],
 
             // ── Tab 7: Catatan ─────────────────────────────────────────────
             'notes' => ['nullable', 'string'],
@@ -81,15 +91,110 @@ class StoreFleetRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'vehicle_code'     => 'Kode Kendaraan',
-            'police_number'    => 'Nomor Polisi',
-            'hull_number'      => 'Nomor Lambung',
-            'vehicle_type_id'  => 'Jenis Kendaraan',
-            'vehicle_brand_id' => 'Merek Kendaraan',
-            'manufacture_year' => 'Tahun Pembuatan',
-            'chassis_number'   => 'Nomor Rangka',
-            'engine_number'    => 'Nomor Mesin',
-            'photos.*.file'    => 'File Foto',
+            'vehicle_code'             => 'Kode Kendaraan',
+            'police_number'            => 'Nomor Polisi',
+            'hull_number'              => 'Nomor Lambung',
+            'vehicle_type_id'          => 'Jenis Kendaraan',
+            'vehicle_brand_id'         => 'Merek Kendaraan',
+            'manufacture_year'         => 'Tahun Pembuatan',
+            'chassis_number'           => 'Nomor Rangka',
+            'engine_number'            => 'Nomor Mesin',
+            'photos.*.file'            => 'File Foto',
+            'document_files.stnk'      => 'File STNK',
+            'document_files.kir'       => 'File KIR',
+            'document_files.bpkb'      => 'File BPKB',
+            'document_files.asuransi'  => 'File Asuransi',
         ];
+    }
+
+    // ── File helpers (dipanggil langsung dari controller) ─────────────────────
+
+    /**
+     * Kembalikan array foto yang siap diteruskan ke Action.
+     * Format: [['file' => UploadedFile, 'category' => ..., 'caption' => ...], ...]
+     */
+    public function preparedPhotos(): array
+    {
+        // PENTING: jangan pakai $this->hasFile('photos') untuk nested 3-level.
+        // hasFile() hanya iterasi 1 level — untuk photos[N][file] (3 level),
+        // ia menemukan array ['file'=>UploadedFile] bukan UploadedFile langsung,
+        // sehingga selalu return false meski file ada. Gunakan input() sebagai ganti.
+        $photosData = $this->input('photos');
+        if (empty($photosData) || ! is_array($photosData)) {
+            return [];
+        }
+
+        $primaryIdx = (int) $this->input('photos_primary', 0);
+
+        $photos = [];
+        $order  = 0;
+
+        foreach ($photosData as $index => $item) {
+            // Ambil file dengan dot notation — benar untuk nested file upload 3 level
+            /** @var \Illuminate\Http\UploadedFile|null $file */
+            $file = $this->file("photos.{$index}.file");
+            if (! ($file instanceof \Illuminate\Http\UploadedFile) || ! $file->isValid()) {
+                continue; // slot kosong (tidak diisi) — lewati
+            }
+
+            $photos[] = [
+                'file'       => $file,
+                'category'   => ($item['category'] ?? null) ?: 'lainnya',
+                'caption'    => $item['caption'] ?? null,
+                'is_primary' => ((int) $index === $primaryIdx),
+                'sort_order' => $order++,
+            ];
+        }
+
+        return $photos;
+    }
+
+    /**
+     * Kembalikan array file dokumen yang siap diteruskan ke Action.
+     * Format: ['stnk' => UploadedFile, 'kir' => UploadedFile, ...]
+     *
+     * @return array<string, \Illuminate\Http\UploadedFile>
+     */
+    public function preparedDocumentFiles(): array
+    {
+        if (! $this->hasFile('document_files')) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($this->file('document_files') as $type => $file) {
+            if ($file && $file->isValid()) {
+                $result[$type] = $file;
+            }
+        }
+
+        return $result;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $integerFields = [
+            'manufacture_year',
+            'engine_capacity_cc',
+            'axis_configuration',
+            'wheel_count',
+            'ownership_status',
+            'acquisition_year',
+            'initial_odometer_km',
+            'last_odometer_km',
+            'service_interval_km',
+        ];
+
+        $merge = [];
+        foreach ($integerFields as $field) {
+            $value = $this->input($field);
+            if ($value !== null && $value !== '') {
+                $merge[$field] = (int) $value; // "00001" → 1, "  5  " → 5
+            }
+        }
+
+        if (!empty($merge)) {
+            $this->merge($merge);
+        }
     }
 }

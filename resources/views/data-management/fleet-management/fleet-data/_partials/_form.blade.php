@@ -5,10 +5,34 @@
 --}}
 
 @php
-    $isEdit  = !is_null($fleet ?? null);
-    $old     = fn(string $field, $default = null) => old($field, $isEdit ? ($fleet?->$field ?? $default) : $default);
-    $err     = fn(string $field) => $errors->first($field);
-    $hasErr  = fn(string $field) => $errors->has($field) ? 'is-invalid' : '';
+    $fleet = $fleet ?? null; // ← TAMBAH BARIS INI — pastikan $fleet selalu defined
+    $isEdit = !is_null($fleet);
+    $old = function ($field) use ($fleet) {
+        $integerFields = [
+            'axis_configuration',
+            'ownership_status',
+            'vehicle_type_id',
+            'vehicle_brand_id',
+            'vehicle_model_id',
+            'fuel_type_id',
+            'body_type_id',
+        ];
+
+        if (old($field) !== null && old($field) !== '') {
+            $val = old($field);
+            return in_array($field, $integerFields) ? (int) $val : $val;
+        }
+        if ($fleet === null) {
+            return null;
+        }
+        $val = $fleet->{$field};
+        if ($val instanceof \Carbon\Carbon) {
+            return $val->format('Y-m-d');
+        }
+        return $val;
+    };
+    $err = fn(string $field) => $errors->first($field);
+    $hasErr = fn(string $field) => $errors->has($field) ? 'is-invalid' : '';
 @endphp
 
 {{-- ── Tab Navigation ────────────────────────────────────── --}}
@@ -16,26 +40,43 @@
     <ul class="nav nav-tabs" id="vehicleTabs" role="tablist">
         @php
             $tabs = [
-                ['id'=>'tab-umum',        'icon'=>'fas fa-info-circle',     'label'=>'Informasi Umum', 'label_en'=>'General Info'],
-                ['id'=>'tab-spesifikasi', 'icon'=>'fas fa-cogs',            'label'=>'Spesifikasi',    'label_en'=>'Specifications'],
-                ['id'=>'tab-kepemilikan', 'icon'=>'fas fa-building',        'label'=>'Kepemilikan',    'label_en'=>'Ownership'],
-                ['id'=>'tab-operasional', 'icon'=>'fas fa-tachometer-alt',  'label'=>'Operasional',    'label_en'=>'Operational'],
-                ['id'=>'tab-dokumen',     'icon'=>'fas fa-file-alt',        'label'=>'Dokumen',        'label_en'=>'Documents'],
-                ['id'=>'tab-foto',        'icon'=>'fas fa-images',          'label'=>'Foto',           'label_en'=>'Photos'],
-                ['id'=>'tab-catatan',     'icon'=>'fas fa-book',            'label'=>'Catatan',        'label_en'=>'Notes'],
+                [
+                    'id' => 'tab-umum',
+                    'icon' => 'fas fa-info-circle',
+                    'label' => 'Informasi Umum',
+                    'label_en' => 'General Info',
+                ],
+                [
+                    'id' => 'tab-spesifikasi',
+                    'icon' => 'fas fa-cogs',
+                    'label' => 'Spesifikasi',
+                    'label_en' => 'Specifications',
+                ],
+                [
+                    'id' => 'tab-kepemilikan',
+                    'icon' => 'fas fa-building',
+                    'label' => 'Kepemilikan',
+                    'label_en' => 'Ownership',
+                ],
+                [
+                    'id' => 'tab-operasional',
+                    'icon' => 'fas fa-tachometer-alt',
+                    'label' => 'Operasional',
+                    'label_en' => 'Operational',
+                ],
+                ['id' => 'tab-dokumen', 'icon' => 'fas fa-file-alt', 'label' => 'Dokumen', 'label_en' => 'Documents'],
+                ['id' => 'tab-foto', 'icon' => 'fas fa-images', 'label' => 'Foto', 'label_en' => 'Photos'],
+                ['id' => 'tab-catatan', 'icon' => 'fas fa-book', 'label' => 'Catatan', 'label_en' => 'Notes'],
             ];
         @endphp
-        @foreach($tabs as $i => $tab)
-        <li class="nav-item" role="presentation">
-            <button class="nav-link {{ $i === 0 ? 'active' : '' }}"
-                    id="{{ $tab['id'] }}-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#{{ $tab['id'] }}"
-                    type="button" role="tab">
-                <i class="{{ $tab['icon'] }}"></i>
-                <span class="d-none d-sm-inline" data-en="{{ $tab['label_en'] }}">{{ $tab['label'] }}</span>
-            </button>
-        </li>
+        @foreach ($tabs as $i => $tab)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $i === 0 ? 'active' : '' }}" id="{{ $tab['id'] }}-tab" data-bs-toggle="tab"
+                    data-bs-target="#{{ $tab['id'] }}" type="button" role="tab">
+                    <i class="{{ $tab['icon'] }}"></i>
+                    <span class="d-none d-sm-inline" data-en="{{ $tab['label_en'] }}">{{ $tab['label'] }}</span>
+                </button>
+            </li>
         @endforeach
     </ul>
 </div>
@@ -84,16 +125,19 @@
 <div class="veh-action-bar">
     <div style="font-size:.8rem;color:var(--text-muted)">
         <i class="fas fa-info-circle me-1"></i>
-        <span data-en="All fields are optional. Fill in available data.">Semua field bersifat opsional. Isi sesuai data yang tersedia.</span>
+        <span data-en="All fields are optional. Fill in available data.">Semua field bersifat opsional. Isi sesuai data
+            yang tersedia.</span>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ $isEdit ? route('data-management.fleet-data.show', $fleet) : route('data-management.fleet-data.index') }}"
-           class="btn btn-outline-secondary btn-sm">
+        <a href="{{ $isEdit ? route('data-management.fleet-data.index') : route('data-management.fleet-data.index') }}"
+            class="btn btn-secondary btn-sm">
+            <i class="fas fa-times me-1"></i>
             <span data-en="Cancel">Batal</span>
         </a>
-        <button type="submit" class="btn-save" id="btnSubmit">
-            <i class="fas fa-check"></i>
-            <span data-en="{{ $isEdit ? 'Save Changes' : 'Add Vehicle' }}">{{ $isEdit ? 'Simpan Perubahan' : 'Tambah Kendaraan' }}</span>
+        <button type="submit" class="btn btn-primary btn-sm" id="btnSubmit">
+            <i class="fas fa-save me-1"></i>
+            <span
+                data-en="{{ $isEdit ? 'Save Changes' : 'Save' }}">{{ $isEdit ? 'Simpan Perubahan' : 'Simpan' }}</span>
         </button>
     </div>
 </div>
@@ -109,10 +153,10 @@
 </div>
 
 {{-- Session alerts --}}
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show position-fixed bottom-0 start-50 translate-middle-x mb-4"
-     style="z-index:9999;min-width:320px" role="alert">
-    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show position-fixed bottom-0 start-50 translate-middle-x mb-4"
+        style="z-index:9999;min-width:320px" role="alert">
+        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 @endif

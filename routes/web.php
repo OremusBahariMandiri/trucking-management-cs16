@@ -6,6 +6,8 @@ use App\Http\Controllers\DataManagement\SdmManagement\EmployeeManagement\Employe
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MasterData\Vehicle\BodyTypeController;
 use App\Http\Controllers\MasterData\Vehicle\FuelTypeController;
+use App\Http\Controllers\MasterData\Vehicle\OwnershipStatusController;
+use App\Http\Controllers\MasterData\Vehicle\VehicleAxisConfigurationController;
 use App\Http\Controllers\MasterData\Vehicle\VehicleBrandController;
 use App\Http\Controllers\MasterData\Vehicle\VehicleModelController;
 use App\Http\Controllers\MasterData\Vehicle\VehicleTypeController;
@@ -96,6 +98,30 @@ Route::middleware(['auth', 'permission'])->group(function () {
             Route::delete('/{body_type}',        [BodyTypeController::class, 'destroy'])->name('destroy');
             Route::patch('/{body_type}/toggle',  [BodyTypeController::class, 'toggleActive'])->name('toggle');
             Route::get('/api/list',              [BodyTypeController::class, 'apiList'])->name('api.list');
+        });
+
+        // ── aa09: Vehicle Axis Configurations ────────────────────────────────────────
+        Route::prefix('axis-configurations')->name('axis-configurations.')->group(function () {
+            Route::get('/',                              [VehicleAxisConfigurationController::class, 'index'])->name('index');
+            Route::get('/create',                        [VehicleAxisConfigurationController::class, 'create'])->name('create');
+            Route::post('/',                             [VehicleAxisConfigurationController::class, 'store'])->name('store');
+            Route::get('/{axis_configuration}/edit',     [VehicleAxisConfigurationController::class, 'edit'])->name('edit');
+            Route::put('/{axis_configuration}',          [VehicleAxisConfigurationController::class, 'update'])->name('update');
+            Route::delete('/{axis_configuration}',       [VehicleAxisConfigurationController::class, 'destroy'])->name('destroy');
+            Route::patch('/{axis_configuration}/toggle', [VehicleAxisConfigurationController::class, 'toggle'])->name('toggle');
+            Route::get('/api/list',                      [VehicleAxisConfigurationController::class, 'apiList'])->name('api.list');
+        });
+
+        // ── aa10: Ownership Statuses ──────────────────────────────────────────────────
+        Route::prefix('ownership-statuses')->name('ownership-statuses.')->group(function () {
+            Route::get('/',                            [OwnershipStatusController::class, 'index'])->name('index');
+            Route::get('/create',                      [OwnershipStatusController::class, 'create'])->name('create');
+            Route::post('/',                           [OwnershipStatusController::class, 'store'])->name('store');
+            Route::get('/{ownership_status}/edit',     [OwnershipStatusController::class, 'edit'])->name('edit');
+            Route::put('/{ownership_status}',          [OwnershipStatusController::class, 'update'])->name('update');
+            Route::delete('/{ownership_status}',       [OwnershipStatusController::class, 'destroy'])->name('destroy');
+            Route::patch('/{ownership_status}/toggle', [OwnershipStatusController::class, 'toggle'])->name('toggle');
+            Route::get('/api/list',                    [OwnershipStatusController::class, 'apiList'])->name('api.list');
         });
     });
 
