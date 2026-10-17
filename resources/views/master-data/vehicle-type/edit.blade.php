@@ -11,7 +11,6 @@
     <div class="veh-page-header mb-4">
         <div>
             <div class="veh-title">
-                <i class="fas fa-pen"></i>
                 <span data-en="Edit Vehicle Type">Edit Jenis Kendaraan</span>
             </div>
             <nav aria-label="breadcrumb">

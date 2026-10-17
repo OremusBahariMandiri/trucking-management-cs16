@@ -66,7 +66,21 @@
                     </div>
 
 
-                    <div class="col-12 col-md-12 d-flex align-items-end">
+
+
+                {-- Description --}
+                <div class="col-12">
+                    <label class="form-label" data-en="Description">Deskripsi</label>
+                    <textarea name="description" id="description"
+                              class="form-control @error('description') is-invalid @enderror"
+                              rows="3"
+                              placeholder="Deskripsi singkat (opsional)…">{ old('description', $fuelType->description) }</textarea>
+                    @error('description')
+                        <div class="invalid-feedback">{ $message }</div>
+                    @enderror
+                </div>
+
+                <div class="col-12 col-md-12 d-flex align-items-end">
                         <div class="lkp-toggle-wrap w-100">
                             <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1"
                                 {{ old('is_active', $fuelType->is_active) ? 'checked' : '' }}>

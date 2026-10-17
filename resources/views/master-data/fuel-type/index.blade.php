@@ -52,6 +52,7 @@
                     <th data-en="No">No</th>
                     <th data-en="Code">Kode</th>
                     <th data-en="Name">Nama</th>
+                    <th data-en="Description">Deskripsi</th>
                     <th data-en="Status">Status</th>
                     <th class="text-end" data-en="Actions">Aksi</th>
                 </tr>
@@ -59,20 +60,19 @@
             <tbody>
                 @foreach($fuelTypes as $item)
                 <tr>
-                    <td class="lkp-sub">{{ $loop->iteration }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>
                         @if($item->code)
-                            <span class="lkp-code-badge">{{ $item->code }}</span>
+                            {{ $item->code }}
                         @else
-                            <span class="lkp-sub">—</span>
+                            —
                         @endif
                     </td>
-                    <td><span class="lkp-name">{{ $item->name }}</span></td>
+                    <td>{{ $item->name }}</td>
+                    <td>—</td>
                     <td>
-                        <span class="badge-status {{ $item->is_active ? 'status-active' : 'status-inactive' }}">
-                            <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">
+                        <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">
                                 {{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                            </span>
                         </span>
                     </td>
                     <td>

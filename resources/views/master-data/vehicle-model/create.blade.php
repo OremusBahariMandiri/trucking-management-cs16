@@ -107,6 +107,20 @@
                     @enderror
                 </div>
 
+
+
+                {{-- Description --}}
+                <div class="col-12">
+                    <label class="form-label" data-en="Description">Deskripsi</label>
+                    <textarea name="description" id="description"
+                              class="form-control @error('description') is-invalid @enderror"
+                              rows="3"
+                              placeholder="Deskripsi singkat (opsional)…">{{ old('description') }}</textarea>
+                    @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 {{-- Status --}}
                 <div class="col-12 col-md-12 d-flex align-items-end">
                     <div class="lkp-toggle-wrap w-100">
