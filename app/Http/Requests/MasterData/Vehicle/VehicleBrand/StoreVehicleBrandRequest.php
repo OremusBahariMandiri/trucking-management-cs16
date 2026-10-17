@@ -14,6 +14,7 @@ class StoreVehicleBrandRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'code'        => 'nullable|string|max:10|unique:aa02_vehicle_brands,code',
             'name'              => 'required|string|max:100|unique:aa02_vehicle_brands,name',
             'country_of_origin' => 'nullable|string|max:100',
             'is_active'         => 'boolean',

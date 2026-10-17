@@ -17,6 +17,7 @@ class UpdateVehicleBrandRequest extends FormRequest
         $id = $this->route('vehicle_brand');
 
         return [
+            'code'        => ['nullable', 'string', 'max:10', Rule::unique('aa02_vehicle_brands', 'code')->ignore($id)],
             'name'              => ['required', 'string', 'max:100', Rule::unique('aa02_vehicle_brands', 'name')->ignore($id)],
             'country_of_origin' => 'nullable|string|max:100',
             'is_active'         => 'boolean',

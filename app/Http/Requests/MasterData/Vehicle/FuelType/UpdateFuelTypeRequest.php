@@ -17,6 +17,7 @@ class UpdateFuelTypeRequest extends FormRequest
         $id = $this->route('fuel_type');
 
         return [
+            'code'        => ['nullable', 'string', 'max:10', Rule::unique('aa04_fuel_types', 'code')->ignore($id)],
             'name'      => ['required', 'string', 'max:100', Rule::unique('aa04_fuel_types', 'name')->ignore($id)],
             'is_active' => 'boolean',
         ];

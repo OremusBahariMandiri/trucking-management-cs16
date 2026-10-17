@@ -11,7 +11,6 @@
 <div class="veh-page-header mb-4">
     <div>
         <div class="veh-title">
-            <i class="fas fa-car-side"></i>
             <span data-en="Vehicle Models">Model Kendaraan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -24,78 +23,8 @@
     <a href="{{ route('master-data.vehicle-models.create') }}"
        class="btn btn-primary btn-sm d-flex align-items-center gap-2">
         <i class="fas fa-plus"></i>
-        <span data-en="Add Model">Tambah Model</span>
+        <span data-en="Add Model">Tambah</span>
     </a>
-</div>
-
-{{-- Stats --}}
-<div class="lkp-stats mb-4">
-    @php
-        $statsConfig = [
-            ['label'=>'Total Model', 'label_en'=>'Total Models', 'key'=>'total',    'icon'=>'fas fa-car-side',    'color'=>'#3b6fd4','soft'=>'rgba(59,111,212,.12)'],
-            ['label'=>'Aktif',       'label_en'=>'Active',       'key'=>'active',   'icon'=>'fas fa-check-circle','color'=>'#16a34a','soft'=>'rgba(22,163,74,.12)'],
-            ['label'=>'Tidak Aktif', 'label_en'=>'Inactive',     'key'=>'inactive', 'icon'=>'fas fa-ban',        'color'=>'#64748b','soft'=>'rgba(100,116,139,.12)'],
-        ];
-    @endphp
-    @foreach($statsConfig as $s)
-    <div class="lkp-stat" style="--stat-color:{{ $s['color'] }};--stat-soft:{{ $s['soft'] }}">
-        <div class="lkp-stat-icon"><i class="{{ $s['icon'] }}"></i></div>
-        <div>
-            <div class="lkp-stat-num">{{ $statCounts[$s['key']] ?? 0 }}</div>
-            <div class="lkp-stat-label" data-en="{{ $s['label_en'] }}">{{ $s['label'] }}</div>
-        </div>
-    </div>
-    @endforeach
-</div>
-
-{{-- Filter --}}
-<div class="veh-filter-bar mb-3">
-    <form method="GET" action="{{ route('master-data.vehicle-models.index') }}"
-          class="row g-2 align-items-end">
-        <div class="col-12 col-sm-6 col-md-3">
-            <label class="form-label form-label-sm" data-en="Search">Cari</label>
-            <div class="input-group input-group-sm">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" name="q" class="form-control"
-                       value="{{ request('q') }}"
-                       placeholder="Nama model…"
-                       data-en-placeholder="Model name…">
-            </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label form-label-sm" data-en="Brand">Merek</label>
-            <select name="brand_id" class="form-select form-select-sm">
-                <option value="" data-en="All Brands">Semua Merek</option>
-                @foreach($brands ?? [] as $brand)
-                    <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
-                        {{ $brand->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label class="form-label form-label-sm" data-en="Status">Status</label>
-            <select name="status" class="form-select form-select-sm">
-                <option value="" data-en="All">Semua</option>
-                <option value="1" {{ request('status') === '1' ? 'selected' : '' }} data-en="Active">Aktif</option>
-                <option value="0" {{ request('status') === '0' ? 'selected' : '' }} data-en="Inactive">Tidak Aktif</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-auto">
-            <button type="submit" class="btn btn-primary btn-sm w-100">
-                <i class="fas fa-filter me-1"></i>
-                <span data-en="Filter">Filter</span>
-            </button>
-        </div>
-        @if(request()->hasAny(['q','brand_id','status']))
-        <div class="col-6 col-md-auto">
-            <a href="{{ route('master-data.vehicle-models.index') }}" class="btn btn-outline-secondary btn-sm w-100">
-                <i class="fas fa-times-circle me-1"></i>
-                <span data-en="Reset">Reset</span>
-            </a>
-        </div>
-        @endif
-    </form>
 </div>
 
 {{-- Table --}}
@@ -120,6 +49,8 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th data-en="No">No</th>
+                    <th data-en="Code">Kode</th>
                     <th data-en="Model Name">Nama Model</th>
                     <th data-en="Brand">Merek</th>
                     <th data-en="Type">Jenis</th>
@@ -130,6 +61,14 @@
             <tbody>
                 @foreach($vehicleModels as $item)
                 <tr>
+                    <td class="lkp-sub">{{ $loop->iteration }}</td>
+                    <td>
+                        @if($item->code)
+                            <span class="lkp-code-badge">{{ $item->code }}</span>
+                        @else
+                            <span class="lkp-sub">—</span>
+                        @endif
+                    </td>
                     <td><span class="lkp-name">{{ $item->name }}</span></td>
                     <td>
                         <span class="lkp-sub">{{ $item->brand?->name ?? '—' }}</span>

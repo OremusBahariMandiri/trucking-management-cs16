@@ -10,7 +10,7 @@ class VehicleAxisConfiguration extends Model
 {
     protected $table = 'aa09_vehicle_axis_configurations';
 
-    protected $fillable = ['name', 'description', 'is_active'];
+    protected $fillable = ['code', 'name', 'description', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 

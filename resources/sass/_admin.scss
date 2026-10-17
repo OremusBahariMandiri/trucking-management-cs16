@@ -7,15 +7,14 @@
   --radius-sm: 8px;
 
   /* ── Sidebar LIGHT ── */
-  --sb-bg: #ffffff;
-  --sb-border: #e2e8f0;
-  --sb-text: #64748b;
-  --sb-text-hi: #0f172a;
-  --sb-hover: #f1f5f9;
-  --sb-active-bg: #eff6ff;
+  --sb-bg: #f0f7ff;
+  --sb-border: #dce8f7;
+  --sb-text: #2d3e55;
+  --sb-text-hi: #1e293b;
+  --sb-hover: rgba(255, 255, 255, .82);
+  --sb-active-bg: rgba(37, 99, 235, .11);
   --sb-active-txt: #1d4ed8;
-  --sb-shadow: 1px 0 0 #e2e8f0;
-
+  --sb-shadow: 1px 0 8px rgba(59, 130, 246, .08);
   /* Section dot colors */
   --sec-main: #3b82f6;
   --sec-master: #f59e0b;
@@ -158,10 +157,10 @@ svg {
   display: flex;
   flex-direction: column;
   background: var(--sb-bg);
-  /* gradient tipis dari atas → lebih premium */
-  background-image: linear-gradient(180deg,
-      rgba(255, 255, 255, .04) 0%,
-      transparent 40%);
+  background-image: url('../images/sidebar-bg.png');
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
   border-right: 1px solid var(--sb-border);
   box-shadow: var(--sb-shadow);
   overflow: hidden;
@@ -337,13 +336,19 @@ svg {
 
   &:hover {
     background: var(--sb-hover);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: var(--sb-text-hi);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
   }
 
   &.active {
     background: var(--sb-active-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: var(--sb-active-txt);
     font-weight: 600;
+    box-shadow: inset 3px 0 0 var(--sb-active-txt), 0 1px 6px rgba(37, 99, 235, .10);
 
     .n-icon {
       color: var(--sb-active-txt);
@@ -461,6 +466,8 @@ svg {
 
   &:hover {
     background: var(--sb-hover);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: var(--sb-text-hi);
 
     &::before {
@@ -471,6 +478,8 @@ svg {
   &.active {
     color: var(--sb-active-txt);
     background: var(--sb-active-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     font-weight: 600;
 
     &::before {
@@ -495,6 +504,8 @@ svg {
 
   &:hover {
     background: var(--sb-hover);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: var(--sb-text-hi);
   }
 
@@ -550,6 +561,8 @@ svg {
 
   &:hover {
     background: var(--sb-hover);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: var(--sb-text-hi);
 
     &::before {
@@ -560,6 +573,8 @@ svg {
   &.active {
     color: var(--sb-active-txt);
     background: var(--sb-active-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     font-weight: 600;
 
     &::before {

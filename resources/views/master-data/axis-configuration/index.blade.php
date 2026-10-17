@@ -51,14 +51,23 @@
                     <thead>
                         <tr>
                             <th data-en="No">No</th>
+                            <th data-en="Code">Kode</th>
+                            <th data-en="Name">Nama</th>
                             <th data-en="Status">Status</th>
-                            <th class="text-end" data-en="Actions">Actions</th>
+                            <th class="text-end" data-en="Actions">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($items as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td class="lkp-sub">{{ $loop->iteration }}</td>
+                                <td>
+                                    @if($item->code)
+                                        <span class="lkp-code-badge">{{ $item->code }}</span>
+                                    @else
+                                        <span class="lkp-sub">—</span>
+                                    @endif
+                                </td>
                                 <td><span class="lkp-name">{{ $item->name }}</span></td>
                                 <td>
                                     <span class="badge-status {{ $item->is_active ? 'status-active' : 'status-inactive' }}">

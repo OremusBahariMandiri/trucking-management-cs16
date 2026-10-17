@@ -17,6 +17,7 @@ class StoreVehicleModelRequest extends FormRequest
         return [
             'vehicle_brand_id' => 'required|exists:aa02_vehicle_brands,id',
             'vehicle_type_id'  => 'nullable|exists:aa01_vehicle_types,id',   // ← tambah ini
+            'code'        => 'nullable|string|max:10|unique:aa03_vehicle_models,code',
             'name'             => [
                 'required',
                 'string',

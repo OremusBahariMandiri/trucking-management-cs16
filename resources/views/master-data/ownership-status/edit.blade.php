@@ -39,6 +39,20 @@
             <div class="row g-3">
 
                 <div class="col-12 col-md-12">
+                    <label class="form-label" data-en="Code">
+                        Kode
+                    </label>
+                    <input type="text" name="code" id="code"
+                           class="form-control @error('code') is-invalid @enderror"
+                           value="{{ old('code', $ownershipStatus->code) }}"
+                           placeholder="maks. 10 karakter"
+                           maxlength="10">
+                    @error('code')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12 col-md-12">
                     <label class="form-label" data-en="Name">
                         Name <span class="text-danger">*</span>
                     </label>

@@ -17,6 +17,7 @@ class UpdateOwnershipStatusRequest extends FormRequest
         $id = $this->route('ownership_status')?->id ?? $this->route('ownership_status');
 
         return [
+            'code'        => ['nullable', 'string', 'max:10', Rule::unique('aa10_ownership_statuses', 'code')->ignore($id)],
             'name'        => ['required', 'string', 'max:100', Rule::unique('aa10_ownership_statuses', 'name')->ignore($id)],
             'description' => 'nullable|string|max:200',
             'is_active'   => 'boolean',

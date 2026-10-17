@@ -41,6 +41,21 @@
             <div class="lkp-form-body">
                 <div class="row g-3">
 
+                    {{-- Code --}}
+                    <div class="col-12 col-md-12">
+                        <label class="form-label" data-en="Code">Kode</label>
+                        <input type="text"
+                               class="form-control @error('code') is-invalid @enderror"
+                               id="code"
+                               name="code"
+                               value="{{ old('code') }}"
+                               maxlength="10"
+                               placeholder="Maks 10 karakter">
+                        @error('code')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     {{-- Name --}}
                     <div class="col-12 col-md-12">
                         <label class="form-label" data-en="Type Name">
