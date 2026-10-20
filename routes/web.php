@@ -160,6 +160,8 @@ Route::middleware(['auth', 'permission'])->group(function () {
                 Route::patch('{photo}/set-primary', [FleetController::class, 'setPrimaryPhoto'])->name('set-primary');
             });
 
+            Route::get('{fleet}/pdf', [FleetController::class, 'exportPdf'])->name('pdf');
+
             Route::prefix('api')->name('api.')->group(function () {
                 Route::get('search',   [FleetController::class, 'apiSearch'])->name('search');
                 Route::get('{fleet}',  [FleetController::class, 'apiShow'])->name('show');
@@ -187,7 +189,8 @@ Route::middleware(['auth', 'permission'])->group(function () {
                     Route::delete('certificates/{certificate}', [DriverController::class, 'destroyCertificate'])->name('certificates.destroy');
                 });
 
-                Route::prefix('api')->name('api.')->group(function () {
+
+            Route::prefix('api')->name('api.')->group(function () {
                     Route::get('generate-code', [DriverController::class, 'apiGenerateCode'])->name('generate-code');
                 });
             });
@@ -206,7 +209,8 @@ Route::middleware(['auth', 'permission'])->group(function () {
                         'destroy' => 'destroy',
                     ]);
 
-                Route::prefix('api')->name('api.')->group(function () {
+
+            Route::prefix('api')->name('api.')->group(function () {
                     Route::get('generate-nrk', [EmployeeController::class, 'apiGenerateNrk'])->name('generate-nrk');
                 });
             });

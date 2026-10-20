@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Ownership Statuses')
+@section('title', 'Status Kepemilikan')
 
 @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -20,23 +20,24 @@
                 </ol>
             </nav>
         </div>
-    <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
-                data-bs-toggle="modal" data-bs-target="#filterModal">
-            <i class="fas fa-filter"></i> <span data-en="Filter">Filter</span>
-            @if(request()->hasAny(['q','status']))
-                <span class="badge bg-primary rounded-pill">{{ collect(['q','status'])->filter(fn($k)=>request()->filled($k))->count() }}</span>
-            @endif
-        </button>
-        <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-2"
-                data-bs-toggle="modal" data-bs-target="#exportModal">
-            <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
-        </button>
-        <a href="{{ route('master-data.ownership-statuses.create') }}"
-            class="btn btn-primary btn-sm d-flex align-items-center gap-2">
-            <i class="fas fa-plus"></i>
-            <span data-en="Add Ownership Status">Tambah Status</span>
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#filterModal">
+                <i class="fas fa-filter"></i> <span data-en="Filter">Filter</span>
+                @if(request()->hasAny(['q','status']))
+                    <span class="badge bg-primary rounded-pill">{{ collect(['q','status'])->filter(fn($k)=>request()->filled($k))->count() }}</span>
+                @endif
+            </button>
+            <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-2"
+                    data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
+            </button>
+            <a href="{{ route('master-data.ownership-statuses.create') }}"
+                class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span data-en="Add Ownership Status">Tambah</span>
+            </a>
+        </div>
     </div>
 
     {{-- Table --}}
@@ -67,7 +68,7 @@
                             <th data-en="Name">Nama</th>
                             <th data-en="Description">Deskripsi</th>
                             <th data-en="Status">Status</th>
-                            <th class="text-end" data-en="Actions">Actions</th>
+                            <th class="text-end" data-en="Actions">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,9 +97,9 @@
                                         </a>
                                         <form method="POST"
                                             action="{{ route('master-data.ownership-statuses.destroy', $item) }}"
-                                            onsubmit="return confirm('Delete this ownership status?')">
+                                            onsubmit="return confirm('Hapus status kepemilikan ini?')">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>

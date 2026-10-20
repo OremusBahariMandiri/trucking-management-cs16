@@ -35,7 +35,7 @@
             <a href="{{ route('master-data.fuel-types.create') }}"
            class="btn btn-primary btn-sm d-flex align-items-center gap-2">
             <i class="fas fa-plus"></i>
-            <span data-en="Add Fuel Type">Tambah Jenis BBM</span>
+            <span data-en="Add Fuel Type">Tambah</span>
         </a>
     </div>
 </div>
