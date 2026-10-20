@@ -24,16 +24,11 @@
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="{{ route('data-management.fleet-data.pdf', $fleet) }}"
-           class="btn btn-outline-danger btn-sm d-flex align-items-center gap-2"
+           class="btn btn-danger btn-sm d-flex align-items-center gap-2"
            target="_blank"
            title="Generate Vehicle Particular PDF">
             <i class="fas fa-file-pdf"></i>
-            <span data-en="Vehicle Particular">Vehicle Particular</span>
-        </a>
-        <a href="{{ route('data-management.fleet-data.edit', $fleet) }}"
-           class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2">
-            <i class="fas fa-pen"></i>
-            <span data-en="Edit">Edit</span>
+            <span data-en="Vehicle Particular">Fleet Particular</span>
         </a>
     </div>
 </div>

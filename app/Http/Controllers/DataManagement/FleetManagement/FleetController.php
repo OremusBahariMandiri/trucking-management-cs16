@@ -11,6 +11,7 @@ use App\Http\Requests\DataManagement\FleetManagement\UpdateFleetRequest;
 use App\Http\Resources\DataManagement\FleetManagement\FleetResource;
 use App\Models\DataManagement\FleetManagement\Fleet;
 use App\Services\DataManagement\FleetManagement\FleetService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -117,6 +118,23 @@ class FleetController extends Controller
         $this->updateAction->setPrimaryPhoto($fleet, $photoId);
 
         return back()->with('success', 'Foto utama berhasil diubah.');
+    }
+
+    public function updatePhotoMeta(Request $request, Fleet $fleet, int $photoId): JsonResponse
+    {
+        $request->validate([
+            'category' => ['required', 'string', 'in:' . implode(',', array_keys(\App\Models\MasterData\Vehicle\VehiclePhoto::CATEGORIES))],
+            'caption'  => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $this->updateAction->updatePhotoMeta(
+            $fleet,
+            $photoId,
+            $request->input('category'),
+            $request->input('caption'),
+        );
+
+        return response()->json(['success' => true, 'message' => 'Foto diperbarui.']);
     }
 
     // ── Document file routes ────────────────────────────────────────────────
