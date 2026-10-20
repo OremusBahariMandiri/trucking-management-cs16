@@ -158,6 +158,7 @@ Route::middleware(['auth', 'permission'])->group(function () {
             Route::prefix('{fleet}/foto')->name('foto.')->group(function () {
                 Route::delete('{photo}',            [FleetController::class, 'destroyPhoto'])->name('destroy');
                 Route::patch('{photo}/set-primary', [FleetController::class, 'setPrimaryPhoto'])->name('set-primary');
+                Route::patch('{photo}/update-meta',  [FleetController::class, 'updatePhotoMeta'])->name('update-meta');
             });
 
             Route::get('{fleet}/pdf', [FleetController::class, 'exportPdf'])->name('pdf');
