@@ -4,6 +4,9 @@ use App\Http\Controllers\DataManagement\FleetManagement\FleetController;
 use App\Http\Controllers\DataManagement\SdmManagement\DriverManagement\DriverController;
 use App\Http\Controllers\DataManagement\SdmManagement\EmployeeManagement\EmployeeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MasterData\Administration\BusinessTypeController;
+use App\Http\Controllers\MasterData\Administration\CustomerController;
+use App\Http\Controllers\MasterData\Administration\CustomerTypeController;
 use App\Http\Controllers\MasterData\Vehicle\BodyTypeController;
 use App\Http\Controllers\MasterData\Vehicle\FuelTypeController;
 use App\Http\Controllers\MasterData\Vehicle\OwnershipStatusController;
@@ -123,7 +126,49 @@ Route::middleware(['auth', 'permission'])->group(function () {
             Route::patch('/{ownership_status}/toggle', [OwnershipStatusController::class, 'toggle'])->name('toggle');
             Route::get('/api/list',                    [OwnershipStatusController::class, 'apiList'])->name('api.list');
         });
-    });
+
+        // ── Administrasi ───────────────────────────────────────
+        Route::prefix('administration')->name('administration.')->group(function () {
+
+            // Jenis Pelanggan
+            Route::prefix('customer-types')->name('customer-types.')->group(function () {
+                Route::get('/',                          [CustomerTypeController::class, 'index'])->name('index');
+                Route::get('/create',                    [CustomerTypeController::class, 'create'])->name('create');
+                Route::post('/',                         [CustomerTypeController::class, 'store'])->name('store');
+                Route::get('/{customer_type}/edit',      [CustomerTypeController::class, 'edit'])->name('edit');
+                Route::put('/{customer_type}',           [CustomerTypeController::class, 'update'])->name('update');
+                Route::delete('/{customer_type}',        [CustomerTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{customer_type}/toggle',  [CustomerTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                  [CustomerTypeController::class, 'apiList'])->name('api.list');
+            });
+
+            // Jenis Usaha
+            Route::prefix('business-types')->name('business-types.')->group(function () {
+                Route::get('/',                          [BusinessTypeController::class, 'index'])->name('index');
+                Route::get('/create',                    [BusinessTypeController::class, 'create'])->name('create');
+                Route::post('/',                         [BusinessTypeController::class, 'store'])->name('store');
+                Route::get('/{business_type}/edit',      [BusinessTypeController::class, 'edit'])->name('edit');
+                Route::put('/{business_type}',           [BusinessTypeController::class, 'update'])->name('update');
+                Route::delete('/{business_type}',        [BusinessTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{business_type}/toggle',  [BusinessTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                  [BusinessTypeController::class, 'apiList'])->name('api.list');
+            });
+
+            // Data Pelanggan
+            Route::prefix('customers')->name('customers.')->group(function () {
+                Route::get('/',                      [CustomerController::class, 'index'])->name('index');
+                Route::get('/create',                [CustomerController::class, 'create'])->name('create');
+                Route::post('/',                     [CustomerController::class, 'store'])->name('store');
+                Route::get('/{customer}',            [CustomerController::class, 'show'])->name('show');
+                Route::get('/{customer}/edit',       [CustomerController::class, 'edit'])->name('edit');
+                Route::put('/{customer}',            [CustomerController::class, 'update'])->name('update');
+                Route::delete('/{customer}',         [CustomerController::class, 'destroy'])->name('destroy');
+                Route::patch('/{customer}/toggle',   [CustomerController::class, 'toggle'])->name('toggle');
+            });
+
+        }); // end administration
+
+    }); // end master-data
 
     Route::prefix('user-management')->name('user-management.')->group(function () {
 
@@ -218,3 +263,4 @@ Route::middleware(['auth', 'permission'])->group(function () {
         });
     });
 });
+
