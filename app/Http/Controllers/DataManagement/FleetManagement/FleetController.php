@@ -152,4 +152,21 @@ class FleetController extends Controller
 
         return new FleetResource($fleet);
     }
+
+    // ── PDF Export ──────────────────────────────────────────────────────────
+
+    public function exportPdf(Fleet $fleet): \Symfony\Component\HttpFoundation\Response
+    {
+        $fleet = $this->service->findWithRelations($fleet->id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'exports.fleet-management.fleet-particular',
+            compact('fleet')
+        )->setPaper('a4', 'portrait');
+
+        $filename = 'vehicle-particular-' . ($fleet->vehicle_code ?? $fleet->police_number) . '-' . now()->format('Ymd') . '.pdf';
+
+        return $pdf->stream($filename);
+    }
+
 }

@@ -92,6 +92,10 @@
                                             class="btn btn-sm btn-outline-secondary" title="Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        <a href="{{ route('data-management.fleet-data.pdf', $v) }}"
+                                            class="btn btn-sm btn-outline-danger" title="Unduh PDF" target="_blank">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
                                         <a href="{{ route('data-management.fleet-data.edit', $v) }}"
                                             class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="fas fa-pen"></i>
