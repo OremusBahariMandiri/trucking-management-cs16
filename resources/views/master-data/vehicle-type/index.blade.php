@@ -18,14 +18,14 @@
             </nav>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+            <button type="button" class="btn btn-secondary btn-sm d-flex align-items-center gap-2"
                     data-bs-toggle="modal" data-bs-target="#filterModal">
                 <i class="fas fa-filter"></i> <span data-en="Filter">Filter</span>
                 @if(request()->hasAny(['q','status']))
                     <span class="badge bg-primary rounded-pill">{{ collect(['q','status'])->filter(fn($k)=>request()->filled($k))->count() }}</span>
                 @endif
             </button>
-            <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-2"
+            <button type="button" class="btn btn-success btn-sm d-flex align-items-center gap-2"
                     data-bs-toggle="modal" data-bs-target="#exportModal">
                 <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
             </button>
