@@ -21,11 +21,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('master-data.body-types.index') }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i>
-        <span data-en="Back">Kembali</span>
-    </a>
 </div>
 
 <form method="POST" action="{{ route('master-data.body-types.update', $bodyType) }}" novalidate>
@@ -98,7 +93,7 @@
         </div>
         <div class="lkp-form-actions">
             <a href="{{ route('master-data.body-types.index') }}"
-               class="btn btn-outline-secondary btn-sm">
+               class="btn btn-secondary btn-sm">
                 <i class="fas fa-times me-1"></i>
                 <span data-en="Cancel">Batal</span>
             </a>
