@@ -35,7 +35,7 @@ class CustomerController extends Controller
             'customer_type_id' => $request->input('customer_type_id'),
         ];
 
-        $customers     = $this->service->paginatedList($filters);
+        $customers     = $this->service->list($filters);
         $statCounts    = $this->service->statCounts();
         $customerTypes = CustomerType::active()->orderBy('name')->get(['id', 'name']);
         $businessTypes = BusinessType::active()->orderBy('name')->get(['id', 'name']);
