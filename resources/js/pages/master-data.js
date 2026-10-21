@@ -4,9 +4,9 @@
  * Di-load via @vite('resources/js/pages/master-data.js') di setiap
  * halaman index master data (lookup / referensi sederhana).
  *
- * Fungsi generik:
- *  - initMasterDataDelete()  → konfirmasi hapus dengan truckConfirm()
- *  - initLookupTable()       → inisialisasi DataTables via data-lookup-table
+ * Responsive desktop↔mobile ditangani MURNI oleh CSS media query
+ * (@media max-width:767px) — tidak ada JS ResizeObserver / switch.
+ * Tidak ada glitch saat resize.
  */
 
 // ============================================================
@@ -16,8 +16,8 @@ function initMasterDataDelete() {
     document.querySelectorAll('.js-delete-form').forEach(function (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
-            var name  = form.dataset.name || 'data ini';
-            var isEn  = (typeof lang !== 'undefined' ? lang : (localStorage.getItem('lang') || 'id')) === 'en';
+            var name = form.dataset.name || 'data ini';
+            var isEn = (typeof lang !== 'undefined' ? lang : (localStorage.getItem('lang') || 'id')) === 'en';
             truckConfirm({
                 text: isEn
                     ? 'Delete <strong>' + name + '</strong>? This action cannot be undone.'
@@ -31,16 +31,12 @@ function initMasterDataDelete() {
 
 // ============================================================
 // DATATABLE — inisialisasi generik via data-lookup-table
-// Tambahkan data-lookup-table pada elemen <table>.
-// Gunakan data-no-order="true" agar tidak ada default order.
-// Gunakan data-col-targets="[0,7]" untuk custom columnDefs targets
-// (default: [0,5]).
 // ============================================================
 function initLookupTable() {
     var table = document.querySelector('[data-lookup-table]');
     if (!table || !window.$) return;
 
-    var id      = table.id;
+    var id = table.id;
     if (!id) return;
 
     var targets = [0, 5];
@@ -75,52 +71,32 @@ function initLookupTable() {
                 cell.innerHTML = start + i + 1;
             });
         },
-        responsive: true,
+        responsive: false,
         autoWidth: false,
     });
 }
 
 // ============================================================
-// INIT — setiap fungsi dibungkus try/catch agar satu error
-// tidak menghentikan fungsi lainnya
+// MOBILE CARD EXPAND — chevron toggle detail
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-    [
-        initMasterDataDelete,
-        initLookupTable,
-        initMobileCardSwitch,
-    ].forEach(fn => {
-        try { fn(); } catch (e) { console.error(`[master-data.js] ${fn.name}:`, e); }
+function initMobileCardExpand() {
+    document.querySelectorAll('.lkp-mob-card').forEach(function (card) {
+        var header  = card.querySelector('.lkp-mob-header');
+        var details = card.querySelector('.lkp-mob-details');
+        if (!header || !details) return;
+
+        header.addEventListener('click', function () {
+            var open = card.classList.toggle('lkp-mob-card--open');
+            details.style.display = open ? 'block' : 'none';
+        });
+    });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function () {
+    [initMasterDataDelete, initLookupTable, initMobileCardExpand].forEach(function (fn) {
+        try { fn(); } catch (e) { console.error('[master-data.js] ' + fn.name + ':', e); }
     });
 });
-
-// ============================================================
-// MOBILE CARD SWITCH — ResizeObserver pattern (seperti user mgmt)
-// Sembunyikan tabel desktop saat overflow, tampilkan card mobile
-// ============================================================
-function initMobileCardSwitch() {
-    var tableCard  = document.querySelector('.veh-table-card');
-    var desktopDiv = document.getElementById('lkpDesktopTable');
-    var mobileDiv  = document.getElementById('lkpMobileList');
-
-    if (!tableCard || !desktopDiv || !mobileDiv) return;
-
-    function check() {
-        var innerTable = desktopDiv.querySelector('table');
-        if (!innerTable) return;
-        var overflows = innerTable.scrollWidth > tableCard.clientWidth + 2;
-        desktopDiv.style.display = overflows ? 'none' : 'block';
-        mobileDiv.style.display  = overflows ? 'flex'  : 'none';
-    }
-
-    // hide mobile by default first
-    mobileDiv.style.display = 'none';
-
-    check();
-
-    if (window.ResizeObserver) {
-        new ResizeObserver(check).observe(tableCard);
-    } else {
-        window.addEventListener('resize', check);
-    }
-}
