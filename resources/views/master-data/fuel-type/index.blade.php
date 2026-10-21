@@ -2,51 +2,6 @@
 
 @section('title', 'Jenis Bahan Bakar')
 
-@push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-        .dt-top-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: .5rem;
-            padding: .75rem 1.25rem;
-            background: var(--surface); border-bottom: 1px solid var(--border);
-        }
-        .dt-top-bar .dt-length label,
-        .dt-top-bar .dt-search label { color: var(--text-muted); font-size: .82rem; }
-        .dt-top-bar .dt-length select {
-            display: inline-block; width: auto;
-            background: var(--surface-2); color: var(--text);
-            border: 1px solid var(--border); border-radius: 6px;
-            padding: .25rem .5rem; font-size: .82rem; margin: 0 .25rem;
-        }
-        .dt-top-bar .dt-search input {
-            background: var(--surface-2); color: var(--text);
-            border: 1px solid var(--border); border-radius: 6px;
-            padding: .25rem .6rem; font-size: .82rem; width: 200px;
-        }
-        .dt-top-bar .dt-search input:focus {
-            outline: none; border-color: var(--veh-accent);
-            box-shadow: 0 0 0 2px var(--veh-accent-soft);
-        }
-        .dt-bottom-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: .5rem;
-            padding: .75rem 1.25rem;
-            background: var(--surface); border-top: 1px solid var(--border);
-        }
-        .dt-bottom-bar .dt-info { color: var(--text-muted); font-size: .82rem; }
-        .dt-bottom-bar .dt-paging .pagination { margin: 0; }
-        .dt-bottom-bar .dt-paging .page-link {
-            background: var(--surface-2); border-color: var(--border);
-            color: var(--text); font-size: .82rem; padding: .25rem .55rem;
-        }
-        .dt-bottom-bar .dt-paging .page-item.active .page-link {
-            background: var(--veh-accent); border-color: var(--veh-accent); color: #fff;
-        }
-        .dt-bottom-bar .dt-paging .page-link:hover { background: var(--veh-accent-soft); }
-    </style>
-@endpush
-
 @section('content')
 
 <div class="veh-page-header mb-4">
@@ -100,7 +55,7 @@
     </div>
     @else
     <div class="table-responsive">
-        <table id="fuelTypeTable" class="table" style="width:100%">
+        <table id="fuelTypeTable" class="table" data-lookup-table data-col-targets='[0, 5]' style="width:100%">
             <thead>
                 <tr>
                     <th data-en="No">No</th>
@@ -234,58 +189,9 @@
     </div>
 
 
-@push('scripts')
-<script>
-    document.querySelectorAll('.js-delete-form').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            var name = form.dataset.name || 'data ini';
-            var isEn = (typeof lang !== 'undefined' ? lang : (localStorage.getItem('lang')||'id')) === 'en';
-            truckConfirm({
-                text: isEn
-                    ? 'Delete fuel type <strong>' + name + '</strong>? This action cannot be undone.'
-                    : 'Hapus tipe bahan bakar <strong>' + name + '</strong>? Tindakan ini tidak dapat dibatalkan.',
-            }).then(function(result) {
-                if (result.isConfirmed) form.submit();
-            });
-        });
-    });
-</script>
-@endpush
+
 @endsection
 
 @push('scripts')
-<script>
-$(document).ready(function () {
-    $('#fuelTypeTable').DataTable({
-        pageLength: 10,
-        lengthMenu: [[5, 10, 25, 50, -1], ['5', '10', '25', '50', 'Semua']],
-        dom: '<"dt-top-bar"lf>rt<"dt-bottom-bar"ip>',
-        language: {
-            lengthMenu:        'Tampilkan _MENU_ data',
-            zeroRecords:       'Tidak ada data ditemukan',
-            info:              'Menampilkan _START_\u2013_END_ dari _TOTAL_ data',
-            infoEmpty:         'Menampilkan 0 dari 0 data',
-            infoFiltered:      '(difilter dari _MAX_ total data)',
-            search:            '',
-            searchPlaceholder: 'Cari...',
-            paginate: { first: '\u00ab', last: '\u00bb', next: '\u203a', previous: '\u2039' }
-        },
-        columnDefs: [
-            { orderable: false, targets: [0, 5] }
-        ],
-        order: [[2, 'asc']],
-        drawCallback: function(settings) {
-            var api = this.api();
-            var start = api.context[0]._iDisplayStart;
-            api.column(0, {search:'applied', order:'applied'}).nodes().each(function(cell, i) {
-                cell.innerHTML = start + i + 1;
-            });
-        },
-        responsive: true,
-        autoWidth: false,
-    });
-});
-</script>
+    @vite('resources/js/pages/master-data.js')
 @endpush
-

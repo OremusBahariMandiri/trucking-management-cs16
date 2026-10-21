@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\MasterData\Vehicle;
 
+use App\Actions\MasterData\Vehicle\VehicleAxisConfiguration\CreateVehicleAxisConfiguration;
+use App\Actions\MasterData\Vehicle\VehicleAxisConfiguration\DeleteVehicleAxisConfiguration;
+use App\Actions\MasterData\Vehicle\VehicleAxisConfiguration\UpdateVehicleAxisConfiguration;
+use App\Exports\MasterData\Vehicle\AxisConfigurationExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Vehicle\AxisConfiguration\StoreAxisConfigurationRequest;
 use App\Http\Requests\MasterData\Vehicle\AxisConfiguration\UpdateAxisConfigurationRequest;
@@ -9,47 +13,35 @@ use App\Models\MasterData\Vehicle\VehicleAxisConfiguration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Exports\MasterData\Vehicle\AxisConfigurationExport;
 
 class VehicleAxisConfigurationController extends Controller
 {
+    public function __construct(
+        private readonly CreateVehicleAxisConfiguration $createVehicleAxisConfiguration,
+        private readonly UpdateVehicleAxisConfiguration $updateVehicleAxisConfiguration,
+        private readonly DeleteVehicleAxisConfiguration $deleteVehicleAxisConfiguration,
+    ) {}
+
     public function index(Request $request)
     {
-        // ── Export ─────────────────────────────────────────────────
-        $filters = [
-            'q' => $request->input('q'),
-            'status' => $request->input('status'),
-        ];
+        $filters = ['q' => $request->input('q'), 'status' => $request->input('status')];
 
         if ($request->input('export') === 'pdf') {
             $items = (new AxisConfigurationExport($filters))->collection();
-            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
-                'exports.master-data.axis-configuration',
-                compact('items')
-            )->setPaper('a4', 'landscape');
-
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.master-data.axis-configuration', compact('items'))->setPaper('a4', 'landscape');
             return $pdf->stream('konfigurasi-sumbu-' . now()->format('Ymd') . '.pdf');
         }
 
         if ($request->input('export') === 'excel') {
-            return \Maatwebsite\Excel\Facades\Excel::download(
-                new AxisConfigurationExport($filters),
-                'konfigurasi-sumbu-' . now()->format('Ymd') . '.xlsx'
-            );
+            return \Maatwebsite\Excel\Facades\Excel::download(new AxisConfigurationExport($filters), 'konfigurasi-sumbu-' . now()->format('Ymd') . '.xlsx');
         }
 
-        // ── Normal index ────────────────────────────────────────────
         $items = VehicleAxisConfiguration::query()
             ->when($request->input('q'), fn($q, $s) =>
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('code', 'like', "%{$s}%")
-                  ->orWhere('description', 'like', "%{$s}%")
+                $q->where('name', 'like', "%{$s}%")->orWhere('code', 'like', "%{$s}%")->orWhere('description', 'like', "%{$s}%")
             )
-            ->when($request->filled('status'), fn($q) =>
-                $q->where('is_active', $request->input('status'))
-            )
-            ->latest()
-            ->get();
+            ->when($request->filled('status'), fn($q) => $q->where('is_active', $request->input('status')))
+            ->latest()->get();
 
         $statCounts = [
             'total'    => VehicleAxisConfiguration::count(),
@@ -67,11 +59,9 @@ class VehicleAxisConfigurationController extends Controller
 
     public function store(StoreAxisConfigurationRequest $request): RedirectResponse
     {
-        VehicleAxisConfiguration::create($request->validated());
+        $this->createVehicleAxisConfiguration->execute($request->validated());
 
-        return redirect()
-            ->route('master-data.axis-configurations.index')
-            ->with('success', 'Axis configuration added successfully.');
+        return redirect()->route('master-data.axis-configurations.index')->with('success', 'Konfigurasi sumbu kendaraan berhasil ditambahkan.');
     }
 
     public function edit(VehicleAxisConfiguration $axisConfiguration): View
@@ -81,27 +71,23 @@ class VehicleAxisConfigurationController extends Controller
 
     public function update(UpdateAxisConfigurationRequest $request, VehicleAxisConfiguration $axisConfiguration): RedirectResponse
     {
-        $axisConfiguration->update($request->validated());
+        $this->updateVehicleAxisConfiguration->execute($axisConfiguration, $request->validated());
 
-        return redirect()
-            ->route('master-data.axis-configurations.index')
-            ->with('success', 'Axis configuration updated successfully.');
+        return redirect()->route('master-data.axis-configurations.index')->with('success', 'Konfigurasi sumbu kendaraan berhasil diperbarui.');
     }
 
     public function destroy(VehicleAxisConfiguration $axisConfiguration): RedirectResponse
     {
-        $axisConfiguration->delete();
+        $this->deleteVehicleAxisConfiguration->execute($axisConfiguration);
 
-        return redirect()
-            ->route('master-data.axis-configurations.index')
-            ->with('success', 'Axis configuration deleted successfully.');
+        return redirect()->route('master-data.axis-configurations.index')->with('success', 'Konfigurasi sumbu kendaraan berhasil dihapus.');
     }
 
     public function toggle(VehicleAxisConfiguration $axisConfiguration): RedirectResponse
     {
-        $axisConfiguration->update(['is_active' => ! $axisConfiguration->is_active]);
+        $axisConfiguration->update(['is_active' => !$axisConfiguration->is_active]);
 
-        return back()->with('success', 'Axis configuration status updated.');
+        return back()->with('success', 'Status konfigurasi sumbu kendaraan diperbarui.');
     }
 
     public function apiList(Request $request)

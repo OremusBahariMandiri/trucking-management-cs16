@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\MasterData\Administration;
 
+use App\Actions\MasterData\Administration\CustomerType\CreateCustomerType;
+use App\Actions\MasterData\Administration\CustomerType\DeleteCustomerType;
+use App\Actions\MasterData\Administration\CustomerType\UpdateCustomerType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Administration\CustomerType\StoreCustomerTypeRequest;
 use App\Http\Requests\MasterData\Administration\CustomerType\UpdateCustomerTypeRequest;
@@ -12,18 +15,20 @@ use Illuminate\View\View;
 
 class CustomerTypeController extends Controller
 {
+    public function __construct(
+        private readonly CreateCustomerType $createCustomerType,
+        private readonly UpdateCustomerType $updateCustomerType,
+        private readonly DeleteCustomerType $deleteCustomerType,
+    ) {}
+
     public function index(Request $request): View
     {
         $customerTypes = CustomerType::query()
             ->when($request->input('q'), fn($q, $s) =>
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('code', 'like', "%{$s}%")
+                $q->where('name', 'like', "%{$s}%")->orWhere('code', 'like', "%{$s}%")
             )
-            ->when($request->filled('status'), fn($q) =>
-                $q->where('is_active', $request->input('status'))
-            )
-            ->latest()
-            ->get();
+            ->when($request->filled('status'), fn($q) => $q->where('is_active', $request->input('status')))
+            ->latest()->get();
 
         $statCounts = [
             'total'    => CustomerType::count(),
@@ -41,11 +46,9 @@ class CustomerTypeController extends Controller
 
     public function store(StoreCustomerTypeRequest $request): RedirectResponse
     {
-        CustomerType::create($request->validated());
+        $this->createCustomerType->execute($request->validated());
 
-        return redirect()
-            ->route('master-data.administration.customer-types.index')
-            ->with('success', 'Jenis pelanggan berhasil ditambahkan.');
+        return redirect()->route('master-data.administration.customer-types.index')->with('success', 'Jenis pelanggan berhasil ditambahkan.');
     }
 
     public function edit(CustomerType $customerType): View
@@ -55,20 +58,16 @@ class CustomerTypeController extends Controller
 
     public function update(UpdateCustomerTypeRequest $request, CustomerType $customerType): RedirectResponse
     {
-        $customerType->update($request->validated());
+        $this->updateCustomerType->execute($customerType, $request->validated());
 
-        return redirect()
-            ->route('master-data.administration.customer-types.index')
-            ->with('success', 'Jenis pelanggan berhasil diperbarui.');
+        return redirect()->route('master-data.administration.customer-types.index')->with('success', 'Jenis pelanggan berhasil diperbarui.');
     }
 
     public function destroy(CustomerType $customerType): RedirectResponse
     {
-        $customerType->delete();
+        $this->deleteCustomerType->execute($customerType);
 
-        return redirect()
-            ->route('master-data.administration.customer-types.index')
-            ->with('success', 'Jenis pelanggan berhasil dihapus.');
+        return redirect()->route('master-data.administration.customer-types.index')->with('success', 'Jenis pelanggan berhasil dihapus.');
     }
 
     public function toggle(CustomerType $customerType): RedirectResponse
