@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\MasterData\Administration;
+namespace App\Actions\MasterData\Administration\Customer;
 
 use App\Models\MasterData\Administration\Customer;
 use Illuminate\Http\UploadedFile;
@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class UpdateCustomer
+class CreateCustomer
 {
-    public function handle(Customer $customer, array $data, ?UploadedFile $npwpFile = null, ?UploadedFile $nibFile = null): Customer
+    public function handle(array $data, ?UploadedFile $npwpFile = null, ?UploadedFile $nibFile = null): Customer
     {
-        return DB::transaction(function () use ($customer, $data, $npwpFile, $nibFile) {
+        return DB::transaction(function () use ($data, $npwpFile, $nibFile) {
 
-            $customer->update([
+            $customer = Customer::create([
                 ...$this->coreFields($data),
+                'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
             ]);
 
@@ -24,7 +25,7 @@ class UpdateCustomer
 
             $this->syncPics($customer, $data['pics'] ?? []);
 
-            return $customer->fresh();
+            return $customer;
         });
     }
 
@@ -57,10 +58,6 @@ class UpdateCustomer
     {
         if (!$file || !$file->isValid()) return;
 
-        // Hapus file lama
-        $old = $customer->getAttribute("{$prefix}_file_path");
-        if ($old) Storage::disk('public')->delete($old);
-
         $path = $file->store("customers/{$customer->id}/{$prefix}", 'public');
         $customer->update([
             "{$prefix}_file_path" => $path,
@@ -70,30 +67,19 @@ class UpdateCustomer
 
     private function syncPics(Customer $customer, array $pics): void
     {
-        $incomingIds = collect($pics)->pluck('id')->filter()->values();
-
-        // Hapus PIC yang sudah dihapus dari form
-        $customer->pics()->whereNotIn('id', $incomingIds)->delete();
-
         $hasPrimary = collect($pics)->contains(fn($p) => !empty($p['is_primary']));
 
         foreach ($pics as $index => $pic) {
             if (empty($pic['name'])) continue;
 
-            $payload = [
+            $customer->pics()->create([
                 'name'       => $pic['name'],
                 'position'   => $pic['position']   ?? null,
                 'department' => $pic['department']  ?? null,
                 'phone'      => $pic['phone']       ?? null,
                 'email'      => $pic['email']       ?? null,
                 'is_primary' => $hasPrimary ? (bool)($pic['is_primary'] ?? false) : ($index === 0),
-            ];
-
-            if (!empty($pic['id'])) {
-                $customer->pics()->where('id', $pic['id'])->update($payload);
-            } else {
-                $customer->pics()->create($payload);
-            }
+            ]);
         }
     }
 }

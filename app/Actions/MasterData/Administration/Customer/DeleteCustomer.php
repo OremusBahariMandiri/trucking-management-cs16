@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\MasterData\Administration;
+namespace App\Actions\MasterData\Administration\Customer;
 
 use App\Models\MasterData\Administration\Customer;
 use Illuminate\Support\Facades\Storage;

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\MasterData\Vehicle;
 
+use App\Actions\MasterData\Vehicle\BodyType\CreateBodyType;
+use App\Actions\MasterData\Vehicle\BodyType\DeleteBodyType;
+use App\Actions\MasterData\Vehicle\BodyType\UpdateBodyType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Vehicle\BodyType\StoreBodyTypeRequest;
 use App\Http\Requests\MasterData\Vehicle\BodyType\UpdateBodyTypeRequest;
@@ -9,46 +12,23 @@ use App\Models\MasterData\Vehicle\BodyType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Exports\MasterData\Vehicle\BodyTypeExport;
 
 class BodyTypeController extends Controller
 {
-    public function index(Request $request)
+    public function __construct(
+        private readonly CreateBodyType $createBodyType,
+        private readonly UpdateBodyType $updateBodyType,
+        private readonly DeleteBodyType $deleteBodyType,
+    ) {}
+
+    public function index(Request $request): View
     {
-        // ── Export ─────────────────────────────────────────────────
-        $filters = [
-            'q' => $request->input('q'),
-            'status' => $request->input('status'),
-        ];
-
-        if ($request->input('export') === 'pdf') {
-            $items = (new BodyTypeExport($filters))->collection();
-            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
-                'exports.master-data.body-type',
-                compact('items')
-            )->setPaper('a4', 'landscape');
-
-            return $pdf->stream('jenis-karoseri-' . now()->format('Ymd') . '.pdf');
-        }
-
-        if ($request->input('export') === 'excel') {
-            return \Maatwebsite\Excel\Facades\Excel::download(
-                new BodyTypeExport($filters),
-                'jenis-karoseri-' . now()->format('Ymd') . '.xlsx'
-            );
-        }
-
-        // ── Normal index ────────────────────────────────────────────
         $bodyTypes = BodyType::query()
             ->when($request->input('q'), fn($q, $s) =>
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('description', 'like', "%{$s}%")
+                $q->where('name', 'like', "%{$s}%")->orWhere('code', 'like', "%{$s}%")
             )
-            ->when($request->filled('status'), fn($q) =>
-                $q->where('is_active', $request->input('status'))
-            )
-            ->latest()
-            ->get();
+            ->when($request->filled('status'), fn($q) => $q->where('is_active', $request->input('status')))
+            ->latest()->get();
 
         $statCounts = [
             'total'    => BodyType::count(),
@@ -66,11 +46,9 @@ class BodyTypeController extends Controller
 
     public function store(StoreBodyTypeRequest $request): RedirectResponse
     {
-        BodyType::create($request->validated());
+        $this->createBodyType->execute($request->validated());
 
-        return redirect()
-            ->route('master-data.body-types.index')
-            ->with('success', 'Jenis karoseri berhasil ditambahkan.');
+        return redirect()->route('master-data.body-types.index')->with('success', 'Jenis bodi kendaraan berhasil ditambahkan.');
     }
 
     public function edit(BodyType $bodyType): View
@@ -80,27 +58,23 @@ class BodyTypeController extends Controller
 
     public function update(UpdateBodyTypeRequest $request, BodyType $bodyType): RedirectResponse
     {
-        $bodyType->update($request->validated());
+        $this->updateBodyType->execute($bodyType, $request->validated());
 
-        return redirect()
-            ->route('master-data.body-types.index')
-            ->with('success', 'Jenis karoseri berhasil diperbarui.');
+        return redirect()->route('master-data.body-types.index')->with('success', 'Jenis bodi kendaraan berhasil diperbarui.');
     }
 
     public function destroy(BodyType $bodyType): RedirectResponse
     {
-        $bodyType->delete();
+        $this->deleteBodyType->execute($bodyType);
 
-        return redirect()
-            ->route('master-data.body-types.index')
-            ->with('success', 'Jenis karoseri berhasil dihapus.');
+        return redirect()->route('master-data.body-types.index')->with('success', 'Jenis bodi kendaraan berhasil dihapus.');
     }
 
     public function toggle(BodyType $bodyType): RedirectResponse
     {
         $bodyType->update(['is_active' => !$bodyType->is_active]);
 
-        return back()->with('success', 'Status jenis karoseri diperbarui.');
+        return back()->with('success', 'Status jenis bodi kendaraan diperbarui.');
     }
 
     public function apiList(Request $request)
@@ -109,7 +83,7 @@ class BodyTypeController extends Controller
             BodyType::active()
                 ->when($request->input('q'), fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
                 ->orderBy('name')
-                ->get(['id', 'name'])
+                ->get(['id', 'name', 'code'])
         );
     }
 }

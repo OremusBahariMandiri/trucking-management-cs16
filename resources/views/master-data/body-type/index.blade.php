@@ -2,51 +2,6 @@
 
 @section('title', 'Jenis Karoseri')
 
-@push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-        .dt-top-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: .5rem;
-            padding: .75rem 1.25rem;
-            background: var(--surface); border-bottom: 1px solid var(--border);
-        }
-        .dt-top-bar .dt-length label,
-        .dt-top-bar .dt-search label { color: var(--text-muted); font-size: .82rem; }
-        .dt-top-bar .dt-length select {
-            display: inline-block; width: auto;
-            background: var(--surface-2); color: var(--text);
-            border: 1px solid var(--border); border-radius: 6px;
-            padding: .25rem .5rem; font-size: .82rem; margin: 0 .25rem;
-        }
-        .dt-top-bar .dt-search input {
-            background: var(--surface-2); color: var(--text);
-            border: 1px solid var(--border); border-radius: 6px;
-            padding: .25rem .6rem; font-size: .82rem; width: 200px;
-        }
-        .dt-top-bar .dt-search input:focus {
-            outline: none; border-color: var(--veh-accent);
-            box-shadow: 0 0 0 2px var(--veh-accent-soft);
-        }
-        .dt-bottom-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: .5rem;
-            padding: .75rem 1.25rem;
-            background: var(--surface); border-top: 1px solid var(--border);
-        }
-        .dt-bottom-bar .dt-info { color: var(--text-muted); font-size: .82rem; }
-        .dt-bottom-bar .dt-paging .pagination { margin: 0; }
-        .dt-bottom-bar .dt-paging .page-link {
-            background: var(--surface-2); border-color: var(--border);
-            color: var(--text); font-size: .82rem; padding: .25rem .55rem;
-        }
-        .dt-bottom-bar .dt-paging .page-item.active .page-link {
-            background: var(--veh-accent); border-color: var(--veh-accent); color: #fff;
-        }
-        .dt-bottom-bar .dt-paging .page-link:hover { background: var(--veh-accent-soft); }
-    </style>
-@endpush
-
 @section('content')
 
 <div class="veh-page-header mb-4">
@@ -62,14 +17,14 @@
         </nav>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+        <button type="button" class="btn btn-secondary btn-sm d-flex align-items-center gap-2"
                 data-bs-toggle="modal" data-bs-target="#filterModal">
             <i class="fas fa-filter"></i> <span data-en="Filter">Filter</span>
             @if(request()->hasAny(['q','status']))
                 <span class="badge bg-primary rounded-pill">{{ collect(['q','status'])->filter(fn($k)=>request()->filled($k))->count() }}</span>
             @endif
         </button>
-        <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-2"
+        <button type="button" class="btn btn-success btn-sm d-flex align-items-center gap-2"
                 data-bs-toggle="modal" data-bs-target="#exportModal">
             <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
         </button>
@@ -99,16 +54,17 @@
         <p data-en="Add the first body type.">Tambah jenis karoseri pertama.</p>
     </div>
     @else
+    <div class="lkp-desktop-table" id="lkpDesktopTable">
     <div class="table-responsive">
-        <table id="bodyTypeTable" class="table" style="width:100%">
+        <table id="bodyTypeTable" class="table" data-lookup-table data-col-targets='[0, 5]' style="width:100%">
             <thead>
                 <tr>
-                    <th data-en="No">No</th>
-                    <th data-en="Code">Kode</th>
-                    <th data-en="Name">Nama</th>
-                    <th data-en="Description">Deskripsi</th>
-                    <th data-en="Status">Status</th>
-                    <th class="text-end" data-en="Actions">Aksi</th>
+                    <th data-en="No" data-priority="6">No</th>
+                    <th data-en="Code" data-priority="4">Kode</th>
+                    <th data-en="Name" data-priority="1">Nama</th>
+                    <th data-en="Description" data-priority="5">Deskripsi</th>
+                    <th data-en="Status" data-priority="2">Status</th>
+                    <th class="text-end" data-en="Actions" data-priority="1">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -147,6 +103,47 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+    </div>{{-- /lkp-desktop-table --}}
+
+    {{-- Mobile cards --}}
+    <div class="lkp-mobile-list" id="lkpMobileList">
+        @foreach($bodyTypes as $item)
+        <div class="lkp-mob-card">
+            <div class="lkp-mob-main">
+                <div class="lkp-mob-icon"><i class="fas fa-truck"></i></div>
+                <div class="lkp-mob-info">
+                    <div class="lkp-mob-name">{{ $item->name }}</div>
+                    @if($item->code)
+                    <div class="lkp-mob-meta">
+                        <span><i class="fas fa-hashtag fa-xs"></i> <span data-en="Code">Kode</span>: <strong>{{ $item->code }}</strong></span>
+                    </div>
+                    @endif
+                    @if($item->description)
+                    <div class="lkp-mob-desc">{{ Str::limit($item->description, 80) }}</div>
+                    @endif
+                    <div class="lkp-mob-status mt-1">
+                        <span class="bt-status-{{ $item->is_active ? 'active' : 'inactive' }}">
+                            <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">{{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="lkp-mob-actions">
+                <a href="{{ route('master-data.body-types.edit', $item) }}"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-pen me-1"></i><span data-en="Edit">Edit</span>
+                </a>
+                <form method="POST" action="{{ route('master-data.body-types.destroy', $item) }}"
+                      class="js-delete-form" data-name="{{ $item->name }}">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endforeach
     </div>
 @endif
 </div>
@@ -234,58 +231,9 @@
     </div>
 
 
-@push('scripts')
-<script>
-    document.querySelectorAll('.js-delete-form').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            var name = form.dataset.name || 'data ini';
-            var isEn = (typeof lang !== 'undefined' ? lang : (localStorage.getItem('lang')||'id')) === 'en';
-            truckConfirm({
-                text: isEn
-                    ? 'Delete body type <strong>' + name + '</strong>? This action cannot be undone.'
-                    : 'Hapus tipe bodi <strong>' + name + '</strong>? Tindakan ini tidak dapat dibatalkan.',
-            }).then(function(result) {
-                if (result.isConfirmed) form.submit();
-            });
-        });
-    });
-</script>
-@endpush
+
 @endsection
 
 @push('scripts')
-<script>
-$(document).ready(function () {
-    $('#bodyTypeTable').DataTable({
-        pageLength: 10,
-        lengthMenu: [[5, 10, 25, 50, -1], ['5', '10', '25', '50', 'Semua']],
-        dom: '<"dt-top-bar"lf>rt<"dt-bottom-bar"ip>',
-        language: {
-            lengthMenu:        'Tampilkan _MENU_ data',
-            zeroRecords:       'Tidak ada data ditemukan',
-            info:              'Menampilkan _START_\u2013_END_ dari _TOTAL_ data',
-            infoEmpty:         'Menampilkan 0 dari 0 data',
-            infoFiltered:      '(difilter dari _MAX_ total data)',
-            search:            '',
-            searchPlaceholder: 'Cari...',
-            paginate: { first: '\u00ab', last: '\u00bb', next: '\u203a', previous: '\u2039' }
-        },
-        columnDefs: [
-            { orderable: false, targets: [0, 5] }
-        ],
-        order: [[2, 'asc']],
-        drawCallback: function(settings) {
-            var api = this.api();
-            var start = api.context[0]._iDisplayStart;
-            api.column(0, {search:'applied', order:'applied'}).nodes().each(function(cell, i) {
-                cell.innerHTML = start + i + 1;
-            });
-        },
-        responsive: true,
-        autoWidth: false,
-    });
-});
-</script>
+    @vite('resources/js/pages/master-data.js')
 @endpush
-

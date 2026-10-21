@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\MasterData\Administration;
 
+use App\Actions\MasterData\Administration\BusinessType\CreateBusinessType;
+use App\Actions\MasterData\Administration\BusinessType\DeleteBusinessType;
+use App\Actions\MasterData\Administration\BusinessType\UpdateBusinessType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Administration\BusinessType\StoreBusinessTypeRequest;
 use App\Http\Requests\MasterData\Administration\BusinessType\UpdateBusinessTypeRequest;
@@ -12,18 +15,20 @@ use Illuminate\View\View;
 
 class BusinessTypeController extends Controller
 {
+    public function __construct(
+        private readonly CreateBusinessType $createBusinessType,
+        private readonly UpdateBusinessType $updateBusinessType,
+        private readonly DeleteBusinessType $deleteBusinessType,
+    ) {}
+
     public function index(Request $request): View
     {
         $businessTypes = BusinessType::query()
             ->when($request->input('q'), fn($q, $s) =>
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('code', 'like', "%{$s}%")
+                $q->where('name', 'like', "%{$s}%")->orWhere('code', 'like', "%{$s}%")
             )
-            ->when($request->filled('status'), fn($q) =>
-                $q->where('is_active', $request->input('status'))
-            )
-            ->latest()
-            ->get();
+            ->when($request->filled('status'), fn($q) => $q->where('is_active', $request->input('status')))
+            ->latest()->get();
 
         $statCounts = [
             'total'    => BusinessType::count(),
@@ -41,11 +46,9 @@ class BusinessTypeController extends Controller
 
     public function store(StoreBusinessTypeRequest $request): RedirectResponse
     {
-        BusinessType::create($request->validated());
+        $this->createBusinessType->execute($request->validated());
 
-        return redirect()
-            ->route('master-data.administration.business-types.index')
-            ->with('success', 'Jenis usaha berhasil ditambahkan.');
+        return redirect()->route('master-data.administration.business-types.index')->with('success', 'Jenis usaha berhasil ditambahkan.');
     }
 
     public function edit(BusinessType $businessType): View
@@ -55,20 +58,16 @@ class BusinessTypeController extends Controller
 
     public function update(UpdateBusinessTypeRequest $request, BusinessType $businessType): RedirectResponse
     {
-        $businessType->update($request->validated());
+        $this->updateBusinessType->execute($businessType, $request->validated());
 
-        return redirect()
-            ->route('master-data.administration.business-types.index')
-            ->with('success', 'Jenis usaha berhasil diperbarui.');
+        return redirect()->route('master-data.administration.business-types.index')->with('success', 'Jenis usaha berhasil diperbarui.');
     }
 
     public function destroy(BusinessType $businessType): RedirectResponse
     {
-        $businessType->delete();
+        $this->deleteBusinessType->execute($businessType);
 
-        return redirect()
-            ->route('master-data.administration.business-types.index')
-            ->with('success', 'Jenis usaha berhasil dihapus.');
+        return redirect()->route('master-data.administration.business-types.index')->with('success', 'Jenis usaha berhasil dihapus.');
     }
 
     public function toggle(BusinessType $businessType): RedirectResponse

@@ -14,6 +14,8 @@
         })();
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/js/admin.js'])
     @stack('styles')
 </head>
@@ -430,7 +432,7 @@
 
                 <div class="nav-actions">
 
-                    <div class="lang-pill">
+                    <div class="lang-pill" translate="no">
                         <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
                         <button class="lang-btn active" id="btn-id" onclick="setLang('id')">ID</button>
                     </div>
@@ -532,6 +534,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap5.min.js"></script>
     <script>
     function initDataTable(tableId, options) {
         var defaults = {
