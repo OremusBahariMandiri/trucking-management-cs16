@@ -147,10 +147,12 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         @if ($customer->npwp_file_name)
-                            <div class="mb-1">
-                                <small class="text-muted">
+                            <div class="mt-1">
+                                <a href="{{ $customer->npwp_file_url }}" target="_blank" rel="noopener"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-file me-1"></i>{{ $customer->npwp_file_name }}
-                                </small>
+                                    <i class="fas fa-external-link-alt ms-1"></i>
+                                </a>
                             </div>
                         @endif
                     </div>
@@ -171,10 +173,12 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         @if ($customer->nib_file_name)
-                            <div class="mb-1">
-                                <small class="text-muted">
+                            <div class="mt-1">
+                                <a href="{{ $customer->nib_file_url }}" target="_blank" rel="noopener"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-file me-1"></i>{{ $customer->nib_file_name }}
-                                </small>
+                                    <i class="fas fa-external-link-alt ms-1"></i>
+                                </a>
                             </div>
                         @endif
                     </div>
@@ -402,6 +406,15 @@
         document.getElementById('picContainer').addEventListener('click', function(e) {
             if (e.target.closest('.remove-pic')) {
                 e.target.closest('.pic-row').remove();
+            }
+        });
+
+        // Hanya 1 PIC Utama yang bisa dicentang
+        document.getElementById('picContainer').addEventListener('change', function(e) {
+            if (e.target.matches('input[type="checkbox"][name$="[is_primary]"]') && e.target.checked) {
+                document.querySelectorAll('#picContainer input[type="checkbox"][name$="[is_primary]"]').forEach(function(cb) {
+                    if (cb !== e.target) cb.checked = false;
+                });
             }
         });
     </script>

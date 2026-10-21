@@ -56,7 +56,7 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request): RedirectResponse
     {
         $customer = $this->createAction->handle(
-            $request->except(['npwp_file', 'nib_file', 'pics', '_token']),
+            $request->except(['npwp_file', 'nib_file', '_token']),
             $request->file('npwp_file'),
             $request->file('nib_file'),
         );
@@ -90,7 +90,7 @@ class CustomerController extends Controller
     {
         $this->updateAction->handle(
             $customer,
-            $request->except(['npwp_file', 'nib_file', 'pics', '_token', '_method']),
+            $request->except(['npwp_file', 'nib_file', '_token', '_method']),
             $request->file('npwp_file'),
             $request->file('nib_file'),
         );
