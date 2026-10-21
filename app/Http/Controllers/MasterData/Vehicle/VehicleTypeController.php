@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\MasterData\Vehicle;
 
+use App\Actions\MasterData\Vehicle\VehicleType\CreateVehicleType;
+use App\Actions\MasterData\Vehicle\VehicleType\DeleteVehicleType;
+use App\Actions\MasterData\Vehicle\VehicleType\UpdateVehicleType;
+use App\Exports\MasterData\Vehicle\VehicleTypeExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Vehicle\VehicleType\StoreVehicleTypeRequest;
 use App\Http\Requests\MasterData\Vehicle\VehicleType\UpdateVehicleTypeRequest;
@@ -9,46 +13,35 @@ use App\Models\MasterData\Vehicle\VehicleType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Exports\MasterData\Vehicle\VehicleTypeExport;
 
 class VehicleTypeController extends Controller
 {
+    public function __construct(
+        private readonly CreateVehicleType $createVehicleType,
+        private readonly UpdateVehicleType $updateVehicleType,
+        private readonly DeleteVehicleType $deleteVehicleType,
+    ) {}
+
     public function index(Request $request)
     {
-        // ── Export ─────────────────────────────────────────────────
-        $filters = [
-            'q' => $request->input('q'),
-            'status' => $request->input('status'),
-        ];
+        $filters = ['q' => $request->input('q'), 'status' => $request->input('status')];
 
         if ($request->input('export') === 'pdf') {
             $items = (new VehicleTypeExport($filters))->collection();
-            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
-                'exports.master-data.vehicle-type',
-                compact('items')
-            )->setPaper('a4', 'landscape');
-
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.master-data.vehicle-type', compact('items'))->setPaper('a4', 'landscape');
             return $pdf->stream('jenis-kendaraan-' . now()->format('Ymd') . '.pdf');
         }
 
         if ($request->input('export') === 'excel') {
-            return \Maatwebsite\Excel\Facades\Excel::download(
-                new VehicleTypeExport($filters),
-                'jenis-kendaraan-' . now()->format('Ymd') . '.xlsx'
-            );
+            return \Maatwebsite\Excel\Facades\Excel::download(new VehicleTypeExport($filters), 'jenis-kendaraan-' . now()->format('Ymd') . '.xlsx');
         }
 
-        // ── Normal index ────────────────────────────────────────────
         $vehicleTypes = VehicleType::query()
             ->when($request->input('q'), fn($q, $s) =>
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('description', 'like', "%{$s}%")
+                $q->where('name', 'like', "%{$s}%")->orWhere('description', 'like', "%{$s}%")
             )
-            ->when($request->filled('status'), fn($q) =>
-                $q->where('is_active', $request->input('status'))
-            )
-            ->latest()
-            ->get();
+            ->when($request->filled('status'), fn($q) => $q->where('is_active', $request->input('status')))
+            ->latest()->get();
 
         $statCounts = [
             'total'    => VehicleType::count(),
@@ -66,11 +59,9 @@ class VehicleTypeController extends Controller
 
     public function store(StoreVehicleTypeRequest $request): RedirectResponse
     {
-        VehicleType::create($request->validated());
+        $this->createVehicleType->execute($request->validated());
 
-        return redirect()
-            ->route('master-data.vehicle-types.index')
-            ->with('success', 'Tipe kendaraan berhasil ditambahkan.');
+        return redirect()->route('master-data.vehicle-types.index')->with('success', 'Tipe kendaraan berhasil ditambahkan.');
     }
 
     public function edit(VehicleType $vehicleType): View
@@ -80,20 +71,16 @@ class VehicleTypeController extends Controller
 
     public function update(UpdateVehicleTypeRequest $request, VehicleType $vehicleType): RedirectResponse
     {
-        $vehicleType->update($request->validated());
+        $this->updateVehicleType->execute($vehicleType, $request->validated());
 
-        return redirect()
-            ->route('master-data.vehicle-types.index')
-            ->with('success', 'Tipe kendaraan berhasil diperbarui.');
+        return redirect()->route('master-data.vehicle-types.index')->with('success', 'Tipe kendaraan berhasil diperbarui.');
     }
 
     public function destroy(VehicleType $vehicleType): RedirectResponse
     {
-        $vehicleType->delete();
+        $this->deleteVehicleType->execute($vehicleType);
 
-        return redirect()
-            ->route('master-data.vehicle-types.index')
-            ->with('success', 'Tipe kendaraan berhasil dihapus.');
+        return redirect()->route('master-data.vehicle-types.index')->with('success', 'Tipe kendaraan berhasil dihapus.');
     }
 
     public function toggle(VehicleType $vehicleType): RedirectResponse

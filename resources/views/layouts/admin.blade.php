@@ -430,7 +430,7 @@
 
                 <div class="nav-actions">
 
-                    <div class="lang-pill">
+                    <div class="lang-pill" translate="no">
                         <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
                         <button class="lang-btn active" id="btn-id" onclick="setLang('id')">ID</button>
                     </div>
