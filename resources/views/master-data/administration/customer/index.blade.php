@@ -251,7 +251,6 @@
         </div>
     </div>
 
-    @include('components.alert')
 
     <div class="veh-table-card">
         {{-- Header card --}}
@@ -321,7 +320,8 @@
                                     </a>
                                     <form method="POST"
                                         action="{{ route('master-data.administration.customers.destroy', $item) }}"
-                                        onsubmit="return confirm('Hapus pelanggan ini?')">
+                                        class="js-delete-form"
+                                        data-name="{{ $item->name }}">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
                                             <i class="fas fa-trash"></i>
@@ -452,4 +452,23 @@
         </script>
     @endpush
 
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.js-delete-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = form.dataset.name || 'data ini';
+            var isEn = (typeof lang !== 'undefined' ? lang : (localStorage.getItem('lang')||'id')) === 'en';
+            truckConfirm({
+                text: isEn
+                    ? 'Delete customer <strong>' + name + '</strong>? This action cannot be undone.'
+                    : 'Hapus pelanggan <strong>' + name + '</strong>? Tindakan ini tidak dapat dibatalkan.',
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

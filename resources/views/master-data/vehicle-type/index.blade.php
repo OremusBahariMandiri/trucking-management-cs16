@@ -139,7 +139,8 @@
                                         </a>
                                         <form method="POST"
                                             action="{{ route('master-data.vehicle-types.destroy', $item) }}"
-                                            onsubmit="return confirm('{{ __('Hapus jenis ini?') }}')">
+                                            class="js-delete-form"
+                                            data-name="{{ $item->name }}">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
                                                 <i class="fas fa-trash"></i>
@@ -274,7 +275,23 @@ $(document).ready(function () {
         responsive: true,
         autoWidth: false,
     });
-});
+}); 
+
+    // ── Delete confirm dengan SweetAlert truck ────────────────
+    document.querySelectorAll('.js-delete-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = form.dataset.name || 'data ini';
+            truckConfirm({
+                text: 'Hapus jenis kendaraan <strong>' + name + '</strong>?<br><small class="text-muted">Tindakan ini tidak dapat dibatalkan.</small>',
+                confirmText: 'Ya, Hapus',
+                cancelText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+
 </script>
 @endpush
 

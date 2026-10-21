@@ -136,9 +136,7 @@
                                             class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="fas fa-pen"></i>
                                         </a>
-                                        <form method="POST"
-                                            action="{{ route('master-data.ownership-statuses.destroy', $item) }}"
-                                            onsubmit="return confirm('Hapus status kepemilikan ini?')">
+                                        <form method="POST" action="{{ route('master-data.ownership-statuses.destroy', $item) }}" class="js-delete-form" data-name="{{ $item->name }}">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
                                                 <i class="fas fa-trash"></i>
@@ -236,6 +234,25 @@
         </div>
     </div>
 
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.js-delete-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = form.dataset.name || 'data ini';
+            var isEn = (typeof lang !== 'undefined' ? lang : (localStorage.getItem('lang')||'id')) === 'en';
+            truckConfirm({
+                text: isEn
+                    ? 'Delete ownership status <strong>' + name + '</strong>? This action cannot be undone.'
+                    : 'Hapus status kepemilikan <strong>' + name + '</strong>? Tindakan ini tidak dapat dibatalkan.',
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+</script>
+@endpush
 @endsection
 
 @push('scripts')

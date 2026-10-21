@@ -123,7 +123,7 @@
                         @endif
                     </td>
                     <td>{{ $item->name }}</td>
-                    <td>—</td>
+                    <td style="font-size:.85rem;color:var(--text-muted)">{{ $item->description ?: '—' }}</td>
                     <td>
                         <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">
                                 {{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}
@@ -135,9 +135,7 @@
                                class="btn btn-sm btn-outline-primary" title="Edit">
                                 <i class="fas fa-pen"></i>
                             </a>
-                            <form method="POST"
-                                  action="{{ route('master-data.body-types.destroy', $item) }}"
-                                  onsubmit="return confirm('Hapus jenis karoseri ini?')">
+                            <form method="POST" action="{{ route('master-data.body-types.destroy', $item) }}" class="js-delete-form" data-name="{{ $item->name }}">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
                                     <i class="fas fa-trash"></i>
@@ -235,6 +233,25 @@
         </div>
     </div>
 
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.js-delete-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = form.dataset.name || 'data ini';
+            var isEn = (typeof lang !== 'undefined' ? lang : (localStorage.getItem('lang')||'id')) === 'en';
+            truckConfirm({
+                text: isEn
+                    ? 'Delete body type <strong>' + name + '</strong>? This action cannot be undone.'
+                    : 'Hapus tipe bodi <strong>' + name + '</strong>? Tindakan ini tidak dapat dibatalkan.',
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+</script>
+@endpush
 @endsection
 
 @push('scripts')
