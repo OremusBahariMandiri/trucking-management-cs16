@@ -147,6 +147,14 @@
             </div>
         </div>
         @endforeach
+        <div class="lkp-mob-footer">
+            <div class="lkp-mob-pagination-info"></div>
+            <div class="lkp-mob-pagination-nav">
+                <button class="btn btn-sm btn-outline-secondary lkp-mob-prev" disabled>&#8249;</button>
+                <span class="lkp-mob-page-num"></span>
+                <button class="btn btn-sm btn-outline-secondary lkp-mob-next">&#8250;</button>
+            </div>
+        </div>
     </div>{{-- /lkp-mobile-list --}}
 
     @endif

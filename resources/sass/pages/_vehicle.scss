@@ -1267,15 +1267,11 @@ ul.dtr-details {
   }
 }
 
-// Mobile: page header buttons jadi compact
+// Mobile: page header buttons wrap tapi tetap tampilkan icon + teks
 @media (max-width: 480px) {
   .veh-page-header .d-flex.align-items-center.gap-2 {
     flex-wrap: wrap;
     justify-content: flex-end;
-
-    .btn span[data-en] {
-      display: none; // hide text, icon only on very small screens
-    }
   }
 }
 
