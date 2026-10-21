@@ -88,7 +88,39 @@ document.addEventListener('DOMContentLoaded', () => {
     [
         initMasterDataDelete,
         initLookupTable,
+        initMobileCardSwitch,
     ].forEach(fn => {
         try { fn(); } catch (e) { console.error(`[master-data.js] ${fn.name}:`, e); }
     });
 });
+
+// ============================================================
+// MOBILE CARD SWITCH — ResizeObserver pattern (seperti user mgmt)
+// Sembunyikan tabel desktop saat overflow, tampilkan card mobile
+// ============================================================
+function initMobileCardSwitch() {
+    var tableCard  = document.querySelector('.veh-table-card');
+    var desktopDiv = document.getElementById('lkpDesktopTable');
+    var mobileDiv  = document.getElementById('lkpMobileList');
+
+    if (!tableCard || !desktopDiv || !mobileDiv) return;
+
+    function check() {
+        var innerTable = desktopDiv.querySelector('table');
+        if (!innerTable) return;
+        var overflows = innerTable.scrollWidth > tableCard.clientWidth + 2;
+        desktopDiv.style.display = overflows ? 'none' : 'block';
+        mobileDiv.style.display  = overflows ? 'flex'  : 'none';
+    }
+
+    // hide mobile by default first
+    mobileDiv.style.display = 'none';
+
+    check();
+
+    if (window.ResizeObserver) {
+        new ResizeObserver(check).observe(tableCard);
+    } else {
+        window.addEventListener('resize', check);
+    }
+}

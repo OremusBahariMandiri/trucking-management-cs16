@@ -54,6 +54,7 @@
         <p data-en="Add the first vehicle model.">Tambah model kendaraan pertama.</p>
     </div>
     @else
+    <div class="lkp-desktop-table" id="lkpDesktopTable">
     <div class="table-responsive">
         <table id="vehicleModelTable" class="table" data-lookup-table data-col-targets='[0, 7]' style="width:100%">
             <thead>
@@ -110,6 +111,48 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+    </div>{{-- /lkp-desktop-table --}}
+
+    {{-- Mobile cards --}}
+    <div class="lkp-mobile-list" id="lkpMobileList">
+        @foreach($vehicleModels as $item)
+        <div class="lkp-mob-card">
+            <div class="lkp-mob-main">
+                <div class="lkp-mob-icon"><i class="fas fa-car-side"></i></div>
+                <div class="lkp-mob-info">
+                    <div class="lkp-mob-name">{{ $item->name }}</div>
+                    <div class="lkp-mob-meta">
+                        @if($item->code)<span><i class="fas fa-hashtag fa-xs"></i> <span data-en="Code">Kode</span>: <strong>{{ $item->code }}</strong></span>@endif
+                        <span><i class="fas fa-copyright fa-xs"></i> <span data-en="Brand">Merek</span>: <strong>{{ $item->brand?->name ?? '—' }}</strong></span>
+                    </div>
+                    @if($item->vehicleType)
+                    <div class="lkp-mob-meta">
+                        <span><i class="fas fa-tag fa-xs"></i> <span data-en="Type">Jenis</span>: {{ $item->vehicleType->name }}</span>
+                    </div>
+                    @endif
+                    <div class="lkp-mob-status mt-1">
+                        <span class="bt-status-{{ $item->is_active ? 'active' : 'inactive' }}">
+                            <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">{{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="lkp-mob-actions">
+                <a href="{{ route('master-data.vehicle-models.edit', \$item) }}"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-pen me-1"></i><span data-en="Edit">Edit</span>
+                </a>
+                <form method="POST" action="{{ route('master-data.vehicle-models.destroy', \$item) }}"
+                      class="js-delete-form" data-name="{{ $item->name }}">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endforeach
     </div>
 @endif
 </div>
