@@ -58,12 +58,12 @@
         <table id="bodyTypeTable" class="table" data-lookup-table data-col-targets='[0, 5]' style="width:100%">
             <thead>
                 <tr>
-                    <th data-en="No">No</th>
-                    <th data-en="Code">Kode</th>
-                    <th data-en="Name">Nama</th>
-                    <th data-en="Description">Deskripsi</th>
-                    <th data-en="Status">Status</th>
-                    <th class="text-end" data-en="Actions">Aksi</th>
+                    <th data-en="No" data-priority="6">No</th>
+                    <th data-en="Code" data-priority="4">Kode</th>
+                    <th data-en="Name" data-priority="1">Nama</th>
+                    <th data-en="Description" data-priority="5">Deskripsi</th>
+                    <th data-en="Status" data-priority="2">Status</th>
+                    <th class="text-end" data-en="Actions" data-priority="1">Aksi</th>
                 </tr>
             </thead>
             <tbody>

@@ -1172,3 +1172,109 @@
   .bt-status-active  { background: rgba(16, 185, 129, .18); color: #34d399; }
   .bt-status-inactive { background: rgba(107, 114, 128, .18); }
 }
+
+// ══════════════════════════════════════════════════════════════
+//  DataTables Responsive — child row & control button styling
+// ══════════════════════════════════════════════════════════════
+
+// Control cell ("+"/"-" toggle button)
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control {
+  padding-left: 2.5rem;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    top: 50%;
+    left: .9rem;
+    transform: translateY(-50%);
+    display: inline-block;
+    color: #fff;
+    border: 2px solid var(--veh-accent);
+    border-radius: 50%;
+    box-shadow: none;
+    box-sizing: content-box;
+    text-align: center;
+    text-indent: 0;
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 14px;
+    background-color: var(--veh-accent);
+    content: '+';
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    font-size: .85rem;
+    font-weight: 700;
+  }
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td.dtr-control,
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th.dtr-control {
+  &::before {
+    content: '-';
+    background-color: #ef4444;
+    border-color: #ef4444;
+  }
+}
+
+// Child row container
+tr.child {
+  background: var(--surface-2) !important;
+
+  td.child {
+    padding: .5rem 1rem 1rem !important;
+    border-top: none !important;
+  }
+}
+
+// Child row — label:value list
+ul.dtr-details {
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    font-size: .82rem;
+    padding: .35rem .5rem;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+
+    &:last-child { margin-bottom: 0; }
+
+    span.dtr-title {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      min-width: 80px;
+      padding-top: .1rem;
+      flex-shrink: 0;
+    }
+
+    span.dtr-data {
+      color: var(--text);
+      font-weight: 500;
+      word-break: break-word;
+    }
+  }
+}
+
+// Mobile: page header buttons jadi compact
+@media (max-width: 480px) {
+  .veh-page-header .d-flex.align-items-center.gap-2 {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    .btn span[data-en] {
+      display: none; // hide text, icon only on very small screens
+    }
+  }
+}
