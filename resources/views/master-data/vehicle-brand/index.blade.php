@@ -139,11 +139,11 @@
                 </div>
             </div>
             <div class="lkp-mob-actions">
-                <a href="{{ route('master-data.vehicle-brands.edit', \$item) }}"
+                <a href="{{ route('master-data.vehicle-brands.edit', $item) }}"
                    class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-pen me-1"></i><span data-en="Edit">Edit</span>
                 </a>
-                <form method="POST" action="{{ route('master-data.vehicle-brands.destroy', \$item) }}"
+                <form method="POST" action="{{ route('master-data.vehicle-brands.destroy', $item) }}"
                       class="js-delete-form" data-name="{{ $item->name }}">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn btn-sm btn-outline-danger">
