@@ -109,7 +109,7 @@
                 <tbody>
                     @foreach($customerTypes as $item)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
+                        <td></td>
                         <td>{{ $item->code ?: '—' }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ Str::limit($item->description, 60) ?: '—' }}</td>
@@ -168,6 +168,13 @@ $(document).ready(function () {
         order: [[2, 'asc']],
         responsive: true,
         autoWidth: false,
+        drawCallback: function(settings) {
+            var api = this.api();
+            var start = api.context[0]._iDisplayStart;
+            api.column(0, {search:'applied', order:'applied'}).nodes().each(function(cell, i) {
+                cell.innerHTML = start + i + 1;
+            });
+        },
     });
 });
 </script>

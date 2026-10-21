@@ -283,9 +283,7 @@
                 <tbody>
                     @foreach ($customers as $i => $item)
                         <tr>
-                            <td class="text-center" style="color:var(--text-faint);font-size:.8rem">
-                                {{ $i + 1 }}
-                            </td>
+                            <td class="text-center" style="color:var(--text-faint);font-size:.8rem"></td>
                             <td>
                                 <a href="{{ route('master-data.administration.customers.show', $item) }}"
                                     class="cust-name-link">
@@ -439,7 +437,13 @@
                     order: [[1, 'asc']],
                     responsive: true,
                     autoWidth: false,
-                    drawCallback: function() {
+                    drawCallback: function(settings) {
+                        // nomor urut otomatis sesuai halaman & sort
+                        var api = this.api();
+                        var start = api.context[0]._iDisplayStart;
+                        api.column(0, {search:'applied', order:'applied'}).nodes().each(function(cell, i) {
+                            cell.innerHTML = start + i + 1;
+                        });
                         // pastikan border-radius card tetap setelah DataTables render
                         $('.veh-table-card').css('overflow', 'hidden');
                     }
