@@ -22,11 +22,6 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('master-data.fuel-types.index') }}"
-            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-            <i class="fas fa-arrow-left"></i>
-            <span data-en="Back">Kembali</span>
-        </a>
     </div>
 
     <form method="POST" action="{{ route('master-data.fuel-types.update', $fuelType) }}" novalidate>
@@ -95,7 +90,7 @@
                 </div>
             </div>
             <div class="lkp-form-actions">
-                <a href="{{ route('master-data.fuel-types.index') }}" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ route('master-data.fuel-types.index') }}" class="btn btn-secondary btn-sm">
                     <i class="fas fa-times me-1"></i>
                     <span data-en="Cancel">Batal</span>
                 </a>
