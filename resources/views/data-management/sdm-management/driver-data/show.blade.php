@@ -29,23 +29,10 @@
         <div class="d-flex gap-2">
             <a href="{{ route('data-management.sdm-management.driver-data.pdf', $driver) }}"
                 target="_blank"
-                class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1">
+                class="btn btn-sm btn-danger d-flex align-items-center gap-1">
                 <i class="fas fa-file-pdf"></i>
                 <span data-en="Export CV">Export CV</span>
             </a>
-            <a href="{{ route('data-management.sdm-management.driver-data.edit', $driver) }}"
-                class="btn btn-sm btn-primary d-flex align-items-center gap-1">
-                <i class="fas fa-pen"></i>
-                <span data-en="Edit">Edit</span>
-            </a>
-            <form method="POST" action="{{ route('data-management.sdm-management.driver-data.destroy', $driver) }}"
-                onsubmit="return confirm('Hapus supir ini?')">
-                @csrf @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="fas fa-trash"></i>
-                    <span data-en="Delete">Hapus</span>
-                </button>
-            </form>
         </div>
     </div>
 
