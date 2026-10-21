@@ -52,7 +52,9 @@ class VehicleModelController extends Controller
             'inactive' => VehicleModel::where('is_active', false)->count(),
         ];
 
-        return view('master-data.vehicle-model.index', compact('vehicleModels', 'statCounts'));
+        $brands = VehicleBrand::active()->orderBy('name')->get(['id', 'name']);
+
+        return view('master-data.vehicle-model.index', compact('vehicleModels', 'statCounts', 'brands'));
     }
 
     public function create(): View
