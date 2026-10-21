@@ -1,16 +1,10 @@
 /**
  * Master Data — generic page JS
- *
- * Di-load via @vite('resources/js/pages/master-data.js') di setiap
- * halaman index master data (lookup / referensi sederhana).
- *
- * Responsive desktop↔mobile ditangani MURNI oleh CSS media query
- * (@media max-width:767px) — tidak ada JS ResizeObserver / switch.
- * Tidak ada glitch saat resize.
+ * Responsive desktop↔mobile: CSS @media (max-width:767px) — no JS switch.
  */
 
 // ============================================================
-// DELETE — konfirmasi hapus dengan SweetAlert2 truck animation
+// DELETE — konfirmasi hapus dengan SweetAlert2
 // ============================================================
 function initMasterDataDelete() {
     document.querySelectorAll('.js-delete-form').forEach(function (form) {
@@ -26,6 +20,55 @@ function initMasterDataDelete() {
                 if (result.isConfirmed) form.submit();
             });
         });
+    });
+}
+
+// ============================================================
+// MOBILE SYNC — sinkronisasi kartu mobile dengan DataTables
+// (pagination, search, sort)
+// ============================================================
+function syncMobileCards(api) {
+    // Kumpulkan index baris yang sedang ditampilkan di halaman ini
+    var visibleSet = new Set();
+    api.rows({ page: 'current' }).nodes().each(function (tr) {
+        var idx = tr.getAttribute('data-row');
+        if (idx !== null) visibleSet.add(idx);
+    });
+
+    // Tampilkan / sembunyikan kartu mobile sesuai index
+    document.querySelectorAll('.lkp-mob-card').forEach(function (card) {
+        card.style.display = visibleSet.has(card.getAttribute('data-row')) ? '' : 'none';
+    });
+
+    // Update info teks
+    var pi       = api.page.info();
+    var infoEl   = document.querySelector('.lkp-mob-pagination-info');
+    var pageEl   = document.querySelector('.lkp-mob-page-num');
+    var prevBtn  = document.querySelector('.lkp-mob-prev');
+    var nextBtn  = document.querySelector('.lkp-mob-next');
+
+    if (infoEl) {
+        if (pi.recordsDisplay === 0) {
+            infoEl.textContent = 'Tidak ada data';
+        } else {
+            infoEl.textContent =
+                'Menampilkan ' + (pi.start + 1) + '–' + pi.end +
+                ' dari ' + pi.recordsDisplay + ' data';
+        }
+    }
+    if (pageEl)  pageEl.textContent  = (pi.page + 1) + ' / ' + (pi.pages || 1);
+    if (prevBtn) prevBtn.disabled    = pi.page === 0;
+    if (nextBtn) nextBtn.disabled    = pi.page >= pi.pages - 1;
+}
+
+function initMobilePaginationButtons(dtApi) {
+    var prevBtn = document.querySelector('.lkp-mob-prev');
+    var nextBtn = document.querySelector('.lkp-mob-next');
+    if (prevBtn) prevBtn.addEventListener('click', function () {
+        dtApi.page('previous').draw('page');
+    });
+    if (nextBtn) nextBtn.addEventListener('click', function () {
+        dtApi.page('next').draw('page');
     });
 }
 
@@ -46,7 +89,7 @@ function initLookupTable() {
 
     var order = table.dataset.noOrder ? [] : [[2, 'asc']];
 
-    $('#' + id).DataTable({
+    var dt = $('#' + id).DataTable({
         pageLength: 10,
         lengthMenu: [[5, 10, 25, 50, -1], ['5', '10', '25', '50', 'Semua']],
         dom: '<"dt-top-bar"lf>rt<"dt-bottom-bar"ip>',
@@ -70,10 +113,13 @@ function initLookupTable() {
             api.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
                 cell.innerHTML = start + i + 1;
             });
+            syncMobileCards(api);
         },
         responsive: false,
         autoWidth: false,
     });
+
+    initMobilePaginationButtons(dt);
 }
 
 // ============================================================

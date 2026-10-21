@@ -68,7 +68,7 @@
                         </thead>
                         <tbody>
                             @foreach ($vehicleTypes as $item)
-                                <tr>
+                                <tr data-row="{{ $loop->index }}">
                                     <td></td>
                                     <td>{{ $item->code ?: '—' }}</td>
                                     <td>{{ $item->name }}</td>
@@ -101,7 +101,7 @@
             {{-- Mobile cards --}}
             <div class="lkp-mobile-list">
                 @foreach($vehicleTypes as $item)
-                <div class="lkp-mob-card">
+                <div class="lkp-mob-card" data-row="{{ $loop->index }}">
                     <div class="lkp-mob-header">
                         <div class="lkp-mob-initial">{{ strtoupper(substr($item->name, 0, 1)) }}</div>
                         <div class="lkp-mob-name-wrap">
@@ -143,6 +143,14 @@
                     </div>
                 </div>
                 @endforeach
+                <div class="lkp-mob-footer">
+                    <div class="lkp-mob-pagination-info"></div>
+                    <div class="lkp-mob-pagination-nav">
+                        <button class="btn btn-sm btn-outline-secondary lkp-mob-prev" disabled>&#8249;</button>
+                        <span class="lkp-mob-page-num"></span>
+                        <button class="btn btn-sm btn-outline-secondary lkp-mob-next">&#8250;</button>
+                    </div>
+                </div>
             </div>{{-- /lkp-mobile-list --}}
         @endif
     </div>

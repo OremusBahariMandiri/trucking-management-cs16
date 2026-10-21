@@ -71,7 +71,7 @@
                 </thead>
                 <tbody>
                     @foreach($vehicleBrands as $item)
-                    <tr>
+                    <tr data-row="{{ $loop->index }}">
                         <td></td>
                         <td>{{ $item->code ?: '—' }}</td>
                         <td>{{ $item->name }}</td>
@@ -103,7 +103,7 @@
     {{-- Mobile cards --}}
     <div class="lkp-mobile-list">
         @foreach($vehicleBrands as $item)
-        <div class="lkp-mob-card">
+        <div class="lkp-mob-card" data-row="{{ $loop->index }}">
             <div class="lkp-mob-header">
                 <div class="lkp-mob-initial">{{ strtoupper(substr($item->name, 0, 1)) }}</div>
                 <div class="lkp-mob-name-wrap">
