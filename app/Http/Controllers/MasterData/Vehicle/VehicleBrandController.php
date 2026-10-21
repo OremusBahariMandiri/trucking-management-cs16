@@ -49,8 +49,7 @@ class VehicleBrandController extends Controller
                 $q->where('is_active', $request->input('status'))
             )
             ->latest()
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         $statCounts = [
             'total'    => VehicleBrand::count(),

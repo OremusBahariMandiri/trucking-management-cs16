@@ -48,8 +48,7 @@ class BodyTypeController extends Controller
                 $q->where('is_active', $request->input('status'))
             )
             ->latest()
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         $statCounts = [
             'total'    => BodyType::count(),
