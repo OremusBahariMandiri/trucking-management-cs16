@@ -74,7 +74,7 @@
                         @foreach($customers as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->code ?: '—' }}</td>
+                            <td>{{ $item->customer_code ?: '—' }}</td>
                             <td>
                                 <a href="{{ route('master-data.administration.customers.show', $item) }}">
                                     {{ $item->name }}

@@ -117,10 +117,10 @@
                     $canAxisConfigurations = Auth::user()->hasAccessToMenu('master-data.axis-configurations');
                     $canOwnershipStatuses = Auth::user()->hasAccessToMenu('master-data.ownership-statuses');
                     // Administrasi
-                    $canCustomerTypes  = Auth::user()->hasAccessToMenu('master-data.administration.customer-types');
-                    $canBusinessTypes  = Auth::user()->hasAccessToMenu('master-data.administration.business-types');
-                    $canCustomers      = Auth::user()->hasAccessToMenu('master-data.administration.customers');
-                    $showAdminSub      = $canCustomerTypes || $canBusinessTypes || $canCustomers;
+                    $canCustomerTypes = Auth::user()->hasAccessToMenu('master-data.administration.customer-types');
+                    $canBusinessTypes = Auth::user()->hasAccessToMenu('master-data.administration.business-types');
+                    $canCustomers = Auth::user()->hasAccessToMenu('master-data.administration.customers');
+                    $showAdminSub = $canCustomerTypes || $canBusinessTypes || $canCustomers;
                     $showKendaraanSub =
                         $canVehicleTypes ||
                         $canVehicleBrands ||
@@ -240,13 +240,13 @@
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round">
-                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                            <circle cx="9" cy="7" r="4"/>
-                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                         </svg>
                                     </span>
-                                    <span>Administrasi</span>
+                                    <span data-en="Administration">Administrasi</span>
                                     <svg class="sub-arrow {{ $adminOpen ? 'open' : '' }}" width="13"
                                         height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2.5" stroke-linecap="round">
@@ -256,19 +256,22 @@
                                 <div class="sub-group-body {{ $adminOpen ? 'open' : '' }}">
                                     @if ($canCustomerTypes)
                                         <a href="{{ route('master-data.administration.customer-types.index') }}"
-                                            class="sub-link2 {{ request()->routeIs('master-data.administration.customer-types.*') ? 'active' : '' }}">
+                                            class="sub-link2 {{ request()->routeIs('master-data.administration.customer-types.*') ? 'active' : '' }}"
+                                            data-en="Customer Types">
                                             Jenis Pelanggan
                                         </a>
                                     @endif
                                     @if ($canBusinessTypes)
                                         <a href="{{ route('master-data.administration.business-types.index') }}"
-                                            class="sub-link2 {{ request()->routeIs('master-data.administration.business-types.*') ? 'active' : '' }}">
+                                            class="sub-link2 {{ request()->routeIs('master-data.administration.business-types.*') ? 'active' : '' }}"
+                                            data-en="Business Types">
                                             Jenis Usaha
                                         </a>
                                     @endif
                                     @if ($canCustomers)
                                         <a href="{{ route('master-data.administration.customers.index') }}"
-                                            class="sub-link2 {{ request()->routeIs('master-data.administration.customers.*') ? 'active' : '' }}">
+                                            class="sub-link2 {{ request()->routeIs('master-data.administration.customers.*') ? 'active' : '' }}"
+                                            data-en="Customer Data">
                                             Data Pelanggan
                                         </a>
                                     @endif

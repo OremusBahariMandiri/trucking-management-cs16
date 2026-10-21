@@ -338,5 +338,14 @@
                 e.target.closest('.pic-row').remove();
             }
         });
+
+        // Hanya 1 PIC Utama yang bisa dicentang
+        document.getElementById('picContainer').addEventListener('change', function(e) {
+            if (e.target.matches('input[type="checkbox"][name$="[is_primary]"]') && e.target.checked) {
+                document.querySelectorAll('#picContainer input[type="checkbox"][name$="[is_primary]"]').forEach(function(cb) {
+                    if (cb !== e.target) cb.checked = false;
+                });
+            }
+        });
     </script>
 @endpush
