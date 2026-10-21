@@ -55,7 +55,8 @@
                 <p data-en="Add the first axis configuration.">Tambah konfigurasi sumbu pertama.</p>
             </div>
         @else
-            <div class="table-responsive">
+            <div class="lkp-desktop-table" id="lkpDesktopTable">
+    <div class="table-responsive">
                 <table id="axisConfigTable" class="table" data-lookup-table data-col-targets='[0, 5]' style="width:100%">
                     <thead>
                         <tr>
@@ -104,6 +105,47 @@
                     </tbody>
                 </table>
             </div>
+    </div>{{-- /lkp-desktop-table --}}
+
+    {{-- Mobile cards --}}
+    <div class="lkp-mobile-list" id="lkpMobileList">
+        @foreach($items as $item)
+        <div class="lkp-mob-card">
+            <div class="lkp-mob-main">
+                <div class="lkp-mob-icon"><i class="fas fa-sliders"></i></div>
+                <div class="lkp-mob-info">
+                    <div class="lkp-mob-name">{{ $item->name }}</div>
+                    @if($item->code)
+                    <div class="lkp-mob-meta">
+                        <span><i class="fas fa-hashtag fa-xs"></i> <span data-en="Code">Kode</span>: <strong>{{ $item->code }}</strong></span>
+                    </div>
+                    @endif
+                    @if($item->description)
+                    <div class="lkp-mob-desc">{{ Str::limit($item->description, 80) }}</div>
+                    @endif
+                    <div class="lkp-mob-status mt-1">
+                        <span class="bt-status-{{ $item->is_active ? 'active' : 'inactive' }}">
+                            <span data-en="{{ $item->is_active ? 'Active' : 'Inactive' }}">{{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="lkp-mob-actions">
+                <a href="{{ route('master-data.axis-configurations.edit', \$item) }}"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-pen me-1"></i><span data-en="Edit">Edit</span>
+                </a>
+                <form method="POST" action="{{ route('master-data.axis-configurations.destroy', \$item) }}"
+                      class="js-delete-form" data-name="{{ $item->name }}">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endforeach
+    </div>
 @endif
     </div>
 
