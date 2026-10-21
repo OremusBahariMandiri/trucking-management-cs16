@@ -13,6 +13,7 @@
             else if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
         })();
     </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css">
     @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/js/admin.js'])
     @stack('styles')
 </head>
@@ -527,6 +528,32 @@
         </div>
     </div>
 
+    {{-- sebelum </body> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+    function initDataTable(tableId, options) {
+        var defaults = {
+            pageLength: 10,
+            lengthMenu: [[5, 10, 25, 50, -1], ['5', '10', '25', '50', 'Semua']],
+            dom: '<"dt-top-bar"lf>rt<"dt-bottom-bar"ip>',
+            language: {
+                lengthMenu:   'Show _MENU_ data',
+                zeroRecords:  'Tidak ada data ditemukan',
+                info:         'Menampilkan _START_–_END_ dari _TOTAL_ data',
+                infoEmpty:    'Menampilkan 0 dari 0 data',
+                infoFiltered: '(difilter dari _MAX_ total data)',
+                search:       '',
+                searchPlaceholder: 'Cari...',
+                paginate: { first: '«', last: '»', next: '›', previous: '‹' }
+            },
+            responsive: true,
+            autoWidth: false
+        };
+        return $('#' + tableId).DataTable(Object.assign({}, defaults, options || {}));
+    }
+    </script>
     @stack('scripts')
 </body>
 
