@@ -1407,6 +1407,17 @@ ul.dtr-details {
 }
 
 // Tombol aksi di dalam detail
+
+.lkp-mob-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .6rem 1rem; border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  @media (min-width: 768px) { display: none; }
+}
+.lkp-mob-pagination-info { font-size: .75rem; color: var(--text-muted); }
+.lkp-mob-pagination-nav  { display: flex; align-items: center; gap: .4rem; }
+.lkp-mob-page-num        { font-size: .75rem; color: var(--text-muted); min-width: 3rem; text-align: center; }
+
 .lkp-mob-actions {
   display: flex;
   align-items: center;
