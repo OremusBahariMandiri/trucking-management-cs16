@@ -233,6 +233,7 @@ Route::middleware(['auth', 'permission'])->group(function () {
                 Route::prefix('{driver}')->name('')->group(function () {
                     Route::delete('documents/{document}',       [DriverController::class, 'destroyDocument'])->name('documents.destroy');
                     Route::delete('certificates/{certificate}', [DriverController::class, 'destroyCertificate'])->name('certificates.destroy');
+                    Route::get('pdf',                                  [DriverController::class, 'exportPdf'])->name('pdf');
                 });
 
 

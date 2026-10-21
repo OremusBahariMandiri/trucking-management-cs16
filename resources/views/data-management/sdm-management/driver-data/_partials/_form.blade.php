@@ -75,7 +75,7 @@
         <span data-en="All fields are optional unless marked required.">Field bertanda * wajib diisi.</span>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ $isEdit ? route('data-management.sdm-management.driver-data.show', $driver) : route('data-management.sdm-management.driver-data.index') }}"
+        <a href="{{ $isEdit ? route('data-management.sdm-management.driver-data.index', $driver) : route('data-management.sdm-management.driver-data.index') }}"
            class="btn btn-outline-secondary btn-sm">
             <span data-en="Cancel">Batal</span>
         </a>

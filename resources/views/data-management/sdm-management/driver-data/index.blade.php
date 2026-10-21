@@ -29,25 +29,6 @@
     </a>
 </div>
 
-{{-- ── Stat Cards ───────────────────────────────────────────── --}}
-<div class="drv-stats mb-4">
-    @php
-        $statsConfig = [
-            ['label' => 'Total Supir',  'label_en' => 'Total Drivers',  'key' => 'total',    'icon' => 'fas fa-users',        'color' => '#3b6fd4', 'soft' => 'rgba(59,111,212,.12)'],
-            ['label' => 'Aktif',        'label_en' => 'Active',          'key' => 'active',   'icon' => 'fas fa-check-circle', 'color' => '#16a34a', 'soft' => 'rgba(22,163,74,.12)'],
-            ['label' => 'Tidak Aktif',  'label_en' => 'Inactive',        'key' => 'inactive', 'icon' => 'fas fa-pause-circle', 'color' => '#64748b', 'soft' => 'rgba(100,116,139,.12)'],
-            ['label' => 'Resign',       'label_en' => 'Resigned',        'key' => 'resigned', 'icon' => 'fas fa-user-times',   'color' => '#dc2626', 'soft' => 'rgba(220,38,38,.12)'],
-        ];
-    @endphp
-    @foreach($statsConfig as $s)
-    <div class="stat-card" style="--stat-color:{{ $s['color'] }};--stat-soft:{{ $s['soft'] }}">
-        <div class="stat-icon-wrap"><i class="{{ $s['icon'] }}"></i></div>
-        <div class="stat-number">{{ $stats[$s['key']] ?? 0 }}</div>
-        <div class="stat-label" data-en="{{ $s['label_en'] }}">{{ $s['label'] }}</div>
-    </div>
-    @endforeach
-</div>
-
 {{-- ── Filter Bar ───────────────────────────────────────────── --}}
 <div class="drv-filter-bar mb-3">
     <form method="GET" action="{{ route('data-management.sdm-management.driver-data.index') }}"

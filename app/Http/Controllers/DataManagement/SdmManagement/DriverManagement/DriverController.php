@@ -157,6 +157,22 @@ class DriverController extends Controller
         return response()->json(['message' => 'Sertifikat berhasil dihapus.']);
     }
 
+    // ── PDF Export ──────────────────────────────────────────────────────────
+
+    public function exportPdf(Driver $driver): \Symfony\Component\HttpFoundation\Response
+    {
+        $driver = $this->service->findWithRelations($driver->id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'exports.sdm-management.driver-cv',
+            compact('driver')
+        )->setPaper('a4', 'portrait');
+
+        $filename = 'driver-cv-' . ($driver->driver_code ?? $driver->id) . '-' . now()->format('Ymd') . '.pdf';
+
+        return $pdf->stream($filename);
+    }
+
     public function apiGenerateCode(): \Illuminate\Http\JsonResponse
     {
         return response()->json(['code' => $this->service->generateDriverCode()]);
