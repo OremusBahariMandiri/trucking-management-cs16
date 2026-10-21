@@ -54,8 +54,7 @@ class VehicleModelController extends Controller
                 $q->where('vehicle_brand_id', $request->input('brand_id'))
             )
             ->latest()
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         $statCounts = [
             'total'    => VehicleModel::count(),
