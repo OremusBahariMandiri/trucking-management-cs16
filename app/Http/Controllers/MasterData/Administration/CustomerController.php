@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\MasterData\Administration;
 
-use App\Actions\MasterData\Administration\CreateCustomer;
-use App\Actions\MasterData\Administration\DeleteCustomer;
-use App\Actions\MasterData\Administration\UpdateCustomer;
+use App\Actions\MasterData\Administration\Customer\CreateCustomer;
+use App\Actions\MasterData\Administration\Customer\DeleteCustomer;
+use App\Actions\MasterData\Administration\Customer\UpdateCustomer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Administration\Customer\StoreCustomerRequest;
 use App\Http\Requests\MasterData\Administration\Customer\UpdateCustomerRequest;
