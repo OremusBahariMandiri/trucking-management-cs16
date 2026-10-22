@@ -40,11 +40,16 @@
         <div class="col-md-6">
             <label class="form-label" data-en="Engine Capacity (CC)">Kapasitas Mesin (CC)</label>
             <div class="input-group">
-                <input type="number" name="engine_capacity_cc"
-                    class="form-control {{ $hasErr('engine_capacity_cc') }}" value="{{ $old('engine_capacity_cc') }}"
-                    min="0" placeholder="8000">
+                <input type="text" id="engine_capacity_cc_display"
+                    class="form-control {{ $hasErr('engine_capacity_cc') }}"
+                    value="{{ $old('engine_capacity_cc') ? number_format((int)$old('engine_capacity_cc'), 0, ',', '.') : '' }}"
+                    placeholder="8.000" inputmode="numeric"
+                    data-format="number">
                 <span class="input-group-text">cc</span>
+                <input type="hidden" name="engine_capacity_cc"
+                    value="{{ $old('engine_capacity_cc') }}">
             </div>
+            <div class="invalid-feedback">{{ $err('engine_capacity_cc') }}</div>
         </div>
 
         {{-- Konfigurasi Sumbu --}}
@@ -85,7 +90,7 @@
             <div class="input-group">
                 <input type="number" name="load_capacity_ton" class="form-control {{ $hasErr('load_capacity_ton') }}"
                     value="{{ $old('load_capacity_ton') }}" min="0" step="0.5" placeholder="10">
-                <span class="input-group-text">ton</span>
+                <span class="input-group-text">kg</span>
             </div>
         </div>
 
@@ -96,7 +101,7 @@
                 <input type="number" name="gross_vehicle_weight_ton"
                     class="form-control {{ $hasErr('gross_vehicle_weight_ton') }}"
                     value="{{ $old('gross_vehicle_weight_ton') }}" min="0" step="0.5" placeholder="24">
-                <span class="input-group-text">ton</span>
+                <span class="input-group-text">kg</span>
             </div>
         </div>
 
@@ -106,7 +111,7 @@
             <div class="input-group">
                 <input type="number" name="tare_weight_ton" class="form-control {{ $hasErr('tare_weight_ton') }}"
                     value="{{ $old('tare_weight_ton') }}" min="0" step="0.5" placeholder="8">
-                <span class="input-group-text">ton</span>
+                <span class="input-group-text">kg</span>
             </div>
         </div>
 

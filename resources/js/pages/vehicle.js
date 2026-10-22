@@ -308,7 +308,86 @@ document.addEventListener('DOMContentLoaded', () => {
         initExistingPhotoActions,
         initAutoCode,
         highlightErrorTabs,
+        initNumberFormat,
     ].forEach(fn => {
         try { fn(); } catch (e) { console.error(`[vehicle.js] ${fn.name}:`, e); }
     });
 });
+// ============================================================
+// NUMBER FORMAT — tampilkan titik ribuan, simpan angka murni
+// data-format="number"  → 8.000
+// data-format="rupiah"  → 500.000.000,00
+// ============================================================
+function initNumberFormat() {
+    // Helper: strip semua non-digit kecuali koma (untuk rupiah saat edit)
+    function rawDigits(str) {
+        return str.replace(/[^\d]/g, '');
+    }
+
+    // Format angka biasa: 8000 → "8.000"
+    function fmtNumber(digits) {
+        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    // Format rupiah: 500000000 → "500.000.000,00"
+    function fmtRupiah(digits) {
+        if (!digits) return '';
+        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
+    }
+
+    function initField(display) {
+        const isRupiah = display.dataset.format === 'rupiah';
+        const hidden   = display.parentElement.querySelector('input[type="hidden"]');
+        if (!hidden) return;
+
+        // Inisialisasi: hidden dari nilai awal display
+        const initRaw = rawDigits(display.value);
+        if (initRaw) {
+            hidden.value  = initRaw;
+            display.value = isRupiah ? fmtRupiah(initRaw) : fmtNumber(initRaw);
+        }
+
+        display.addEventListener('focus', () => {
+            // Saat fokus: hilangkan ,00 supaya mudah diedit
+            if (isRupiah) {
+                display.value = hidden.value ? fmtNumber(hidden.value) : '';
+            }
+        });
+
+        display.addEventListener('input', () => {
+            const raw     = rawDigits(display.value);
+            hidden.value  = raw;
+            // Saat mengetik: tampilkan titik saja (tanpa ,00)
+            const cursor  = display.selectionStart;
+            const prevLen = display.value.length;
+            display.value = raw ? fmtNumber(raw) : '';
+            // Pertahankan posisi cursor (koreksi karena titik bisa bertambah/berkurang)
+            const diff = display.value.length - prevLen;
+            display.setSelectionRange(cursor + diff, cursor + diff);
+        });
+
+        display.addEventListener('blur', () => {
+            const raw = hidden.value;
+            display.value = raw
+                ? (isRupiah ? fmtRupiah(raw) : fmtNumber(raw))
+                : '';
+        });
+    }
+
+    document.querySelectorAll('[data-format="number"], [data-format="rupiah"]')
+        .forEach(initField);
+
+    // Sebelum submit: sync hidden kalau ada yang belum tersinkron
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', () => {
+            document.querySelectorAll('[data-format="number"], [data-format="rupiah"]')
+                .forEach(display => {
+                    const hidden = display.parentElement.querySelector('input[type="hidden"]');
+                    if (hidden && !hidden.value && display.value) {
+                        hidden.value = rawDigits(display.value);
+                    }
+                });
+        });
+    }
+}
