@@ -87,8 +87,36 @@ class RoleController extends Controller
             ->with('success', "Role {$name} berhasil dihapus.");
     }
 
+
     /**
-     * Sync permissions untuk role — dipanggil dari form di halaman show.
+     * Dedicated page for managing role permissions.
+     */
+    public function managePermissions(Role $role)
+    {
+        $role->load('permissions');
+
+        $allPermissions = Permission::orderBy('group')->orderBy('slug')->get();
+        $assignedIds    = $role->permissions->pluck('id')->toArray();
+
+        // Build hierarchical tree: [L1][L2][modulePrefix] => [Permission, ...]
+        $tree = [];
+        foreach ($allPermissions as $perm) {
+            $groupParts = explode(' > ', $perm->group, 2);
+            $l1 = trim($groupParts[0] ?? 'Lainnya');
+            $l2 = trim($groupParts[1] ?? '');
+
+            $slugParts = explode('.', $perm->slug);
+            array_pop($slugParts); // strip action
+            $modulePrefix = implode('.', $slugParts);
+
+            $tree[$l1][$l2][$modulePrefix][] = $perm;
+        }
+
+        return view('user-management.roles.permissions', compact('role', 'tree', 'assignedIds'));
+    }
+
+    /**
+     * Sync permissions untuk role — dipanggil dari form di halaman permissions.
      */
     public function syncPermissions(Request $request, Role $role)
     {
@@ -100,7 +128,7 @@ class RoleController extends Controller
         $this->syncRolePermissions->execute($role, $request->permission_ids ?? []);
 
         return redirect()
-            ->route('user-management.roles.show', $role)
+            ->route('user-management.roles.manage-permissions', $role)
             ->with('success', "Permission untuk role {$role->name} berhasil diperbarui.");
     }
 }

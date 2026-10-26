@@ -3,6 +3,12 @@
 @section('title', 'Konfigurasi Sumbu')
 
 @section('content')
+@php
+    $canCreate = auth()->user()->hasPermission('master-data.axis-configurations.create');
+    $canEdit   = auth()->user()->hasPermission('master-data.axis-configurations.edit');
+    $canDelete = auth()->user()->hasPermission('master-data.axis-configurations.delete');
+@endphp
+
 
 <div class="veh-page-header mb-4">
     <div>
@@ -26,9 +32,16 @@
                 data-bs-toggle="modal" data-bs-target="#exportModal">
             <i class="fas fa-file-export"></i> Export
         </button>
+        @if($canCreate)
         <a href="{{ route('master-data.axis-configurations.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
             <i class="fas fa-plus"></i> Tambah
         </a>
+        @else
+        <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-2" disabled
+                title="Anda tidak memiliki akses untuk menambah data">
+            <i class="fas fa-plus"></i> Tambah
+        </button>
+        @endif
     </div>
 </div>
 
@@ -62,11 +75,19 @@
                         <td>{{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}</td>
                         <td>
                             <div class="d-flex justify-content-end gap-1">
+                                @if($canEdit)
                                 <a href="{{ route('master-data.axis-configurations.edit', $item) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-pen"></i></a>
+                                @else
+                                <button type="button" class="btn btn-sm btn-outline-primary" disabled title="Tidak ada akses edit"><i class="fas fa-pen"></i></button>
+                                @endif
+                                @if($canDelete)
                                 <form method="POST" action="{{ route('master-data.axis-configurations.destroy', $item) }}" class="js-delete-form" data-name="{{ $item->name }}">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
                                 </form>
+                                @else
+                                <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Tidak ada akses hapus"><i class="fas fa-trash"></i></button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -103,11 +124,19 @@
                     <span class="lkp-mob-value">{{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}</span>
                 </div>
                 <div class="lkp-mob-actions">
+                    @if($canEdit)
                     <a href="{{ route('master-data.axis-configurations.edit', $item) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-pen me-1"></i>Edit</a>
+                    @else
+                    <button type="button" class="btn btn-sm btn-outline-primary" disabled title="Tidak ada akses edit"><i class="fas fa-pen me-1"></i>Edit</button>
+                    @endif
+                    @if($canDelete)
                     <form method="POST" action="{{ route('master-data.axis-configurations.destroy', $item) }}" class="js-delete-form" data-name="{{ $item->name }}">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
                     </form>
+                    @else
+                    <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Tidak ada akses hapus"><i class="fas fa-trash"></i></button>
+                    @endif
                 </div>
             </div>
         </div>

@@ -3,6 +3,12 @@
 @section('title', 'Model Kendaraan')
 
 @section('content')
+@php
+    $canCreate = auth()->user()->hasPermission('master-data.vehicle-models.create');
+    $canEdit   = auth()->user()->hasPermission('master-data.vehicle-models.edit');
+    $canDelete = auth()->user()->hasPermission('master-data.vehicle-models.delete');
+@endphp
+
 
 <div class="veh-page-header mb-4">
     <div>
@@ -28,11 +34,19 @@
                 data-bs-toggle="modal" data-bs-target="#exportModal">
             <i class="fas fa-file-export"></i> <span data-en="Export">Export</span>
         </button>
+        @if($canCreate)
         <a href="{{ route('master-data.vehicle-models.create') }}"
            class="btn btn-primary btn-sm d-flex align-items-center gap-2">
             <i class="fas fa-plus"></i>
             <span data-en="Add Model">Tambah</span>
         </a>
+        @else
+        <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-2" disabled
+                title="Anda tidak memiliki akses untuk menambah data">
+            <i class="fas fa-plus"></i>
+            <span data-en="Add Model">Tambah</span>
+        </button>
+        @endif
     </div>
 </div>
 
@@ -81,16 +95,28 @@
                         <td>{{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}</td>
                         <td>
                             <div class="d-flex justify-content-end gap-1">
+                                @if($canEdit)
                                 <a href="{{ route('master-data.vehicle-models.edit', $item) }}"
                                    class="btn btn-sm btn-outline-primary" title="Edit">
                                     <i class="fas fa-pen"></i>
                                 </a>
+                                @else
+                                <button type="button" class="btn btn-sm btn-outline-primary" disabled title="Tidak ada akses edit">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                @endif
+                                @if($canDelete)
                                 <form method="POST" action="{{ route('master-data.vehicle-models.destroy', $item) }}" class="js-delete-form" data-name="{{ $item->name }}">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+                                @else
+                                <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Tidak ada akses hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -132,10 +158,17 @@
                     <span class="lkp-mob-value">{{ $item->is_active ? 'Aktif' : 'Tidak Aktif' }}</span>
                 </div>
                 <div class="lkp-mob-actions">
+                    @if($canEdit)
                     <a href="{{ route('master-data.vehicle-models.edit', $item) }}"
                        class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-pen me-1"></i>Edit
                     </a>
+                    @else
+                    <button type="button" class="btn btn-sm btn-outline-primary" disabled title="Tidak ada akses edit">
+                        <i class="fas fa-pen me-1"></i>Edit
+                    </button>
+                    @endif
+                    @if($canDelete)
                     <form method="POST" action="{{ route('master-data.vehicle-models.destroy', $item) }}"
                           class="js-delete-form" data-name="{{ $item->name }}">
                         @csrf @method('DELETE')
@@ -143,6 +176,11 @@
                             <i class="fas fa-trash"></i>
                         </button>
                     </form>
+                    @else
+                    <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Tidak ada akses hapus">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    @endif
                 </div>
             </div>
         </div>

@@ -12,7 +12,6 @@
     <div class="drv-page-header mb-3">
         <div>
             <div class="drv-title">
-                <i class="fas fa-id-card"></i>
                 <span data-en="Driver Detail">Detail Supir</span>
             </div>
             <nav aria-label="breadcrumb">
@@ -27,8 +26,7 @@
             </nav>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('data-management.sdm-management.driver-data.pdf', $driver) }}"
-                target="_blank"
+            <a href="{{ route('data-management.sdm-management.driver-data.pdf', $driver) }}" target="_blank"
                 class="btn btn-sm btn-danger d-flex align-items-center gap-1">
                 <i class="fas fa-file-pdf"></i>
                 <span data-en="Export CV">Export CV</span>
@@ -166,6 +164,13 @@
                         'label_en' => 'Certificates',
                         'badge' => $driver->certificates->count(),
                     ],
+                    [
+                        'id' => 'tab-kontak-darurat',
+                        'icon' => 'fas fa-phone-alt',
+                        'label' => 'Kontak Darurat',
+                        'label_en' => 'Emergency Contacts',
+                        'badge' => $driver->emergencyContacts->count(),
+                    ],
                     ['id' => 'tab-catatan', 'icon' => 'fas fa-book', 'label' => 'Catatan', 'label_en' => 'Notes'],
                 ];
             @endphp
@@ -192,21 +197,22 @@
                 <div class="row g-3">
                     @php
                         $ktpFields = [
+                            ['label' => 'Provinsi', 'label_en' => 'Province', 'value' => $driver->ktp_province],
+                            ['label' => 'Kota/Kab.', 'label_en' => 'City', 'value' => $driver->ktp_city],
+                            ['label' => 'Kecamatan', 'label_en' => 'District', 'value' => $driver->ktp_district],
+                            ['label' => 'Kelurahan', 'label_en' => 'Village', 'value' => $driver->ktp_village],
+                            ['label' => 'RT / RW', 'label_en' => 'RT/RW', 'value' => $driver->ktp_rt_rw],
+                            ['label' => 'Kode Pos', 'label_en' => 'Postal Code', 'value' => $driver->ktp_postal_code],
                             [
                                 'label' => 'Alamat KTP',
                                 'label_en' => 'KTP Address',
                                 'value' => $driver->ktp_address,
                                 'full' => true,
                             ],
-                            ['label' => 'Kelurahan', 'label_en' => 'Village', 'value' => $driver->ktp_village],
-                            ['label' => 'Kecamatan', 'label_en' => 'District', 'value' => $driver->ktp_district],
-                            ['label' => 'Kota/Kab.', 'label_en' => 'City', 'value' => $driver->ktp_city],
-                            ['label' => 'Provinsi', 'label_en' => 'Province', 'value' => $driver->ktp_province],
-                            ['label' => 'Kode Pos', 'label_en' => 'Postal Code', 'value' => $driver->ktp_postal_code],
                         ];
                     @endphp
                     @foreach ($ktpFields as $f)
-                        <div class="{{ $f['full'] ?? false ? 'col-12' : 'col-6 col-md-4' }}">
+                        <div class="{{ $f['full'] ?? false ? 'col-12' : 'col-6 col-md-6' }}">
                             <div class="info-label" data-en="{{ $f['label_en'] }}">{{ $f['label'] }}</div>
                             <div class="info-value">{{ $f['value'] ?? '-' }}</div>
                         </div>
@@ -239,25 +245,30 @@
                 <div class="row g-3">
                     @php
                         $domFields = [
+                            ['label' => 'Provinsi', 'label_en' => 'Province', 'value' => $driver->domicile_province],
+                            ['label' => 'Kota/Kab.', 'label_en' => 'City', 'value' => $driver->domicile_city],
+                            ['label' => 'Kecamatan', 'label_en' => 'District', 'value' => $driver->domicile_district],
+                            ['label' => 'Kelurahan', 'label_en' => 'Village', 'value' => $driver->domicile_village],
+                            [
+                                'label' => 'RT / RW',
+                                'label_en' => 'RT/RW',
+                                'value' => $driver->domicile_rt_rw,
+                            ],
+                            [
+                                'label' => 'Kode Pos',
+                                'label_en' => 'Postal Code',
+                                'value' => $driver->domicile_postal_code,
+                            ],
                             [
                                 'label' => 'Alamat Domisili',
                                 'label_en' => 'Domicile Address',
                                 'value' => $driver->domicile_address,
                                 'full' => true,
                             ],
-                            ['label' => 'Kelurahan', 'label_en' => 'Village', 'value' => $driver->domicile_village],
-                            ['label' => 'Kecamatan', 'label_en' => 'District', 'value' => $driver->domicile_district],
-                            ['label' => 'Kota/Kab.', 'label_en' => 'City', 'value' => $driver->domicile_city],
-                            ['label' => 'Provinsi', 'label_en' => 'Province', 'value' => $driver->domicile_province],
-                            [
-                                'label' => 'Kode Pos',
-                                'label_en' => 'Postal Code',
-                                'value' => $driver->domicile_postal_code,
-                            ],
                         ];
                     @endphp
                     @foreach ($domFields as $f)
-                        <div class="{{ $f['full'] ?? false ? 'col-12' : 'col-6 col-md-4' }}">
+                        <div class="{{ $f['full'] ?? false ? 'col-12' : 'col-6 col-md-6' }}">
                             <div class="info-label" data-en="{{ $f['label_en'] }}">{{ $f['label'] }}</div>
                             <div class="info-value">{{ $f['value'] ?? '-' }}</div>
                         </div>
@@ -401,6 +412,222 @@
                 @endif
             </div>
         </div>
+
+        {{-- Tab: Kontak Darurat --}}
+        <div class="tab-pane fade" id="tab-kontak-darurat">
+            <div class="drv-form-card">
+                @if ($driver->emergencyContacts->isEmpty())
+                    <div class="drv-empty">
+                        <div class="drv-empty-icon"><i class="fas fa-phone-alt"></i></div>
+                        <h6 data-en="No emergency contacts">Belum ada kontak darurat</h6>
+                        <p>
+                            <a href="{{ route('data-management.sdm-management.driver-data.edit', $driver) }}#tab-kontak-darurat"
+                                class="btn btn-sm btn-outline-primary mt-2">
+                                <i class="fas fa-plus me-1"></i> Tambah Kontak Darurat
+                            </a>
+                        </p>
+                    </div>
+                @else
+                    @foreach ($driver->emergencyContacts as $ec)
+                        <div class="ec-show-card mb-4">
+                            {{-- Card header --}}
+                            <div class="ec-show-header d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="ec-show-avatar">
+                                        <i class="fas fa-user-shield"></i>
+                                    </div>
+                                    <div>
+                                        <div class="ec-show-name">{{ $ec->full_name }}</div>
+                                        <div class="ec-show-meta">
+                                            <span class="ec-show-type-badge">{{ $ec->contact_type_label }}</span>
+                                            &bull;
+                                            <span>{{ $ec->phone_primary }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span
+                                    class="{{ $ec->contact_status === 'aktif' ? 'ec-show-status-aktif' : 'ec-show-status-nonaktif' }}">
+                                    {{ $ec->contact_status_label }}
+                                </span>
+                            </div>
+
+                            {{-- Card body --}}
+                            <div class="ec-show-body">
+                                <div class="form-section-title" style="font-size:.7rem;margin-bottom:.75rem">
+                                    <i class="fas fa-info-circle me-1"></i><span>Identitas</span>
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Full Name">Nama Lengkap</div>
+                                        <div class="info-value">{{ $ec->full_name ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label">NIK</div>
+                                        <div class="info-value">{{ $ec->nik ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Place of Birth">Tempat Lahir</div>
+                                        <div class="info-value">{{ $ec->birth_place ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Date of Birth">Tanggal Lahir</div>
+                                        <div class="info-value">{{ $ec->birth_date?->format('d M Y') ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Gender">Jenis Kelamin</div>
+                                        <div class="info-value">{{ $ec->gender_label ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Religion">Agama</div>
+                                        <div class="info-value">{{ $ec->religion_label ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Marital Status">Status Pernikahan</div>
+                                        <div class="info-value">{{ $ec->marital_status_label ?? '-' }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section-title" style="font-size:.7rem;margin-bottom:.75rem">
+                                    <i class="fas fa-phone me-1"></i><span>Kontak</span>
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Primary Phone">No. Telepon Utama</div>
+                                        <div class="info-value">{{ $ec->phone_primary ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Alternative Phone">No. Telepon Alternatif</div>
+                                        <div class="info-value">{{ $ec->phone_alternative ?? '-' }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section-title" style="font-size:.7rem;margin-bottom:.75rem">
+                                    <i class="fas fa-map-marked-alt me-1"></i><span>Alamat</span>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Province">Provinsi</div>
+                                        <div class="info-value">{{ $ec->province ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="City">Kota/Kabupaten</div>
+                                        <div class="info-value">{{ $ec->city ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="District">Kecamatan</div>
+                                        <div class="info-value">{{ $ec->district ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Village">Kelurahan/Desa</div>
+                                        <div class="info-value">{{ $ec->village ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label">RT/RW</div>
+                                        <div class="info-value">{{ $ec->rt_rw ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label" data-en="Postal Code">Kode Pos</div>
+                                        <div class="info-value">{{ $ec->postal_code ?? '-' }}</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="info-label" data-en="Full Address">Alamat Lengkap</div>
+                                        <div class="info-value">{{ $ec->full_address ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>{{-- /ec-show-body --}}
+                        </div>{{-- /ec-show-card --}}
+                    @endforeach
+                @endif
+            </div>
+        </div>
+
+        <style>
+            .ec-show-card {
+                border: 1px solid var(--border);
+                border-radius: var(--drv-radius, 14px);
+                overflow: hidden;
+                background: var(--surface);
+                box-shadow: var(--drv-shadow);
+                transition: box-shadow var(--drv-transition, .18s ease);
+            }
+
+            .ec-show-card:hover {
+                box-shadow: var(--drv-shadow-hover);
+            }
+
+            .ec-show-header {
+                padding: .875rem 1.25rem;
+                background: var(--surface-2, rgba(255, 255, 255, .04));
+                border-bottom: 1px solid var(--border);
+                border-left: 3px solid var(--drv-accent);
+            }
+
+            .ec-show-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: var(--drv-accent-soft);
+                border: 1.5px solid var(--drv-accent);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--drv-accent);
+                font-size: .95rem;
+                flex-shrink: 0;
+            }
+
+            .ec-show-name {
+                font-weight: 600;
+                font-size: .9rem;
+                color: var(--text);
+                line-height: 1.3;
+            }
+
+            .ec-show-meta {
+                font-size: .78rem;
+                color: var(--text-muted);
+                margin-top: 1px;
+                display: flex;
+                align-items: center;
+                gap: .35rem;
+                flex-wrap: wrap;
+            }
+
+            .ec-show-type-badge {
+                display: inline-block;
+                padding: 1px 7px;
+                border-radius: 20px;
+                font-size: .7rem;
+                font-weight: 600;
+                background: var(--drv-accent-soft);
+                color: var(--drv-accent);
+                border: 1px solid var(--drv-accent);
+            }
+
+            .ec-show-status-aktif {
+                padding: 2px 10px;
+                border-radius: 20px;
+                font-size: .7rem;
+                font-weight: 600;
+                background: rgba(22, 163, 74, .15);
+                color: #16a34a;
+                border: 1px solid rgba(22, 163, 74, .35);
+            }
+
+            .ec-show-status-nonaktif {
+                padding: 2px 10px;
+                border-radius: 20px;
+                font-size: .7rem;
+                font-weight: 600;
+                background: rgba(100, 116, 139, .12);
+                color: var(--text-muted);
+                border: 1px solid rgba(100, 116, 139, .25);
+            }
+
+            .ec-show-body {
+                padding: 1.25rem;
+            }
+        </style>
 
         {{-- Tab: Catatan --}}
         <div class="tab-pane fade" id="tab-catatan">

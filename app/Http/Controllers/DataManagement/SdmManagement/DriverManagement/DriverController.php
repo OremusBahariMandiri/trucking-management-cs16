@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DataManagement\SdmManagement\DriverManagement\StoreDriverRequest;
 use App\Http\Requests\DataManagement\SdmManagement\DriverManagement\UpdateDriverRequest;
 use App\Models\DataManagement\SdmManagement\DriverManagement\Driver;
+use App\Models\DataManagement\SdmManagement\DriverManagement\DriverEmergencyContact;
 use App\Services\DataManagement\SdmManagement\DriverManagement\DriverService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,10 +38,11 @@ class DriverController extends Controller
     public function create(): View
     {
         $options       = $this->service->formOptions();
+        $ecOptions     = $this->service->emergencyContactOptions();
         $suggestedCode = $this->service->generateDriverCode();
 
         return view('data-management.sdm-management.driver-data.create',
-            compact('options', 'suggestedCode'));
+            compact('options', 'ecOptions', 'suggestedCode'));
     }
 
     public function store(StoreDriverRequest $request): RedirectResponse
@@ -71,7 +73,14 @@ class DriverController extends Controller
             $certificates[] = $cert;
         }
 
-        $driver = $this->createAction->handle($data, $documents, $certificates);
+        // Kontak darurat
+        $emergencyContacts = [];
+        foreach ($request->input('emergency_contacts', []) as $i => $ec) {
+            if (empty($ec['full_name']) || empty($ec['phone_primary'])) continue;
+            $emergencyContacts[] = $ec;
+        }
+
+        $driver = $this->createAction->handle($data, $documents, $certificates, $emergencyContacts);
 
         return redirect()
             ->route('data-management.sdm-management.driver-data.index')
@@ -81,18 +90,20 @@ class DriverController extends Controller
     public function show(Driver $driver): View
     {
         $driver = $this->service->findWithRelations($driver->id);
+        $ecOptions = $this->service->emergencyContactOptions();
 
         return view('data-management.sdm-management.driver-data.show',
-            compact('driver'));
+            compact('driver', 'ecOptions'));
     }
 
     public function edit(Driver $driver): View
     {
-        $driver  = $this->service->findWithRelations($driver->id);
-        $options = $this->service->formOptions();
+        $driver    = $this->service->findWithRelations($driver->id);
+        $options   = $this->service->formOptions();
+        $ecOptions = $this->service->emergencyContactOptions();
 
         return view('data-management.sdm-management.driver-data.edit',
-            compact('driver', 'options'));
+            compact('driver', 'options', 'ecOptions'));
     }
 
     public function update(UpdateDriverRequest $request, Driver $driver): RedirectResponse
@@ -126,7 +137,17 @@ class DriverController extends Controller
             $certificates[] = $cert;
         }
 
-        $driver = $this->updateAction->handle($driver, $data, $documents, $certificates);
+        // Kontak darurat baru
+        $emergencyContacts = [];
+        foreach ($request->input('emergency_contacts', []) as $i => $ec) {
+            if (empty($ec['full_name']) || empty($ec['phone_primary'])) continue;
+            $emergencyContacts[] = $ec;
+        }
+
+        // Kontak darurat yang sudah ada (update)
+        $existingEmergencyContacts = $request->input('existing_emergency_contacts', []);
+
+        $driver = $this->updateAction->handle($driver, $data, $documents, $certificates, $emergencyContacts, $existingEmergencyContacts);
 
         return redirect()
             ->route('data-management.sdm-management.driver-data.index')
@@ -155,6 +176,13 @@ class DriverController extends Controller
         $this->updateAction->deleteCertificate($driver, $certificateId);
 
         return response()->json(['message' => 'Sertifikat berhasil dihapus.']);
+    }
+
+    public function destroyEmergencyContact(Driver $driver, int $contactId): \Illuminate\Http\JsonResponse
+    {
+        $this->updateAction->deleteEmergencyContact($driver, $contactId);
+
+        return response()->json(['message' => 'Kontak darurat berhasil dihapus.']);
     }
 
     // ── PDF Export ──────────────────────────────────────────────────────────

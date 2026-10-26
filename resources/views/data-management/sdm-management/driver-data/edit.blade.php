@@ -11,7 +11,6 @@
 <div class="drv-page-header mb-3">
     <div>
         <div class="drv-title">
-            <i class="fas fa-user-edit"></i>
             <span data-en="Edit Driver">Edit Supir</span>
         </div>
         <nav aria-label="breadcrumb">

@@ -33,6 +33,7 @@ class Driver extends Model
         'ktp_city',
         'ktp_province',
         'ktp_postal_code',
+        'ktp_rt_rw',
         'domicile_same_as_ktp',
         'domicile_address',
         'domicile_village',
@@ -40,6 +41,7 @@ class Driver extends Model
         'domicile_city',
         'domicile_province',
         'domicile_postal_code',
+        'domicile_rt_rw',
         'notes',
         'created_by',
         'updated_by',
@@ -57,6 +59,11 @@ class Driver extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(DriverDocument::class, 'driver_id');
+    }
+
+    public function emergencyContacts(): HasMany
+    {
+        return $this->hasMany(DriverEmergencyContact::class, 'driver_id');
     }
 
     public function certificates(): HasMany
