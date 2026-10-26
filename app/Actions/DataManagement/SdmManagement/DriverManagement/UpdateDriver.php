@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Storage;
 
 class UpdateDriver
 {
-    public function handle(Driver $driver, array $data, array $documents = [], array $certificates = []): Driver
+    public function handle(Driver $driver, array $data, array $documents = [], array $certificates = [], array $emergencyContacts = [], array $existingEmergencyContacts = []): Driver
     {
-        return DB::transaction(function () use ($driver, $data, $documents, $certificates) {
+        return DB::transaction(function () use ($driver, $data, $documents, $certificates, $emergencyContacts, $existingEmergencyContacts) {
 
             // ── Foto profil ────────────────────────────────────
             if (!empty($data['remove_photo'])) {
@@ -88,6 +88,59 @@ class UpdateDriver
                 ]);
             }
 
+            // ── Kontak Darurat yang ada (update) ──────────────
+            foreach ($existingEmergencyContacts as $contactId => $contact) {
+                $existing = $driver->emergencyContacts()->find((int) $contactId);
+                if (! $existing) continue;
+
+                $existing->update([
+                    'contact_type'      => $contact['contact_type']      ?? $existing->contact_type,
+                    'contact_status'    => $contact['contact_status']    ?? $existing->contact_status,
+                    'full_name'         => $contact['full_name']         ?? $existing->full_name,
+                    'nik'               => $contact['nik']               ?? null,
+                    'birth_place'       => $contact['birth_place']       ?? null,
+                    'birth_date'        => $contact['birth_date']        ?? null,
+                    'gender'            => $contact['gender']            ?? null,
+                    'religion'          => $contact['religion']          ?? null,
+                    'marital_status'    => $contact['marital_status']    ?? null,
+                    'phone_primary'     => $contact['phone_primary']     ?? $existing->phone_primary,
+                    'phone_alternative' => $contact['phone_alternative'] ?? null,
+                    'province'          => $contact['province']          ?? null,
+                    'city'              => $contact['city']              ?? null,
+                    'district'          => $contact['district']          ?? null,
+                    'village'           => $contact['village']           ?? null,
+                    'rt_rw'             => $contact['rt_rw']             ?? null,
+                    'postal_code'       => $contact['postal_code']       ?? null,
+                    'full_address'      => $contact['full_address']      ?? null,
+                ]);
+            }
+
+            // ── Kontak Darurat baru ────────────────────────────
+            foreach ($emergencyContacts as $contact) {
+                if (empty($contact['full_name']) || empty($contact['phone_primary'])) continue;
+
+                $driver->emergencyContacts()->create([
+                    'contact_type'      => $contact['contact_type']      ?? 'orang_tua',
+                    'contact_status'    => $contact['contact_status']    ?? 'aktif',
+                    'full_name'         => $contact['full_name'],
+                    'nik'               => $contact['nik']               ?? null,
+                    'birth_place'       => $contact['birth_place']       ?? null,
+                    'birth_date'        => $contact['birth_date']        ?? null,
+                    'gender'            => $contact['gender']            ?? 'male',
+                    'religion'          => $contact['religion']          ?? null,
+                    'marital_status'    => $contact['marital_status']    ?? null,
+                    'phone_primary'     => $contact['phone_primary'],
+                    'phone_alternative' => $contact['phone_alternative'] ?? null,
+                    'province'          => $contact['province']          ?? null,
+                    'city'              => $contact['city']              ?? null,
+                    'district'          => $contact['district']          ?? null,
+                    'village'           => $contact['village']           ?? null,
+                    'rt_rw'             => $contact['rt_rw']             ?? null,
+                    'postal_code'       => $contact['postal_code']       ?? null,
+                    'full_address'      => $contact['full_address']      ?? null,
+                ]);
+            }
+
             return $driver->fresh();
         });
     }
@@ -112,5 +165,11 @@ class UpdateDriver
         }
 
         $cert->delete();
+    }
+
+    public function deleteEmergencyContact(Driver $driver, int $contactId): void
+    {
+        $contact = $driver->emergencyContacts()->findOrFail($contactId);
+        $contact->delete();
     }
 }

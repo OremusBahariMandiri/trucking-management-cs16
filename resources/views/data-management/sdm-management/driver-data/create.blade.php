@@ -11,7 +11,6 @@
 <div class="drv-page-header mb-3">
     <div>
         <div class="drv-title">
-            <i class="fas fa-user-plus"></i>
             <span data-en="Add Driver">Tambah Supir</span>
         </div>
         <nav aria-label="breadcrumb">

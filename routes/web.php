@@ -7,6 +7,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MasterData\Administration\BusinessTypeController;
 use App\Http\Controllers\MasterData\Administration\CustomerController;
 use App\Http\Controllers\MasterData\Administration\CustomerTypeController;
+use App\Http\Controllers\MasterData\Administration\GoodsCategoryController;
+use App\Http\Controllers\MasterData\Administration\GoodsTypeController;
+use App\Http\Controllers\MasterData\Administration\PackagingTypeController;
+use App\Http\Controllers\DataManagement\OrderController;
 use App\Http\Controllers\MasterData\Vehicle\BodyTypeController;
 use App\Http\Controllers\MasterData\Vehicle\FuelTypeController;
 use App\Http\Controllers\MasterData\Vehicle\OwnershipStatusController;
@@ -166,6 +170,43 @@ Route::middleware(['auth', 'permission'])->group(function () {
                 Route::patch('/{customer}/toggle',   [CustomerController::class, 'toggle'])->name('toggle');
             });
 
+
+            // Jenis Barang (AD05)
+            Route::prefix('goods-types')->name('goods-types.')->group(function () {
+                Route::get('/',                        [GoodsTypeController::class, 'index'])->name('index');
+                Route::get('/create',                  [GoodsTypeController::class, 'create'])->name('create');
+                Route::post('/',                       [GoodsTypeController::class, 'store'])->name('store');
+                Route::get('/{goods_type}/edit',       [GoodsTypeController::class, 'edit'])->name('edit');
+                Route::put('/{goods_type}',            [GoodsTypeController::class, 'update'])->name('update');
+                Route::delete('/{goods_type}',         [GoodsTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{goods_type}/toggle',   [GoodsTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                [GoodsTypeController::class, 'apiList'])->name('api.list');
+            });
+
+            // Kategori Barang (AD06)
+            Route::prefix('goods-categories')->name('goods-categories.')->group(function () {
+                Route::get('/',                             [GoodsCategoryController::class, 'index'])->name('index');
+                Route::get('/create',                       [GoodsCategoryController::class, 'create'])->name('create');
+                Route::post('/',                            [GoodsCategoryController::class, 'store'])->name('store');
+                Route::get('/{goods_category}/edit',        [GoodsCategoryController::class, 'edit'])->name('edit');
+                Route::put('/{goods_category}',             [GoodsCategoryController::class, 'update'])->name('update');
+                Route::delete('/{goods_category}',          [GoodsCategoryController::class, 'destroy'])->name('destroy');
+                Route::patch('/{goods_category}/toggle',    [GoodsCategoryController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                     [GoodsCategoryController::class, 'apiList'])->name('api.list');
+            });
+
+            // Jenis Kemasan (AD07)
+            Route::prefix('packaging-types')->name('packaging-types.')->group(function () {
+                Route::get('/',                            [PackagingTypeController::class, 'index'])->name('index');
+                Route::get('/create',                      [PackagingTypeController::class, 'create'])->name('create');
+                Route::post('/',                           [PackagingTypeController::class, 'store'])->name('store');
+                Route::get('/{packaging_type}/edit',       [PackagingTypeController::class, 'edit'])->name('edit');
+                Route::put('/{packaging_type}',            [PackagingTypeController::class, 'update'])->name('update');
+                Route::delete('/{packaging_type}',         [PackagingTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{packaging_type}/toggle',   [PackagingTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                    [PackagingTypeController::class, 'apiList'])->name('api.list');
+            });
+
         }); // end administration
 
     }); // end master-data
@@ -179,6 +220,8 @@ Route::middleware(['auth', 'permission'])->group(function () {
         Route::resource('roles', RoleController::class);
         Route::post('roles/{role}/sync-permissions', [RoleController::class, 'syncPermissions'])
             ->name('roles.sync-permissions');
+        Route::get('roles/{role}/manage-permissions', [RoleController::class, 'managePermissions'])
+            ->name('roles.manage-permissions');
 
         // ── Permissions ────────────────────────────────────────────
         Route::resource('permissions', PermissionController::class)
@@ -233,6 +276,7 @@ Route::middleware(['auth', 'permission'])->group(function () {
                 Route::prefix('{driver}')->name('')->group(function () {
                     Route::delete('documents/{document}',       [DriverController::class, 'destroyDocument'])->name('documents.destroy');
                     Route::delete('certificates/{certificate}', [DriverController::class, 'destroyCertificate'])->name('certificates.destroy');
+                    Route::delete('emergency-contacts/{contact}', [DriverController::class, 'destroyEmergencyContact'])->name('emergency-contacts.destroy');
                     Route::get('pdf',                                  [DriverController::class, 'exportPdf'])->name('pdf');
                 });
 
@@ -262,6 +306,20 @@ Route::middleware(['auth', 'permission'])->group(function () {
                 });
             });
         });
+
+        // ── Pesanan ──────────────────────────────────────────────
+        Route::prefix('orders')->name('orders.')->group(function () {
+            Route::get('/',                  [OrderController::class, 'index'])->name('index');
+            Route::get('/create',            [OrderController::class, 'create'])->name('create');
+            Route::post('/',                 [OrderController::class, 'store'])->name('store');
+            Route::get('/{order}',           [OrderController::class, 'show'])->name('show');
+            Route::get('/{order}/edit',      [OrderController::class, 'edit'])->name('edit');
+            Route::put('/{order}',           [OrderController::class, 'update'])->name('update');
+            Route::delete('/{order}',        [OrderController::class, 'destroy'])->name('destroy');
+            Route::patch('/{order}/approval',[OrderController::class, 'updateApproval'])->name('approval');
+        });
+
     });
+
 });
 

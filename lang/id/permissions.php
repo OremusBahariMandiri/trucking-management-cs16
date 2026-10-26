@@ -1,0 +1,22 @@
+<?php
+return [
+    'title'         => 'Kelola Permission',
+    'breadcrumb'    => ['Beranda', 'Role', 'Kelola Permission'],
+    'back'          => 'Kembali',
+    'feature'       => 'Fitur',
+    'view_list'     => 'Lihat Daftar',
+    'view_detail'   => 'Lihat Detail',
+    'add'           => 'Tambah',
+    'edit'          => 'Ubah',
+    'delete'        => 'Hapus',
+    'export_pdf'    => 'Export PDF',
+    'export_excel'  => 'Export Excel',
+    'na'            => 'Tidak tersedia untuk fitur ini',
+    'select_all'    => 'Pilih Semua',
+    'deselect_all'  => 'Hapus Semua',
+    'save'          => 'Simpan',
+    'selected'      => 'Terpilih',
+    'of'            => '/',
+    'permission'    => 'permission',
+    'success'       => 'Permission berhasil disimpan.',
+];

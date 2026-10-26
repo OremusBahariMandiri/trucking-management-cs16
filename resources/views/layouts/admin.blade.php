@@ -101,7 +101,7 @@
                             @if ($canUmPermissions)
                                 <a href="{{ route('user-management.permissions.index') }}"
                                     class="sub-link {{ request()->routeIs('user-management.permissions.*') ? 'active' : '' }}"
-                                    data-en="Permissions">Permission</a>
+                                    data-en="Permissions">Akses</a>
                             @endif
                         </div>
                     </div>
@@ -123,6 +123,11 @@
                     $canCustomerTypes = Auth::user()->hasAccessToMenu('master-data.administration.customer-types');
                     $canBusinessTypes = Auth::user()->hasAccessToMenu('master-data.administration.business-types');
                     $canCustomers = Auth::user()->hasAccessToMenu('master-data.administration.customers');
+                    $canGoodsTypes = Auth::user()->hasAccessToMenu('master-data.administration.goods-types');
+                    $canGoodsCategories = Auth::user()->hasAccessToMenu('master-data.administration.goods-categories');
+                    $canPackagingTypes = Auth::user()->hasAccessToMenu('master-data.administration.packaging-types');
+                    // Order Management
+                    $canOrders = Auth::user()->hasAccessToMenu('data-management.orders');
                     $showAdminSub = $canCustomerTypes || $canBusinessTypes || $canCustomers;
                     $showKendaraanSub =
                         $canVehicleTypes ||
@@ -278,6 +283,27 @@
                                             Data Pelanggan
                                         </a>
                                     @endif
+                                    @if ($canGoodsTypes)
+                                        <a href="{{ route('master-data.administration.goods-types.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.administration.goods-types.*') ? 'active' : '' }}"
+                                            data-en="Goods Types">
+                                            Jenis Barang
+                                        </a>
+                                    @endif
+                                    @if ($canGoodsCategories)
+                                        <a href="{{ route('master-data.administration.goods-categories.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.administration.goods-categories.*') ? 'active' : '' }}"
+                                            data-en="Goods Categories">
+                                            Kategori Barang
+                                        </a>
+                                    @endif
+                                    @if ($canPackagingTypes)
+                                        <a href="{{ route('master-data.administration.packaging-types.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('master-data.administration.packaging-types.*') ? 'active' : '' }}"
+                                            data-en="Packaging Types">
+                                            Jenis Kemasan
+                                        </a>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -293,11 +319,12 @@
                     $canEmployeeData = Auth::user()->hasAccessToMenu('data-management.sdm-management.employee-data');
                     $canDriverData = Auth::user()->hasAccessToMenu('data-management.sdm-management.driver-data');
                     $showSdmSub = $canEmployeeData || $canDriverData;
-                    $showManajemenGroup = $canFleetData || $showSdmSub;
+                    $showManajemenGroup = $canFleetData || $showSdmSub || $canOrders;
 
                     $manajemenOpen = request()->routeIs(
                         'data-management.fleet-data.*',
                         'data-management.sdm-management.*',
+                        'data-management.orders.*',
                     );
                     $sdmOpen = request()->routeIs('data-management.sdm-management.*');
                 @endphp
@@ -373,9 +400,20 @@
                                     @endif
                                 </div>
                             @endif
+
+                            @if ($canOrders)
+                                <a href="{{ route('data-management.orders.index') }}"
+                                    class="sub-group-hd {{ request()->routeIs('data-management.orders.*') ? 'active' : '' }}">
+                                    <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
+                                        <i class="fas fa-clipboard-list" style="font-size:13px"></i>
+                                    </span>
+                                    <span data-en="Orders">Pesanan</span>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endif
+
 
                 {{-- ── Laporan ── --}}
                 <a href="#" class="nav-link">
