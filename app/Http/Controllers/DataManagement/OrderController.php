@@ -39,7 +39,7 @@ class OrderController extends Controller
     public function create()
     {
         return view('data-management.orders.create', [
-            'customers'       => Customer::where('is_active', true)->with('primaryPic')->orderBy('name')->get(),
+            'customers'       => Customer::where('is_active', true)->with(['primaryPic', 'pics', 'customerType', 'businessType'])->orderBy('name')->get(),
             'goodsTypes'      => GoodsType::where('is_active', true)->orderBy('name')->get(),
             'goodsCategories' => GoodsCategory::where('is_active', true)->orderBy('name')->get(),
             'packagingTypes'  => PackagingType::where('is_active', true)->orderBy('name')->get(),
@@ -84,7 +84,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['customer', 'shipments.goodsType', 'shipments.goodsCategory', 'shipments.packagingType', 'shipments.vehicleType', 'costs', 'approvedBy', 'createdBy']);
+        $order->load(['customer.customerType', 'customer.businessType', 'customer.pics', 'shipments.goodsType', 'shipments.goodsCategory', 'shipments.packagingType', 'shipments.vehicleType', 'costs', 'approvedBy', 'createdBy']);
         return view('data-management.orders.show', compact('order'));
     }
 
@@ -93,7 +93,7 @@ class OrderController extends Controller
         $order->load(['shipments', 'costs']);
         return view('data-management.orders.edit', [
             'order'           => $order,
-            'customers'       => Customer::where('is_active', true)->with('primaryPic')->orderBy('name')->get(),
+            'customers'       => Customer::where('is_active', true)->with(['primaryPic', 'pics', 'customerType', 'businessType'])->orderBy('name')->get(),
             'goodsTypes'      => GoodsType::where('is_active', true)->orderBy('name')->get(),
             'goodsCategories' => GoodsCategory::where('is_active', true)->orderBy('name')->get(),
             'packagingTypes'  => PackagingType::where('is_active', true)->orderBy('name')->get(),

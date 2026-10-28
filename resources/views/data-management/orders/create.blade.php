@@ -34,7 +34,7 @@
 
         .ord-tab-btn:hover:not(.active) {
             color: var(--text);
-            background: var(--surface-alt)
+            background: var(--surface-2)
         }
 
         .ord-tab-pane {
@@ -64,7 +64,7 @@
         }
 
         .ord-row-item {
-            background: var(--surface-alt, #f8f9fa);
+            background: var(--surface-2, #f8fafc);
             border: 1px solid var(--border);
             border-radius: .6rem;
             padding: 1rem
@@ -123,7 +123,7 @@
 
         /* ── Cost summary ─────────────────────────────────────── */
         .ord-cost-summary {
-            background: var(--surface-card, #fff);
+            background: var(--surface, #fff);
             border: 1px solid var(--border);
             border-radius: .6rem;
             padding: 1rem 1.25rem;
@@ -145,6 +145,144 @@
             font-size: 1rem;
             font-weight: 700;
             color: var(--primary, #0d6efd)
+        }
+
+        /* ── Customer Info Modal ──────────────────────────────── */
+        .cust-info-btn {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            border: none;
+            background: #0d6efd;
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background .15s, transform .1s;
+            box-shadow: 0 2px 6px rgba(13,110,253,.35)
+        }
+        .cust-info-btn:hover { background: #0b5ed7; transform: scale(1.08) }
+        .cust-info-btn:disabled { background: #6c757d; cursor: not-allowed; box-shadow: none; transform: none }
+
+        /* ── Customer read-only info strip ───────────────────── */
+        .cust-ro-strip {
+            background: var(--surface-2, #f8fafc);
+            border: 1px solid var(--border);
+            border-radius: .5rem;
+            padding: .75rem 1rem;
+            display: none
+        }
+        .cust-ro-strip.visible { display: block }
+        .cust-ro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+            gap: .5rem .75rem
+        }
+        .cust-ro-field label {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: .15rem
+        }
+        .cust-ro-field .cust-ro-val {
+            font-size: .85rem;
+            color: var(--text);
+            font-weight: 500;
+            word-break: break-word
+        }
+        .cust-ro-field .cust-ro-val:empty::after { content: "—"; color: var(--text-muted); font-weight: 400 }
+
+        /* ── Info Modal ───────────────────────────────────────── */
+        .ci-modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,.45);
+            z-index: 1055; display: none; align-items: center; justify-content: center; padding: 1rem
+        }
+        .ci-modal-backdrop.show { display: flex }
+        .ci-modal {
+            background: var(--surface, #fff);
+            border-radius: .75rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+            width: 100%; max-width: 680px; max-height: 90vh;
+            display: flex; flex-direction: column; overflow: hidden
+        }
+        .ci-modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+            background: var(--surface-2, #f8fafc)
+        }
+        .ci-modal-title {
+            font-size: .9rem; font-weight: 700; color: var(--text);
+            display: flex; align-items: center; gap: .5rem
+        }
+        .ci-modal-title .badge-code {
+            font-size: .7rem; background: rgba(13,110,253,.12); color: #0d6efd;
+            border-radius: 1rem; padding: .15rem .6rem; font-weight: 600
+        }
+        .ci-close-btn {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1.1rem; cursor: pointer; padding: .2rem .4rem;
+            border-radius: .3rem; line-height: 1; transition: color .15s
+        }
+        .ci-close-btn:hover { color: var(--text) }
+        .ci-modal-body { flex: 1; overflow-y: auto; padding: 0 }
+
+        /* tabs inside modal */
+        .ci-tab-nav {
+            display: flex; gap: 0;
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.25rem; background: var(--surface-2, #f8fafc)
+        }
+        .ci-tab-btn {
+            background: none; border: none;
+            padding: .55rem .85rem; font-size: .8rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            border-bottom: 2px solid transparent; margin-bottom: -1px;
+            transition: color .15s, border-color .15s
+        }
+        .ci-tab-btn.active { color: #0d6efd; border-bottom-color: #0d6efd }
+        .ci-tab-btn:hover:not(.active) { color: var(--text) }
+        .ci-tab-pane { display: none; padding: 1.25rem }
+        .ci-tab-pane.active { display: block }
+
+        /* info rows inside modal */
+        .ci-info-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+            gap: .65rem 1rem; margin-bottom: 1rem
+        }
+        .ci-info-item label {
+            font-size: .68rem; font-weight: 700; letter-spacing: .07em;
+            text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: .2rem
+        }
+        .ci-info-item .ci-val {
+            font-size: .875rem; color: var(--text); word-break: break-word
+        }
+        .ci-info-item .ci-val:empty::after { content: "—"; color: var(--text-muted) }
+        .ci-info-item.full { grid-column: 1 / -1 }
+
+        /* PIC cards */
+        .ci-pic-list { display: flex; flex-direction: column; gap: .65rem }
+        .ci-pic-card {
+            border: 1px solid var(--border); border-radius: .5rem; padding: .75rem 1rem;
+            background: var(--surface-2, #f8fafc); position: relative
+        }
+        .ci-pic-card .ci-pic-name { font-weight: 700; font-size: .88rem; color: var(--text) }
+        .ci-pic-card .ci-pic-badge {
+            font-size: .65rem; background: #0d6efd; color: #fff;
+            border-radius: 1rem; padding: .1rem .5rem; margin-left: .4rem; vertical-align: middle
+        }
+        .ci-pic-card .ci-pic-sub {
+            font-size: .78rem; color: var(--text-muted); margin-top: .25rem
+        }
+        .ci-modal-footer {
+            padding: .75rem 1.25rem; border-top: 1px solid var(--border);
+            text-align: right
         }
     </style>
 @endpush
@@ -187,7 +325,7 @@
             <div class="lkp-form-body ord-tab-pane active" id="t-cust">
                 <div class="ord-section-title" data-en="A. Customer Information">A. Informasi Pelanggan</div>
                 <div class="row g-3">
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-12">
                         <label class="form-label" data-en="PO Number">Nomor PO <span class="text-danger">*</span></label>
                         <input type="text" name="po_number" class="form-control @error('po_number') is-invalid @enderror"
                             value="{{ old('po_number', $nextPoNumber) }}" required>
@@ -195,22 +333,62 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-12">
                         <label class="form-label" data-en="PO Date">Tanggal PO <span class="text-danger">*</span></label>
                         <input type="date" name="po_date" class="form-control"
                             value="{{ old('po_date', now()->toDateString()) }}" required>
                     </div>
                     <div class="col-12 col-md-12">
                         <label class="form-label" data-en="Customer">Pelanggan</label>
-                        <select name="customer_id" class="form-select" id="customerSelect">
-                            <option value="">— Pilih Pelanggan —</option>
-                            @foreach ($customers as $c)
-                                <option value="{{ $c->id }}" data-address="{{ $c->address }}" data-pic-name="{{ $c->primaryPic?->name }}" data-pic-phone="{{ $c->primaryPic?->phone }}"
-                                    {{ old('customer_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="d-flex gap-2 align-items-center">
+                            <select name="customer_id" class="form-select" id="customerSelect">
+                                <option value="">— Pilih Pelanggan —</option>
+                                @foreach ($customers as $c)
+                                    <option value="{{ $c->id }}"
+                                        data-address="{{ $c->address }}"
+                                        data-pic-name="{{ $c->primaryPic?->name }}"
+                                        data-pic-phone="{{ $c->primaryPic?->phone }}"
+                                        {{ old('customer_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="cust-info-btn" id="btnCustInfo" disabled title="Informasi Pelanggan" data-en-title="Customer Information">
+                                <i class="fas fa-info"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-12">
+
+                    {{-- Read-only customer info strip --}}
+                    {{-- <div class="col-12">
+                        <div class="cust-ro-strip" id="custRoStrip">
+                            <div class="cust-ro-grid">
+                                <div class="cust-ro-field">
+                                    <label data-en="Customer Code">Kode Pelanggan</label>
+                                    <div class="cust-ro-val" id="ro_code"></div>
+                                </div>
+                                <div class="cust-ro-field">
+                                    <label data-en="Type">Tipe</label>
+                                    <div class="cust-ro-val" id="ro_type"></div>
+                                </div>
+                                <div class="cust-ro-field">
+                                    <label data-en="Business">Bidang Usaha</label>
+                                    <div class="cust-ro-val" id="ro_biz"></div>
+                                </div>
+                                <div class="cust-ro-field">
+                                    <label data-en="Phone">Telepon</label>
+                                    <div class="cust-ro-val" id="ro_phone"></div>
+                                </div>
+                                <div class="cust-ro-field">
+                                    <label data-en="Email">Email</label>
+                                    <div class="cust-ro-val" id="ro_email"></div>
+                                </div>
+                                <div class="cust-ro-field">
+                                    <label data-en="NPWP">NPWP</label>
+                                    <div class="cust-ro-val" id="ro_npwp"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> --}}
+                    {{-- <div class="col-12">
                         <label class="form-label" data-en="Address">Alamat</label>
                         <textarea name="customer_address" class="form-control" rows="2" id="custAddr">{{ old('customer_address') }}</textarea>
                     </div>
@@ -221,7 +399,7 @@
                     <div class="col-12 col-md-6">
                         <label class="form-label" data-en="PIC Phone">Telp PIC</label>
                         <input type="text" name="pic_phone" class="form-control" value="{{ old('pic_phone') }}">
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
@@ -433,6 +611,162 @@
             </div>
         </div>
     </template>
+
+    {{-- ═══ CUSTOMER DATA JSON ═══ --}}
+    @php
+        $customersJson = $customers->map(fn($c) => [
+            'id'            => $c->id,
+            'code'          => $c->customer_code,
+            'name'          => $c->name,
+            'type'          => $c->customerType?->name,
+            'business_type' => $c->businessType?->name,
+            'phone'         => $c->phone,
+            'email'         => $c->email,
+            'npwp'          => $c->npwp_number,
+            'nib'           => $c->nib_number,
+            'address'       => $c->address,
+            'rt_rw'         => $c->rt_rw,
+            'kelurahan'     => $c->kelurahan,
+            'kecamatan'     => $c->kecamatan,
+            'city'          => $c->city,
+            'province'      => $c->province,
+            'postal_code'   => $c->postal_code,
+            'is_active'     => $c->is_active,
+            'reg_date'      => $c->registration_date?->format('d/m/Y'),
+            'pics'          => $c->pics->map(fn($p) => [
+                'name'       => $p->name,
+                'position'   => $p->position,
+                'department' => $p->department,
+                'phone'      => $p->phone,
+                'email'      => $p->email,
+                'is_primary' => $p->is_primary,
+            ])->toArray(),
+        ])->keyBy('id');
+    @endphp
+    <script>
+        const CUSTOMERS_DATA = @json($customersJson);
+    </script>
+
+    {{-- ═══ CUSTOMER INFO MODAL ═══ --}}
+    <div class="ci-modal-backdrop" id="custInfoModal" role="dialog" aria-modal="true">
+        <div class="ci-modal">
+            <div class="ci-modal-header">
+                <div class="ci-modal-title">
+                    <i class="fas fa-building" style="color:#0d6efd"></i>
+                    <span id="ciModalName" data-en="">—</span>
+                    <span class="badge-code" id="ciModalCode"></span>
+                </div>
+                <button type="button" class="ci-close-btn" id="btnCloseCustModal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="ci-modal-body">
+                {{-- Tab nav --}}
+                <div class="ci-tab-nav">
+                    <button type="button" class="ci-tab-btn active" data-ci-tab="ci-general">
+                        <i class="fas fa-info-circle me-1"></i><span data-en="General">Umum</span>
+                    </button>
+                    <button type="button" class="ci-tab-btn" data-ci-tab="ci-address">
+                        <i class="fas fa-map-marker-alt me-1"></i><span data-en="Address">Alamat</span>
+                    </button>
+                    <button type="button" class="ci-tab-btn" data-ci-tab="ci-pics">
+                        <i class="fas fa-users me-1"></i><span data-en="PIC / Contacts">PIC / Kontak</span>
+                    </button>
+                </div>
+
+                {{-- Tab: General --}}
+                <div class="ci-tab-pane active" id="ci-general">
+                    <div class="ci-info-grid">
+                        <div class="ci-info-item">
+                            <label data-en="Customer Code">Kode Pelanggan</label>
+                            <div class="ci-val" id="ci_code"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Registration Date">Tgl Registrasi</label>
+                            <div class="ci-val" id="ci_reg_date"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Customer Type">Tipe Pelanggan</label>
+                            <div class="ci-val" id="ci_type"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Business Type">Bidang Usaha</label>
+                            <div class="ci-val" id="ci_biz"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Phone">Telepon</label>
+                            <div class="ci-val" id="ci_phone"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Email">Email</label>
+                            <div class="ci-val" id="ci_email"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label>NPWP</label>
+                            <div class="ci-val" id="ci_npwp"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label>NIB</label>
+                            <div class="ci-val" id="ci_nib"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Status">Status</label>
+                            <div class="ci-val" id="ci_status"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tab: Address --}}
+                <div class="ci-tab-pane" id="ci-address">
+                    <div class="ci-info-grid">
+                        <div class="ci-info-item full">
+                            <label data-en="Street Address">Alamat Jalan</label>
+                            <div class="ci-val" id="ci_address"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label>RT/RW</label>
+                            <div class="ci-val" id="ci_rtrw"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Kelurahan">Kelurahan</label>
+                            <div class="ci-val" id="ci_kelurahan"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Kecamatan">Kecamatan</label>
+                            <div class="ci-val" id="ci_kecamatan"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="City">Kota</label>
+                            <div class="ci-val" id="ci_city"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Province">Provinsi</label>
+                            <div class="ci-val" id="ci_province"></div>
+                        </div>
+                        <div class="ci-info-item">
+                            <label data-en="Postal Code">Kode Pos</label>
+                            <div class="ci-val" id="ci_postal"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tab: PICs --}}
+                <div class="ci-tab-pane" id="ci-pics">
+                    <div class="ci-pic-list" id="ciPicList">
+                        <p class="text-muted" style="font-size:.85rem" data-en="No PIC registered">Belum ada PIC terdaftar</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ci-modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" id="btnCloseCustModal2">
+                    <i class="fas fa-times me-1"></i><span data-en="Close">Tutup</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -447,14 +781,143 @@
             });
         });
 
-        // ── Customer address autofill ──────────────────────────────────────────────
-        document.getElementById('customerSelect')?.addEventListener('change', function() {
-            var opt = this.options[this.selectedIndex];
-            document.getElementById('custAddr').value = opt.dataset.address || '';
-            var picNameInput = document.querySelector('input[name="pic_name"]');
-            var picPhoneInput = document.querySelector('input[name="pic_phone"]');
-            if (picNameInput) picNameInput.value = opt.dataset.picName || '';
-            if (picPhoneInput) picPhoneInput.value = opt.dataset.picPhone || '';
+        // ── Customer select: autofill + read-only strip + info button ────────────
+        const custSelect   = document.getElementById('customerSelect');
+        const btnCustInfo  = document.getElementById('btnCustInfo');
+        const custRoStrip  = document.getElementById('custRoStrip');
+
+        function fillCustomerData(customerId) {
+            const c = CUSTOMERS_DATA[customerId] || CUSTOMERS_DATA[String(customerId)] || CUSTOMERS_DATA[Number(customerId)];
+            if (!c) {
+                custRoStrip?.classList.remove('visible');
+                if (btnCustInfo) { btnCustInfo.disabled = true; btnCustInfo.setAttribute('disabled', ''); }
+                return;
+            }
+            try {
+                // autofill editable fields
+                const addrEl = document.getElementById('custAddr');
+                if (addrEl) addrEl.value = c.address || '';
+                const pics = Array.isArray(c.pics) ? c.pics : [];
+                const picPrimary = pics.find(p => p.is_primary) || pics[0] || {};
+                const picNameInput  = document.querySelector('input[name="pic_name"]');
+                const picPhoneInput = document.querySelector('input[name="pic_phone"]');
+                if (picNameInput)  picNameInput.value  = picPrimary.name  || '';
+                if (picPhoneInput) picPhoneInput.value = picPrimary.phone || '';
+
+                // fill read-only strip
+                const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || ''; };
+                setTxt('ro_code',  c.code);
+                setTxt('ro_type',  c.type);
+                setTxt('ro_biz',   c.business_type);
+                setTxt('ro_phone', c.phone);
+                setTxt('ro_email', c.email);
+                setTxt('ro_npwp',  c.npwp);
+                custRoStrip?.classList.add('visible');
+            } catch(e) { console.error('fillCustomerData error:', e); }
+
+            // enable button regardless of any fill errors above
+            if (btnCustInfo) { btnCustInfo.disabled = false; btnCustInfo.removeAttribute('disabled'); }
+        }
+
+        custSelect?.addEventListener('change', function() {
+            fillCustomerData(this.value);
+        });
+
+        // Trigger on page load if old() value present
+        if (custSelect?.value) fillCustomerData(custSelect.value);
+
+        // ── Customer Info Modal ────────────────────────────────────────────────────
+        const ciModal = document.getElementById('custInfoModal');
+
+        function openCustModal(customerId) {
+            const c = CUSTOMERS_DATA[customerId];
+            if (!c) return;
+            const isEn = (typeof lang !== 'undefined') ? lang === 'en' : false;
+
+            // header
+            document.getElementById('ciModalName').textContent = c.name || '';
+            document.getElementById('ciModalCode').textContent = c.code || '';
+
+            // General tab
+            document.getElementById('ci_code').textContent     = c.code     || '';
+            document.getElementById('ci_reg_date').textContent = c.reg_date || '';
+            document.getElementById('ci_type').textContent     = c.type     || '';
+            document.getElementById('ci_biz').textContent      = c.business_type || '';
+            document.getElementById('ci_phone').textContent    = c.phone    || '';
+            document.getElementById('ci_email').textContent    = c.email    || '';
+            document.getElementById('ci_npwp').textContent     = c.npwp    || '';
+            document.getElementById('ci_nib').textContent      = c.nib     || '';
+            document.getElementById('ci_status').textContent   = c.is_active
+                ? (isEn ? 'Active' : 'Aktif')
+                : (isEn ? 'Inactive' : 'Tidak Aktif');
+
+            // Address tab
+            document.getElementById('ci_address').textContent   = c.address   || '';
+            document.getElementById('ci_rtrw').textContent      = c.rt_rw     || '';
+            document.getElementById('ci_kelurahan').textContent = c.kelurahan || '';
+            document.getElementById('ci_kecamatan').textContent = c.kecamatan || '';
+            document.getElementById('ci_city').textContent      = c.city      || '';
+            document.getElementById('ci_province').textContent  = c.province  || '';
+            document.getElementById('ci_postal').textContent    = c.postal_code || '';
+
+            // PICs tab
+            const picList = document.getElementById('ciPicList');
+            if (!c.pics || c.pics.length === 0) {
+                picList.innerHTML = `<p class="text-muted" style="font-size:.85rem">${isEn ? 'No PIC registered' : 'Belum ada PIC terdaftar'}</p>`;
+            } else {
+                picList.innerHTML = c.pics.map(p => `
+                    <div class="ci-pic-card">
+                        <div class="ci-pic-name">
+                            ${p.name || '—'}
+                            ${p.is_primary ? `<span class="ci-pic-badge">${isEn ? 'Primary' : 'Utama'}</span>` : ''}
+                        </div>
+                        <div class="ci-pic-sub">
+                            ${[p.position, p.department].filter(Boolean).join(' · ') || ''}
+                        </div>
+                        ${p.phone ? `<div class="ci-pic-sub"><i class="fas fa-phone fa-xs me-1"></i>${p.phone}</div>` : ''}
+                        ${p.email ? `<div class="ci-pic-sub"><i class="fas fa-envelope fa-xs me-1"></i>${p.email}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            // Reset tab to first
+            document.querySelectorAll('.ci-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.ci-tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelector('[data-ci-tab="ci-general"]').classList.add('active');
+            document.getElementById('ci-general').classList.add('active');
+
+            ciModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCustModal() {
+            ciModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        btnCustInfo?.addEventListener('click', () => {
+            if (custSelect?.value) openCustModal(custSelect.value);
+        });
+
+        document.getElementById('btnCloseCustModal')?.addEventListener('click', closeCustModal);
+        document.getElementById('btnCloseCustModal2')?.addEventListener('click', closeCustModal);
+
+        ciModal?.addEventListener('click', (e) => {
+            if (e.target === ciModal) closeCustModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && ciModal?.classList.contains('show')) closeCustModal();
+        });
+
+        // Tab switching inside modal
+        document.querySelectorAll('.ci-tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.ci-tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.ci-tab-pane').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.ciTab).classList.add('active');
+            });
         });
 
         // ── Repeatable rows ────────────────────────────────────────────────────────
