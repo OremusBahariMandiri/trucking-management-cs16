@@ -316,6 +316,8 @@ Route::middleware(['auth', 'permission'])->group(function () {
                 Route::get('ws-token',          [GpsMonitoringController::class, 'wsToken'])->name('ws-token');
                 Route::post('ws-token/refresh', [GpsMonitoringController::class, 'refreshToken'])->name('ws-token.refresh');
                 Route::get('positions',         [GpsMonitoringController::class, 'positions'])->name('positions');
+            Route::post('engine-event',     [GpsMonitoringController::class, 'logEngineEvent'])->name('engine-event');
+            Route::get('engine-history/{gpsTrackerId}', [GpsMonitoringController::class, 'engineHistory'])->name('engine-history');
             });
         });
 
