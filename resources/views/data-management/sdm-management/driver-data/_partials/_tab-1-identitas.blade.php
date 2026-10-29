@@ -60,6 +60,25 @@
                     <span data-en="Max 2MB, JPG/PNG">Maks 2MB, JPG/PNG</span>
                 </div>
             </div>
+
+            {{-- CV Export --}}
+            @if ($isEdit)
+            <div class="mt-3">
+                <div class="form-section-title">
+                    <i class="fas fa-file-pdf"></i>
+                    <span data-en="CV">CV</span>
+                </div>
+                <a href="{{ route('data-management.sdm-management.driver-data.pdf', $driver) }}"
+                   target="_blank"
+                   class="drv-cv-btn w-100">
+                    <i class="fas fa-download"></i>
+                    <span data-en="Export CV PDF">Export CV PDF</span>
+                </a>
+                <div style="font-size:.75rem;color:var(--text-faint);margin-top:.4rem">
+                    <span data-en="Opens in new tab">Membuka tab baru</span>
+                </div>
+            </div>
+            @endif
         </div>
 
         {{-- Kanan: Data Diri --}}
@@ -145,7 +164,7 @@
                         Lahir</label>
                     <input type="date" name="birth_date" id="birth_date"
                         class="form-control form-control-sm {{ $hasErr('birth_date') }}"
-                        value="{{ $old('birth_date', $driver?->birth_date?->format('Y-m-d')) }}">
+                        value="{{ old('birth_date', $driver?->birth_date?->format('Y-m-d')) }}">
                     @error('birth_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

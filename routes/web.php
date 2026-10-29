@@ -1,9 +1,17 @@
 <?php
 
 use App\Http\Controllers\DataManagement\FleetManagement\FleetController;
+use App\Http\Controllers\DataManagement\FleetManagement\GpsMonitoringController;
 use App\Http\Controllers\DataManagement\SdmManagement\DriverManagement\DriverController;
 use App\Http\Controllers\DataManagement\SdmManagement\EmployeeManagement\EmployeeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MasterData\Administration\BusinessTypeController;
+use App\Http\Controllers\MasterData\Administration\CustomerController;
+use App\Http\Controllers\MasterData\Administration\CustomerTypeController;
+use App\Http\Controllers\MasterData\Administration\GoodsCategoryController;
+use App\Http\Controllers\MasterData\Administration\GoodsTypeController;
+use App\Http\Controllers\MasterData\Administration\PackagingTypeController;
+use App\Http\Controllers\DataManagement\OrderController;
 use App\Http\Controllers\MasterData\Vehicle\BodyTypeController;
 use App\Http\Controllers\MasterData\Vehicle\FuelTypeController;
 use App\Http\Controllers\MasterData\Vehicle\OwnershipStatusController;
@@ -123,7 +131,86 @@ Route::middleware(['auth', 'permission'])->group(function () {
             Route::patch('/{ownership_status}/toggle', [OwnershipStatusController::class, 'toggle'])->name('toggle');
             Route::get('/api/list',                    [OwnershipStatusController::class, 'apiList'])->name('api.list');
         });
-    });
+
+        // ── Administrasi ───────────────────────────────────────
+        Route::prefix('administration')->name('administration.')->group(function () {
+
+            // Jenis Pelanggan
+            Route::prefix('customer-types')->name('customer-types.')->group(function () {
+                Route::get('/',                          [CustomerTypeController::class, 'index'])->name('index');
+                Route::get('/create',                    [CustomerTypeController::class, 'create'])->name('create');
+                Route::post('/',                         [CustomerTypeController::class, 'store'])->name('store');
+                Route::get('/{customer_type}/edit',      [CustomerTypeController::class, 'edit'])->name('edit');
+                Route::put('/{customer_type}',           [CustomerTypeController::class, 'update'])->name('update');
+                Route::delete('/{customer_type}',        [CustomerTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{customer_type}/toggle',  [CustomerTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                  [CustomerTypeController::class, 'apiList'])->name('api.list');
+            });
+
+            // Jenis Usaha
+            Route::prefix('business-types')->name('business-types.')->group(function () {
+                Route::get('/',                          [BusinessTypeController::class, 'index'])->name('index');
+                Route::get('/create',                    [BusinessTypeController::class, 'create'])->name('create');
+                Route::post('/',                         [BusinessTypeController::class, 'store'])->name('store');
+                Route::get('/{business_type}/edit',      [BusinessTypeController::class, 'edit'])->name('edit');
+                Route::put('/{business_type}',           [BusinessTypeController::class, 'update'])->name('update');
+                Route::delete('/{business_type}',        [BusinessTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{business_type}/toggle',  [BusinessTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                  [BusinessTypeController::class, 'apiList'])->name('api.list');
+            });
+
+            // Data Pelanggan
+            Route::prefix('customers')->name('customers.')->group(function () {
+                Route::get('/',                      [CustomerController::class, 'index'])->name('index');
+                Route::get('/create',                [CustomerController::class, 'create'])->name('create');
+                Route::post('/',                     [CustomerController::class, 'store'])->name('store');
+                Route::get('/{customer}',            [CustomerController::class, 'show'])->name('show');
+                Route::get('/{customer}/edit',       [CustomerController::class, 'edit'])->name('edit');
+                Route::put('/{customer}',            [CustomerController::class, 'update'])->name('update');
+                Route::delete('/{customer}',         [CustomerController::class, 'destroy'])->name('destroy');
+                Route::patch('/{customer}/toggle',   [CustomerController::class, 'toggle'])->name('toggle');
+            });
+
+
+            // Jenis Barang (AD05)
+            Route::prefix('goods-types')->name('goods-types.')->group(function () {
+                Route::get('/',                        [GoodsTypeController::class, 'index'])->name('index');
+                Route::get('/create',                  [GoodsTypeController::class, 'create'])->name('create');
+                Route::post('/',                       [GoodsTypeController::class, 'store'])->name('store');
+                Route::get('/{goods_type}/edit',       [GoodsTypeController::class, 'edit'])->name('edit');
+                Route::put('/{goods_type}',            [GoodsTypeController::class, 'update'])->name('update');
+                Route::delete('/{goods_type}',         [GoodsTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{goods_type}/toggle',   [GoodsTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                [GoodsTypeController::class, 'apiList'])->name('api.list');
+            });
+
+            // Kategori Barang (AD06)
+            Route::prefix('goods-categories')->name('goods-categories.')->group(function () {
+                Route::get('/',                             [GoodsCategoryController::class, 'index'])->name('index');
+                Route::get('/create',                       [GoodsCategoryController::class, 'create'])->name('create');
+                Route::post('/',                            [GoodsCategoryController::class, 'store'])->name('store');
+                Route::get('/{goods_category}/edit',        [GoodsCategoryController::class, 'edit'])->name('edit');
+                Route::put('/{goods_category}',             [GoodsCategoryController::class, 'update'])->name('update');
+                Route::delete('/{goods_category}',          [GoodsCategoryController::class, 'destroy'])->name('destroy');
+                Route::patch('/{goods_category}/toggle',    [GoodsCategoryController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                     [GoodsCategoryController::class, 'apiList'])->name('api.list');
+            });
+
+            // Jenis Kemasan (AD07)
+            Route::prefix('packaging-types')->name('packaging-types.')->group(function () {
+                Route::get('/',                            [PackagingTypeController::class, 'index'])->name('index');
+                Route::get('/create',                      [PackagingTypeController::class, 'create'])->name('create');
+                Route::post('/',                           [PackagingTypeController::class, 'store'])->name('store');
+                Route::get('/{packaging_type}/edit',       [PackagingTypeController::class, 'edit'])->name('edit');
+                Route::put('/{packaging_type}',            [PackagingTypeController::class, 'update'])->name('update');
+                Route::delete('/{packaging_type}',         [PackagingTypeController::class, 'destroy'])->name('destroy');
+                Route::patch('/{packaging_type}/toggle',   [PackagingTypeController::class, 'toggle'])->name('toggle');
+                Route::get('/api/list',                    [PackagingTypeController::class, 'apiList'])->name('api.list');
+            });
+
+        }); // end administration
+
+    }); // end master-data
 
     Route::prefix('user-management')->name('user-management.')->group(function () {
 
@@ -134,6 +221,8 @@ Route::middleware(['auth', 'permission'])->group(function () {
         Route::resource('roles', RoleController::class);
         Route::post('roles/{role}/sync-permissions', [RoleController::class, 'syncPermissions'])
             ->name('roles.sync-permissions');
+        Route::get('roles/{role}/manage-permissions', [RoleController::class, 'managePermissions'])
+            ->name('roles.manage-permissions');
 
         // ── Permissions ────────────────────────────────────────────
         Route::resource('permissions', PermissionController::class)
@@ -158,7 +247,10 @@ Route::middleware(['auth', 'permission'])->group(function () {
             Route::prefix('{fleet}/foto')->name('foto.')->group(function () {
                 Route::delete('{photo}',            [FleetController::class, 'destroyPhoto'])->name('destroy');
                 Route::patch('{photo}/set-primary', [FleetController::class, 'setPrimaryPhoto'])->name('set-primary');
+                Route::patch('{photo}/update-meta',  [FleetController::class, 'updatePhotoMeta'])->name('update-meta');
             });
+
+            Route::get('{fleet}/pdf', [FleetController::class, 'exportPdf'])->name('pdf');
 
             Route::prefix('api')->name('api.')->group(function () {
                 Route::get('search',   [FleetController::class, 'apiSearch'])->name('search');
@@ -185,9 +277,12 @@ Route::middleware(['auth', 'permission'])->group(function () {
                 Route::prefix('{driver}')->name('')->group(function () {
                     Route::delete('documents/{document}',       [DriverController::class, 'destroyDocument'])->name('documents.destroy');
                     Route::delete('certificates/{certificate}', [DriverController::class, 'destroyCertificate'])->name('certificates.destroy');
+                    Route::delete('emergency-contacts/{contact}', [DriverController::class, 'destroyEmergencyContact'])->name('emergency-contacts.destroy');
+                    Route::get('pdf',                                  [DriverController::class, 'exportPdf'])->name('pdf');
                 });
 
-                Route::prefix('api')->name('api.')->group(function () {
+
+            Route::prefix('api')->name('api.')->group(function () {
                     Route::get('generate-code', [DriverController::class, 'apiGenerateCode'])->name('generate-code');
                 });
             });
@@ -206,10 +301,37 @@ Route::middleware(['auth', 'permission'])->group(function () {
                         'destroy' => 'destroy',
                     ]);
 
-                Route::prefix('api')->name('api.')->group(function () {
+
+            Route::prefix('api')->name('api.')->group(function () {
                     Route::get('generate-nrk', [EmployeeController::class, 'apiGenerateNrk'])->name('generate-nrk');
                 });
             });
         });
+
+        // ── GPS Monitoring ───────────────────────────────────────
+        Route::prefix('gps-monitoring')->name('gps-monitoring.')->group(function () {
+            Route::get('/', [GpsMonitoringController::class, 'index'])->name('index');
+
+            Route::prefix('api')->name('api.')->group(function () {
+                Route::get('ws-token',          [GpsMonitoringController::class, 'wsToken'])->name('ws-token');
+                Route::post('ws-token/refresh', [GpsMonitoringController::class, 'refreshToken'])->name('ws-token.refresh');
+                Route::get('positions',         [GpsMonitoringController::class, 'positions'])->name('positions');
+            });
+        });
+
+        // ── Pesanan ──────────────────────────────────────────────
+        Route::prefix('orders')->name('orders.')->group(function () {
+            Route::get('/',                  [OrderController::class, 'index'])->name('index');
+            Route::get('/create',            [OrderController::class, 'create'])->name('create');
+            Route::post('/',                 [OrderController::class, 'store'])->name('store');
+            Route::get('/{order}',           [OrderController::class, 'show'])->name('show');
+            Route::get('/{order}/edit',      [OrderController::class, 'edit'])->name('edit');
+            Route::put('/{order}',           [OrderController::class, 'update'])->name('update');
+            Route::delete('/{order}',        [OrderController::class, 'destroy'])->name('destroy');
+            Route::patch('/{order}/approval',[OrderController::class, 'updateApproval'])->name('approval');
+        });
+
     });
+
 });
+

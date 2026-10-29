@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'gps' => [
+        'api_url' => env('GPS_API_URL', ''),
+        'api_key' => env('GPS_API_KEY', ''),
+        'ws_url'  => env('GPS_WS_URL', ''),
+    ],
+
 ];

@@ -80,9 +80,9 @@ class RbacService
      * Konversi route name ke permission slug.
      *
      * Contoh:
-     *   "master-data.vehicle-types.index"       => "master-data.vehicle-types.monitor"
+     *   "master-data.vehicle-types.index"   => "master-data.vehicle-types.index"
      *   "data-management.fleet-data.store"      => "data-management.fleet-data.create"
-     *   "master-data.vehicle-types.api.list"    => "master-data.vehicle-types.monitor"
+     *   "master-data.vehicle-types.api.list" => "master-data.vehicle-types.index"
      *   "data-management.fleet-data.foto.destroy" => "data-management.fleet-data.delete"
      */
     public function derivePermissionFromRouteName(string $routeName): ?string
@@ -98,19 +98,21 @@ class RbacService
         $menu = implode('.', $parts);
 
         $actionMap = [
-            'index'           => 'monitor',
-            'list'            => 'monitor',
-            'search'          => 'monitor',
-            'show'            => 'view',
+            'index'           => 'index',
+            'list'            => 'index',
+            'search'          => 'index',
+            'show'            => 'show',
             'create'          => 'create',
             'store'           => 'create',
-            'edit'            => 'update',
-            'update'          => 'update',
+            'edit'            => 'edit',
+            'update'          => 'edit',
             'destroy'         => 'delete',
-            'toggle'          => 'toggle',
-            'set-primary'     => 'update',
-            'generate-code'   => 'monitor',
-            'generate-nrk'    => 'monitor',
+            'pdf'             => 'export-pdf',
+            'update-meta'     => 'edit',
+            'toggle'          => 'edit',
+            'set-primary'     => 'edit',
+            'generate-code'   => 'index',
+            'generate-nrk'    => 'index',
         ];
 
         $mapped = $actionMap[$actionRaw] ?? null;

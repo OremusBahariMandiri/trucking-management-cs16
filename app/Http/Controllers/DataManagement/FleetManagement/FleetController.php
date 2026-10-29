@@ -11,6 +11,7 @@ use App\Http\Requests\DataManagement\FleetManagement\UpdateFleetRequest;
 use App\Http\Resources\DataManagement\FleetManagement\FleetResource;
 use App\Models\DataManagement\FleetManagement\Fleet;
 use App\Services\DataManagement\FleetManagement\FleetService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -119,6 +120,23 @@ class FleetController extends Controller
         return back()->with('success', 'Foto utama berhasil diubah.');
     }
 
+    public function updatePhotoMeta(Request $request, Fleet $fleet, int $photoId): JsonResponse
+    {
+        $request->validate([
+            'category' => ['required', 'string', 'in:' . implode(',', array_keys(\App\Models\MasterData\Vehicle\VehiclePhoto::CATEGORIES))],
+            'caption'  => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $this->updateAction->updatePhotoMeta(
+            $fleet,
+            $photoId,
+            $request->input('category'),
+            $request->input('caption'),
+        );
+
+        return response()->json(['success' => true, 'message' => 'Foto diperbarui.']);
+    }
+
     // ── Document file routes ────────────────────────────────────────────────
 
     /**
@@ -152,4 +170,21 @@ class FleetController extends Controller
 
         return new FleetResource($fleet);
     }
+
+    // ── PDF Export ──────────────────────────────────────────────────────────
+
+    public function exportPdf(Fleet $fleet): \Symfony\Component\HttpFoundation\Response
+    {
+        $fleet = $this->service->findWithRelations($fleet->id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'exports.fleet-management.fleet-particular',
+            compact('fleet')
+        )->setPaper('a4', 'portrait');
+
+        $filename = 'vehicle-particular-' . ($fleet->vehicle_code ?? $fleet->police_number) . '-' . now()->format('Ymd') . '.pdf';
+
+        return $pdf->stream($filename);
+    }
+
 }
