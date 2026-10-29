@@ -57,7 +57,9 @@
                 <div class="card-body p-2">
                     <div id="gps-map"
                          data-token-url="{{ route('data-management.gps-monitoring.api.ws-token') }}"
-                         data-refresh-url="{{ route('data-management.gps-monitoring.api.ws-token.refresh') }}">
+                         data-refresh-url="{{ route('data-management.gps-monitoring.api.ws-token.refresh') }}"
+                         data-engine-url="{{ route('data-management.gps-monitoring.api.engine-event') }}"
+                         data-history-url="{{ url('data-management/gps-monitoring/api/engine-history/__ID__') }}">
                     </div>
                 </div>
             </div>
