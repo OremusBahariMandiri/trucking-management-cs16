@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DataManagement\FleetManagement\FleetController;
+use App\Http\Controllers\DataManagement\FleetManagement\GpsMonitoringController;
 use App\Http\Controllers\DataManagement\SdmManagement\DriverManagement\DriverController;
 use App\Http\Controllers\DataManagement\SdmManagement\EmployeeManagement\EmployeeController;
 use App\Http\Controllers\HomeController;
@@ -304,6 +305,17 @@ Route::middleware(['auth', 'permission'])->group(function () {
             Route::prefix('api')->name('api.')->group(function () {
                     Route::get('generate-nrk', [EmployeeController::class, 'apiGenerateNrk'])->name('generate-nrk');
                 });
+            });
+        });
+
+        // ── GPS Monitoring ───────────────────────────────────────
+        Route::prefix('gps-monitoring')->name('gps-monitoring.')->group(function () {
+            Route::get('/', [GpsMonitoringController::class, 'index'])->name('index');
+
+            Route::prefix('api')->name('api.')->group(function () {
+                Route::get('ws-token',          [GpsMonitoringController::class, 'wsToken'])->name('ws-token');
+                Route::post('ws-token/refresh', [GpsMonitoringController::class, 'refreshToken'])->name('ws-token.refresh');
+                Route::get('positions',         [GpsMonitoringController::class, 'positions'])->name('positions');
             });
         });
 

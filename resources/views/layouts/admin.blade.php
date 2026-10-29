@@ -316,16 +316,20 @@
                 ═══════════════════════════════════════════════════════ --}}
                 @php
                     $canFleetData = Auth::user()->hasAccessToMenu('data-management.fleet-data');
+                    $canGpsMonitoring = Auth::user()->hasAccessToMenu('data-management.gps-monitoring');
                     $canEmployeeData = Auth::user()->hasAccessToMenu('data-management.sdm-management.employee-data');
                     $canDriverData = Auth::user()->hasAccessToMenu('data-management.sdm-management.driver-data');
+                    $showKendaraanSub = $canFleetData || $canGpsMonitoring;
                     $showSdmSub = $canEmployeeData || $canDriverData;
-                    $showManajemenGroup = $canFleetData || $showSdmSub || $canOrders;
+                    $showManajemenGroup = $showKendaraanSub || $showSdmSub || $canOrders;
 
                     $manajemenOpen = request()->routeIs(
                         'data-management.fleet-data.*',
+                        'data-management.gps-monitoring.*',
                         'data-management.sdm-management.*',
                         'data-management.orders.*',
                     );
+                    $kendaraanOpen = request()->routeIs('data-management.fleet-data.*', 'data-management.gps-monitoring.*');
                     $sdmOpen = request()->routeIs('data-management.sdm-management.*');
                 @endphp
 
@@ -352,9 +356,9 @@
                         </div>
 
                         <div class="n-sub {{ $manajemenOpen ? 'open' : '' }}">
-                            @if ($canFleetData)
-                                <a href="{{ route('data-management.fleet-data.index') }}"
-                                    class="sub-group-hd {{ request()->routeIs('data-management.fleet-data.*') ? 'active' : '' }}">
+                            @if ($showKendaraanSub)
+                                <div class="sub-group-hd {{ $kendaraanOpen ? 'open' : '' }}"
+                                    onclick="toggleSubGroup(this)">
                                     <span class="n-icon" style="width:16px;height:16px;flex-shrink:0">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -365,8 +369,25 @@
                                             <circle cx="18.5" cy="18.5" r="2.5" />
                                         </svg>
                                     </span>
-                                    <span data-en="Fleet">Kendaraan</span>
-                                </a>
+                                    <span data-en="Vehicle">Kendaraan</span>
+                                    <svg class="sub-arrow {{ $kendaraanOpen ? 'open' : '' }}" width="13"
+                                        height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
+                                </div>
+                                <div class="sub-group-body {{ $kendaraanOpen ? 'open' : '' }}">
+                                    @if ($canFleetData)
+                                        <a href="{{ route('data-management.fleet-data.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('data-management.fleet-data.*') ? 'active' : '' }}"
+                                            data-en="Fleet">Fleet / Armada</a>
+                                    @endif
+                                    @if ($canGpsMonitoring)
+                                        <a href="{{ route('data-management.gps-monitoring.index') }}"
+                                            class="sub-link2 {{ request()->routeIs('data-management.gps-monitoring.*') ? 'active' : '' }}"
+                                            data-en="GPS Tracker">GPS Tracker</a>
+                                    @endif
+                                </div>
                             @endif
 
                             @if ($showSdmSub)

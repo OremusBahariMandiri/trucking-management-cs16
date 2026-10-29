@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/pages/driver.js',
                 'resources/js/pages/employee.js',
                 'resources/js/pages/user-management.js',
+                'resources/js/pages/fleet-monitoring.js',
             ],
             refresh: true,
         }),
