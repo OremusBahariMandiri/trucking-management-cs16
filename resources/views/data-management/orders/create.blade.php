@@ -388,18 +388,24 @@
                             </div>
                         </div>
                     </div> --}}
-                    {{-- <div class="col-12">
-                        <label class="form-label" data-en="Address">Alamat</label>
-                        <textarea name="customer_address" class="form-control" rows="2" id="custAddr">{{ old('customer_address') }}</textarea>
-                    </div>
+                    {{-- Select PIC --}}
                     <div class="col-12 col-md-6">
-                        <label class="form-label">PIC</label>
-                        <input type="text" name="pic_name" class="form-control" value="{{ old('pic_name') }}">
+                        <label class="form-label">Pilih PIC <small class="text-muted">(dari pelanggan terpilih)</small></label>
+                        <select class="form-select" id="picSelect" disabled>
+                            <option value="">— Pilih pelanggan dulu —</option>
+                        </select>
+                        <input type="hidden" name="pic_id" id="picIdInput" value="{{ old('pic_id') }}">
                     </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label" data-en="PIC Phone">Telp PIC</label>
-                        <input type="text" name="pic_phone" class="form-control" value="{{ old('pic_phone') }}">
-                    </div> --}}
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">Nama PIC</label>
+                        <input type="text" name="pic_name" id="picNameInput" class="form-control"
+                            readonly style="background:var(--surface-2)" value="{{ old('pic_name') }}">
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">Telp PIC</label>
+                        <input type="text" name="pic_phone" id="picPhoneInput" class="form-control"
+                            readonly style="background:var(--surface-2)" value="{{ old('pic_phone') }}">
+                    </div>
                 </div>
             </div>
 
@@ -563,12 +569,12 @@
                     <input type="number" name="shipments[__i__][vehicle_capacity]" class="form-control form-control-sm"
                         step="0.01" placeholder="ton">
                 </div>
-                <div class="col-4 col-md-5">
+                <div class="col-4 col-md-4">
                     <label class="form-label" data-en="Volume">Total Volume Angkut</label>
                     <input type="number" name="shipments[__i__][total_volume]" class="form-control form-control-sm"
                         step="0.01">
                 </div>
-                <div class="col-4 col-md-1">
+                <div class="col-4 col-md-2">
                     <label class="form-label" data-en="Unit">Satuan Angkutan</label>
                     <input type="text" name="shipments[__i__][measurement_unit]" class="form-control form-control-sm"
                         value="Ton">
@@ -634,6 +640,7 @@
             'is_active'     => $c->is_active,
             'reg_date'      => $c->registration_date?->format('d/m/Y'),
             'pics'          => $c->pics->map(fn($p) => [
+                'id'         => $p->id,
                 'name'       => $p->name,
                 'position'   => $p->position,
                 'department' => $p->department,
@@ -786,41 +793,78 @@
         const btnCustInfo  = document.getElementById('btnCustInfo');
         const custRoStrip  = document.getElementById('custRoStrip');
 
+        // ── Populate PIC select ───────────────────────────────────────────────────
+        function populatePicSelect(pics) {
+            const sel        = document.getElementById('picSelect');
+            const picIdIn    = document.getElementById('picIdInput');
+            const picNameIn  = document.getElementById('picNameInput');
+            const picPhoneIn = document.getElementById('picPhoneInput');
+            if (!sel) return;
+
+            sel.innerHTML = '<option value="">— Pilih PIC —</option>';
+            picIdIn && (picIdIn.value = '');
+            picNameIn  && (picNameIn.value  = '');
+            picPhoneIn && (picPhoneIn.value = '');
+
+            if (!pics || pics.length === 0) {
+                sel.disabled = true;
+                sel.innerHTML = '<option value="">— Tidak ada PIC —</option>';
+                return;
+            }
+
+            sel.disabled = false;
+            pics.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value          = p.id;
+                opt.dataset.name   = p.name  || '';
+                opt.dataset.phone  = p.phone || '';
+                const isEn = (typeof lang !== 'undefined') ? lang === 'en' : false;
+                let label = p.name || '—';
+                if (p.position)   label += ' – ' + p.position;
+                if (p.is_primary) label += (isEn ? ' - PRIMARY PIC' : ' - PIC UTAMA');
+                opt.textContent = label;
+                sel.appendChild(opt);
+            });
+
+        }
+
         function fillCustomerData(customerId) {
             const c = CUSTOMERS_DATA[customerId] || CUSTOMERS_DATA[String(customerId)] || CUSTOMERS_DATA[Number(customerId)];
             if (!c) {
                 custRoStrip?.classList.remove('visible');
                 if (btnCustInfo) { btnCustInfo.disabled = true; btnCustInfo.setAttribute('disabled', ''); }
+                // reset PIC select
+                const sel = document.getElementById('picSelect');
+                if (sel) { sel.innerHTML = '<option value="">— Pilih pelanggan dulu —</option>'; sel.disabled = true; }
+                const picIdIn = document.getElementById('picIdInput');
+                const picNameIn = document.getElementById('picNameInput');
+                const picPhoneIn = document.getElementById('picPhoneInput');
+                picIdIn  && (picIdIn.value  = '');
+                picNameIn  && (picNameIn.value  = '');
+                picPhoneIn && (picPhoneIn.value = '');
                 return;
             }
-            try {
-                // autofill editable fields
-                const addrEl = document.getElementById('custAddr');
-                if (addrEl) addrEl.value = c.address || '';
-                const pics = Array.isArray(c.pics) ? c.pics : [];
-                const picPrimary = pics.find(p => p.is_primary) || pics[0] || {};
-                const picNameInput  = document.querySelector('input[name="pic_name"]');
-                const picPhoneInput = document.querySelector('input[name="pic_phone"]');
-                if (picNameInput)  picNameInput.value  = picPrimary.name  || '';
-                if (picPhoneInput) picPhoneInput.value = picPrimary.phone || '';
 
-                // fill read-only strip
-                const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || ''; };
-                setTxt('ro_code',  c.code);
-                setTxt('ro_type',  c.type);
-                setTxt('ro_biz',   c.business_type);
-                setTxt('ro_phone', c.phone);
-                setTxt('ro_email', c.email);
-                setTxt('ro_npwp',  c.npwp);
-                custRoStrip?.classList.add('visible');
-            } catch(e) { console.error('fillCustomerData error:', e); }
+            // populate PIC dropdown
+            populatePicSelect(Array.isArray(c.pics) ? c.pics : []);
 
-            // enable button regardless of any fill errors above
+            // enable info button
             if (btnCustInfo) { btnCustInfo.disabled = false; btnCustInfo.removeAttribute('disabled'); }
         }
 
         custSelect?.addEventListener('change', function() {
             fillCustomerData(this.value);
+        });
+
+        // ── PIC select change ──────────────────────────────────────────────────────
+        document.getElementById('picSelect')?.addEventListener('change', function() {
+            const opt = this.options[this.selectedIndex];
+            const picIdIn    = document.getElementById('picIdInput');
+            const picNameIn  = document.getElementById('picNameInput');
+            const picPhoneIn = document.getElementById('picPhoneInput');
+            picIdIn  && (picIdIn.value  = this.value);
+            picNameIn  && (picNameIn.value  = opt ? (opt.dataset.name  || '') : '');
+            picPhoneIn && (picPhoneIn.value = opt ? (opt.dataset.phone || '') : '');
         });
 
         // Trigger on page load if old() value present
@@ -869,7 +913,7 @@
                     <div class="ci-pic-card">
                         <div class="ci-pic-name">
                             ${p.name || '—'}
-                            ${p.is_primary ? `<span class="ci-pic-badge">${isEn ? 'Primary' : 'Utama'}</span>` : ''}
+                            ${p.is_primary ? `<span class="ci-pic-badge">${isEn ? 'PRIMARY PIC' : 'PIC UTAMA'}</span>` : ''}
                         </div>
                         <div class="ci-pic-sub">
                             ${[p.position, p.department].filter(Boolean).join(' · ') || ''}

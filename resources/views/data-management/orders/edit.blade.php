@@ -343,20 +343,26 @@
                             </div>
                         </div>
                     </div> --}}
-                    {{-- <div class="col-12">
-                        <label class="form-label" data-en="Address">Alamat</label>
-                        <textarea name="customer_address" class="form-control" rows="2" id="custAddr">{{ old('customer_address', $order->customer_address) }}</textarea>
-                    </div>
+                    {{-- Select PIC --}}
                     <div class="col-12 col-md-6">
-                        <label class="form-label">PIC</label>
-                        <input type="text" name="pic_name" class="form-control"
+                        <label class="form-label">Pilih PIC <small class="text-muted">(dari pelanggan terpilih)</small></label>
+                        <select class="form-select" id="picSelect" {{ old('customer_id', $order->customer_id) ? '' : 'disabled' }}>
+                            <option value="">— Pilih PIC —</option>
+                        </select>
+                        <input type="hidden" name="pic_id" id="picIdInput" value="{{ old('pic_id', $order->pic_id) }}">
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">Nama PIC</label>
+                        <input type="text" name="pic_name" id="picNameInput" class="form-control"
+                            readonly style="background:var(--surface-2)"
                             value="{{ old('pic_name', $order->pic_name) }}">
                     </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label" data-en="PIC Phone">Telp PIC</label>
-                        <input type="text" name="pic_phone" class="form-control"
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">Telp PIC</label>
+                        <input type="text" name="pic_phone" id="picPhoneInput" class="form-control"
+                            readonly style="background:var(--surface-2)"
                             value="{{ old('pic_phone', $order->pic_phone) }}">
-                    </div> --}}
+                    </div>
                 </div>
             </div>
 
@@ -733,6 +739,7 @@
             'is_active'     => $c->is_active,
             'reg_date'      => $c->registration_date?->format('d/m/Y'),
             'pics'          => $c->pics->map(fn($p) => [
+                'id'         => $p->id,
                 'name'       => $p->name,
                 'position'   => $p->position,
                 'department' => $p->department,
@@ -822,31 +829,85 @@
         const btnCustInfo = document.getElementById('btnCustInfo');
         const custRoStrip = document.getElementById('custRoStrip');
 
+        // ── Populate PIC select ───────────────────────────────────────────────────
+        function populatePicSelect(pics, selectedId) {
+            const sel        = document.getElementById('picSelect');
+            const picIdIn    = document.getElementById('picIdInput');
+            const picNameIn  = document.getElementById('picNameInput');
+            const picPhoneIn = document.getElementById('picPhoneInput');
+            if (!sel) return;
+
+            sel.innerHTML = '<option value="">— Pilih PIC —</option>';
+
+            if (!pics || pics.length === 0) {
+                sel.disabled = true;
+                sel.innerHTML = '<option value="">— Tidak ada PIC —</option>';
+                return;
+            }
+
+            sel.disabled = false;
+            pics.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value         = p.id;
+                opt.dataset.name  = p.name  || '';
+                opt.dataset.phone = p.phone || '';
+                const isEn = (typeof lang !== 'undefined') ? lang === 'en' : false;
+                let label = p.name || '—';
+                if (p.position)   label += ' – ' + p.position;
+                if (p.is_primary) label += (isEn ? ' - PRIMARY PIC' : ' - PIC UTAMA');
+                opt.textContent = label;
+                sel.appendChild(opt);
+            });
+
+            // restore previously saved pic_id (on page load / old() value)
+            if (selectedId) {
+                const saved = pics.find(p => String(p.id) === String(selectedId));
+                if (saved) {
+                    sel.value = saved.id;
+                    picIdIn  && (picIdIn.value  = saved.id);
+                    picNameIn  && (picNameIn.value  = saved.name  || '');
+                    picPhoneIn && (picPhoneIn.value = saved.phone || '');
+                }
+            }
+        }
+
         function fillCustomerData(id) {
             const c = CUSTOMERS_DATA[id];
             if (!c) {
                 custRoStrip?.classList.remove('visible');
                 if (btnCustInfo) btnCustInfo.disabled = true;
+                // reset PIC
+                const sel = document.getElementById('picSelect');
+                if (sel) { sel.innerHTML = '<option value="">— Pilih pelanggan dulu —</option>'; sel.disabled = true; }
+                const picIdIn = document.getElementById('picIdInput');
+                picIdIn && (picIdIn.value = '');
+                document.getElementById('picNameInput')  && (document.getElementById('picNameInput').value  = '');
+                document.getElementById('picPhoneInput') && (document.getElementById('picPhoneInput').value = '');
                 return;
             }
-            document.getElementById('custAddr').value = c.address || '';
-            const pri = c.pics.find(p => p.is_primary) || c.pics[0] || {};
-            const pn = document.querySelector('input[name="pic_name"]');
-            const pp = document.querySelector('input[name="pic_phone"]');
-            if (pn) pn.value = pri.name  || '';
-            if (pp) pp.value = pri.phone || '';
 
-            document.getElementById('ro_code').textContent  = c.code  || '';
-            document.getElementById('ro_type').textContent  = c.type  || '';
-            document.getElementById('ro_biz').textContent   = c.business_type || '';
-            document.getElementById('ro_phone').textContent = c.phone || '';
-            document.getElementById('ro_email').textContent = c.email || '';
-            document.getElementById('ro_npwp').textContent  = c.npwp  || '';
-            custRoStrip?.classList.add('visible');
+            // populate PIC dropdown (preserve existing pic_id on first load)
+            const existingPicId = document.getElementById('picIdInput')?.value || null;
+            populatePicSelect(Array.isArray(c.pics) ? c.pics : [], existingPicId);
+
             if (btnCustInfo) btnCustInfo.disabled = false;
         }
 
         custSelect?.addEventListener('change', function() { fillCustomerData(this.value); });
+
+        // Trigger on page load to populate PIC dropdown from saved order
+        if (custSelect?.value) fillCustomerData(custSelect.value);
+
+        // ── PIC select change ──────────────────────────────────────────────────────
+        document.getElementById('picSelect')?.addEventListener('change', function() {
+            const opt = this.options[this.selectedIndex];
+            const picIdIn    = document.getElementById('picIdInput');
+            const picNameIn  = document.getElementById('picNameInput');
+            const picPhoneIn = document.getElementById('picPhoneInput');
+            picIdIn  && (picIdIn.value  = this.value);
+            picNameIn  && (picNameIn.value  = opt ? (opt.dataset.name  || '') : '');
+            picPhoneIn && (picPhoneIn.value = opt ? (opt.dataset.phone || '') : '');
+        });
 
         // ── Customer Info Modal ────────────────────────────────────────────────────
         const ciModal = document.getElementById('custInfoModal');
@@ -878,7 +939,7 @@
             picList.innerHTML = !c.pics?.length
                 ? `<p class="text-muted" style="font-size:.85rem">${isEn ? 'No PIC registered' : 'Belum ada PIC terdaftar'}</p>`
                 : c.pics.map(p => `<div class="ci-pic-card">
-                    <div class="ci-pic-name">${p.name || '—'}${p.is_primary ? `<span class="ci-pic-badge">${isEn ? 'Primary' : 'Utama'}</span>` : ''}</div>
+                    <div class="ci-pic-name">${p.name || '—'}${p.is_primary ? `<span class="ci-pic-badge">${isEn ? 'PRIMARY PIC' : 'PIC UTAMA'}</span>` : ''}</div>
                     <div class="ci-pic-sub">${[p.position, p.department].filter(Boolean).join(' · ') || ''}</div>
                     ${p.phone ? `<div class="ci-pic-sub"><i class="fas fa-phone fa-xs me-1"></i>${p.phone}</div>` : ''}
                     ${p.email ? `<div class="ci-pic-sub"><i class="fas fa-envelope fa-xs me-1"></i>${p.email}</div>` : ''}

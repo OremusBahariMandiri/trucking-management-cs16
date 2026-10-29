@@ -200,18 +200,22 @@
                 </div>
             </div>
 
-            {{-- <div class="col-12">
-                <label class="form-label" data-en="Address">Alamat</label>
-                <textarea class="form-control" rows="2" disabled>{{ $order->customer_address }}</textarea>
+            @if($order->pic_name)
+            <div class="col-12">
+                <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:.5rem;padding:.65rem 1rem;display:flex;gap:1.5rem;flex-wrap:wrap">
+                    <div>
+                        <div style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.15rem" data-en="PIC">PIC</div>
+                        <div style="font-size:.88rem;font-weight:600;color:var(--text)">{{ $order->pic_name }}</div>
+                    </div>
+                    @if($order->pic_phone)
+                    <div>
+                        <div style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.15rem" data-en="PIC Phone">Telp PIC</div>
+                        <div style="font-size:.88rem;color:var(--text)">{{ $order->pic_phone }}</div>
+                    </div>
+                    @endif
+                </div>
             </div>
-            <div class="col-12 col-md-6">
-                <label class="form-label">PIC</label>
-                <input type="text" class="form-control" value="{{ $order->pic_name }}" disabled>
-            </div>
-            <div class="col-12 col-md-6">
-                <label class="form-label" data-en="PIC Phone">Telp PIC</label>
-                <input type="text" class="form-control" value="{{ $order->pic_phone }}" disabled>
-            </div> --}}
+            @endif
         </div>
     </div>
 
@@ -498,7 +502,7 @@
                             <div class="ci-pic-name">
                                 {{ $pic->name }}
                                 @if($pic->is_primary)
-                                    <span class="ci-pic-badge" data-en="Primary">Utama</span>
+                                    <span class="ci-pic-badge"><span data-en="PRIMARY PIC">PIC UTAMA</span></span>
                                 @endif
                             </div>
                             @if($pic->position || $pic->department)

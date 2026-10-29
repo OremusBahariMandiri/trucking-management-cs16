@@ -13,7 +13,7 @@ class Order extends Model
 
     protected $fillable = [
         'po_number','po_date','customer_id','customer_name','customer_address',
-        'pic_name','pic_phone',
+        'pic_id','pic_name','pic_phone',
         'total_amount','payment_method','payment_due_date',
         'special_notes',
         'submission_date','approval_status','approval_notes','approval_date','approved_by',
