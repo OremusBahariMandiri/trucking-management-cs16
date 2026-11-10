@@ -50,12 +50,34 @@
 
     // ── Marker ──────────────────────────────────────────────────────────────
     function makeIcon(acc) {
-        const color = acc ? '#16a34a' : '#dc2626';
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
-            <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22S28 24.5 28 14C28 6.27 21.73 0 14 0z" fill="${color}"/>
-            <circle cx="14" cy="14" r="6" fill="white"/>
+        const color     = acc ? '#16a34a' : '#dc2626';
+        const bodyColor = acc ? '#15803d' : '#b91c1c';
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="52" height="32" viewBox="0 0 52 32">
+            <!-- Bak dump truck -->
+            <rect x="2" y="4" width="28" height="16" rx="2" fill="${color}" stroke="white" stroke-width="1"/>
+            <!-- Hidrolik bak -->
+            <line x1="8" y1="20" x2="14" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Kabin -->
+            <rect x="30" y="8" width="18" height="12" rx="2" fill="${bodyColor}" stroke="white" stroke-width="1"/>
+            <!-- Kaca kabin -->
+            <rect x="38" y="10" width="8" height="6" rx="1" fill="#bfdbfe" opacity="0.9"/>
+            <!-- Bumper depan -->
+            <rect x="47" y="14" width="3" height="6" rx="1" fill="${bodyColor}" stroke="white" stroke-width="0.5"/>
+            <!-- Chassis -->
+            <rect x="2" y="20" width="46" height="4" rx="1" fill="#374151"/>
+            <!-- Roda depan -->
+            <circle cx="42" cy="26" r="4" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+            <circle cx="42" cy="26" r="2" fill="#4b5563"/>
+            <!-- Roda belakang 1 -->
+            <circle cx="28" cy="26" r="4" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+            <circle cx="28" cy="26" r="2" fill="#4b5563"/>
+            <!-- Roda belakang 2 -->
+            <circle cx="18" cy="26" r="4" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+            <circle cx="18" cy="26" r="2" fill="#4b5563"/>
+            <!-- Lampu depan -->
+            <rect x="49" y="10" width="2" height="2" rx="0.5" fill="#fef08a"/>
         </svg>`;
-        return L.divIcon({ html: svg, className: '', iconSize: [28,36], iconAnchor: [14,36], popupAnchor: [0,-36] });
+        return L.divIcon({ html: svg, className: '', iconSize: [52, 32], iconAnchor: [26, 30], popupAnchor: [0, -32] });
     }
 
     function popupContent(fleet, frame) {
