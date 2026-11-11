@@ -19,7 +19,7 @@ class DriverService
 
     public function findWithRelations(int $id): Driver
     {
-        return Driver::with(['documents', 'certificates'])->findOrFail($id);
+        return Driver::with(['documents', 'certificates', 'emergencyContacts'])->findOrFail($id);
     }
 
     public function formOptions(): array
@@ -39,6 +39,30 @@ class DriverService
                 'married'  => 'Menikah',
                 'divorced' => 'Cerai',
                 'widowed'  => 'Duda/Janda',
+            ],
+        ];
+    }
+
+    public function emergencyContactOptions(): array
+    {
+        return [
+            'contact_types' => [
+                'orang_tua'    => 'Orang Tua',
+                'suami'       => 'Suami',
+                'istri' => 'Istri',
+                'saudara_kandung'     => 'Saudara Kandung',
+            ],
+            'contact_statuses' => [
+                'aktif'       => 'Aktif',
+                'tidak_aktif' => 'Tidak Aktif',
+            ],
+            'religions' => [
+                'islam'    => 'Islam',
+                'kristen'  => 'Kristen',
+                'katolik'  => 'Katolik',
+                'hindu'    => 'Hindu',
+                'budha'    => 'Budha',
+                'konghucu' => 'Konghucu',
             ],
         ];
     }

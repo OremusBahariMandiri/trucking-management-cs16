@@ -61,13 +61,14 @@
                             <th data-en="Year">Tahun</th>
                             <th data-en="Status">Status</th>
                             <th data-en="Ownership">Kepemilikan</th>
+                            <th data-en="Ownership">File</th>
                             <th class="text-end" data-en="Actions">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($fleets as $v)
                             <tr>
-                                <td>{{$loop->iteration}}</td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>
                                     <span class="vehicle-code">{{ $v->vehicle_code ?? '-' }}</span>
                                     <span class="vehicle-police">{{ $v->police_number }}</span>
@@ -86,6 +87,10 @@
                                 <td>
                                     <span class="badge-ownership">{{ $v->ownership_label ?? '-' }}</span>
                                 </td>
+                                <td> <a href="{{ route('data-management.fleet-data.pdf', $v) }}"
+                                        class="btn btn-sm btn-outline-danger" title="Unduh PDF" target="_blank">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a></td>
                                 <td>
                                     <div class="d-flex justify-content-end gap-1">
                                         <a href="{{ route('data-management.fleet-data.show', $v) }}"

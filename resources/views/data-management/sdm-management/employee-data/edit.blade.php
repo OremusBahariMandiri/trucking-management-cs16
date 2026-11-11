@@ -30,11 +30,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('data-management.sdm-management.employee-data.show', $employee) }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i>
-        <span data-en="Back">Kembali</span>
-    </a>
 </div>
 
 <form method="POST"

@@ -12,7 +12,6 @@
 <div class="emp-page-header mb-3">
     <div>
         <div class="emp-title">
-            <i class="fas fa-user"></i>
             <span data-en="Employee Detail">Detail Karyawan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -25,22 +24,6 @@
                 <li class="breadcrumb-item active">{{ $employee->full_name }}</li>
             </ol>
         </nav>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('data-management.sdm-management.employee-data.edit', $employee) }}"
-           class="btn btn-sm btn-primary d-flex align-items-center gap-1">
-            <i class="fas fa-pen"></i>
-            <span data-en="Edit">Edit</span>
-        </a>
-        <form method="POST"
-              action="{{ route('data-management.sdm-management.employee-data.destroy', $employee) }}"
-              onsubmit="return confirm('Hapus karyawan ini?')">
-            @csrf @method('DELETE')
-            <button type="submit" class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-                <span data-en="Delete">Hapus</span>
-            </button>
-        </form>
     </div>
 </div>
 
@@ -61,7 +44,7 @@
     <div class="emp-detail-divider"></div>
 
     {{-- Fields grid --}}
-    <div class="row g-4 px-3 pb-3">
+    <div class="row g-4 px-3 pb-3 mt-2">
         @php
             $fields = [
                 ['label' => 'NRK',        'label_en' => 'NRK',        'value' => $employee->nrk,        'icon' => 'fas fa-id-badge'],
@@ -72,7 +55,7 @@
             ];
         @endphp
         @foreach($fields as $f)
-        <div class="col-sm-6 col-md-4">
+        <div class="col-sm-6 col-md-6">
             <div class="emp-info-item">
                 <div class="emp-info-icon"><i class="{{ $f['icon'] }}"></i></div>
                 <div>

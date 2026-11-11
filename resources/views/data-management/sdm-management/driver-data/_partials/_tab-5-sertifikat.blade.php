@@ -112,7 +112,7 @@
             </button>
         </div>
         <div class="row g-2">
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <label class="form-label form-label-sm">
                     <span data-en="Certificate Name">Nama Sertifikat</span> <span class="text-danger">*</span>
                 </label>
@@ -120,28 +120,28 @@
                        class="form-control form-control-sm" required
                        placeholder="SIM B2, Sertifikat Keselamatan, dll.">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Certificate Number">Nomor</label>
                 <input type="text" name="certificates[__IDX__][certificate_number]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Issuer">Penerbit</label>
                 <input type="text" name="certificates[__IDX__][issuer]"
                        class="form-control form-control-sm"
                        placeholder="Instansi penerbit">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Issued">Tanggal Terbit</label>
                 <input type="date" name="certificates[__IDX__][issued_date]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Expiry">Kadaluarsa</label>
                 <input type="date" name="certificates[__IDX__][expiry_date]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <label class="form-label form-label-sm" data-en="Description">Keterangan</label>
                 <input type="text" name="certificates[__IDX__][description]"
                        class="form-control form-control-sm">

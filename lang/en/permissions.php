@@ -1,0 +1,22 @@
+<?php
+return [
+    'title'         => 'Manage Permissions',
+    'breadcrumb'    => ['Home', 'Roles', 'Manage Permissions'],
+    'back'          => 'Back',
+    'feature'       => 'Feature',
+    'view_list'     => 'View List',
+    'view_detail'   => 'View Detail',
+    'add'           => 'Add',
+    'edit'          => 'Edit',
+    'delete'        => 'Delete',
+    'export_pdf'    => 'Export PDF',
+    'export_excel'  => 'Export Excel',
+    'na'            => 'Not available for this feature',
+    'select_all'    => 'Select All',
+    'deselect_all'  => 'Deselect All',
+    'save'          => 'Save',
+    'selected'      => 'Selected',
+    'of'            => '/',
+    'permission'    => 'permissions',
+    'success'       => 'Permissions saved successfully.',
+];

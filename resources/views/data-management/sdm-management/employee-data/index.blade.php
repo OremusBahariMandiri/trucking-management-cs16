@@ -12,7 +12,6 @@
 <div class="emp-page-header mb-4">
     <div>
         <div class="emp-title">
-            <i class="fas fa-users"></i>
             <span data-en="Employee Management">Manajemen Karyawan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -25,7 +24,7 @@
     <a href="{{ route('data-management.sdm-management.employee-data.create') }}"
        class="btn btn-primary btn-sm d-flex align-items-center gap-2">
         <i class="fas fa-plus"></i>
-        <span data-en="Add Employee">Tambah Karyawan</span>
+        <span data-en="Add Employee">Tambah</span>
     </a>
 </div>
 
