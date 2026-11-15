@@ -17,6 +17,31 @@
         overflow-y: auto;
     }
     .fleet-status { font-size: 11px; min-width: 36px; text-align: center; }
+
+    /* ── Dark mode: card & sidebar ──────────────────────────────────── */
+    .gps-card {
+        background-color: var(--surface, #fff);
+        border-color: var(--border, #dee2e6);
+        color: var(--text, #212529);
+    }
+    .gps-card-header {
+        background-color: var(--surface-2, #f8f9fa) !important;
+        border-bottom-color: var(--border, #dee2e6) !important;
+        color: var(--text, #212529);
+    }
+    #fleet-list .list-group-item {
+        background-color: var(--surface, #fff);
+        border-color: var(--border, #dee2e6);
+        color: var(--text, #212529);
+    }
+    #fleet-list .list-group-item:hover {
+        background-color: var(--surface-2, #f8f9fa);
+    }
+    #fleet-list .text-muted {
+        color: var(--text-muted, #6c757d) !important;
+    }
+    .gps-page-title  { color: var(--text, #212529); }
+    .gps-page-sub    { color: var(--text-muted, #6c757d); }
 </style>
 @endpush
 
@@ -26,14 +51,17 @@
     {{-- Header --}}
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h4 class="mb-0 fw-bold">Monitoring GPS Armada</h4>
-            <small class="text-muted">
-                Status: <span id="gps-connection-status" class="fw-semibold text-warning">Menghubungkan...</span>
-                &nbsp;·&nbsp; {{ $fleets->count() }} kendaraan terdaftar GPS
+            <h4 class="mb-0 fw-bold gps-page-title" data-en="Fleet GPS Monitoring">Monitoring GPS Armada</h4>
+            <small class="gps-page-sub">
+                <span data-en="Status:">Status:</span>
+                <span id="gps-connection-status" class="fw-semibold text-warning">Menghubungkan...</span>
+                &nbsp;·&nbsp; {{ $fleets->count() }}
+                <span data-en="vehicles registered with GPS">kendaraan terdaftar GPS</span>
             </small>
         </div>
         <a href="{{ route('data-management.fleet-data.index') }}" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Data Armada
+            <i class="bi bi-arrow-left"></i>
+            <span data-en="Fleet Data">Data Armada</span>
         </a>
     </div>
 
@@ -41,9 +69,11 @@
 
         {{-- Sidebar daftar kendaraan --}}
         <div class="col-12 col-md-3 col-xl-2">
-            <div class="card shadow-sm h-100">
-                <div class="card-header py-2 bg-white border-bottom">
-                    <span class="fw-semibold small">Armada ({{ $fleets->count() }})</span>
+            <div class="card shadow-sm h-100 gps-card">
+                <div class="card-header py-2 gps-card-header">
+                    <span class="fw-semibold small">
+                        <span data-en="Fleet">Armada</span> ({{ $fleets->count() }})
+                    </span>
                 </div>
                 <ul class="list-group list-group-flush" id="fleet-list">
                     {{-- Diisi oleh fleet-monitoring.js --}}
@@ -53,7 +83,7 @@
 
         {{-- Peta --}}
         <div class="col-12 col-md-9 col-xl-10">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm gps-card">
                 <div class="card-body p-2">
                     <div id="gps-map"
                          data-token-url="{{ route('data-management.gps-monitoring.api.ws-token') }}"

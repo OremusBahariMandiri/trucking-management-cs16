@@ -27,6 +27,28 @@
 
     FLEET_DATA.forEach(f => { fleetById[f.gps_tracker_id] = f; });
 
+    // ── Bahasa ───────────────────────────────────────────────────────────────
+    function isEn() {
+        try { return localStorage.getItem('lang') === 'en'; } catch { return false; }
+    }
+
+    const T = {
+        engine:         () => isEn() ? 'Engine'              : 'Mesin',
+        speed:          () => isEn() ? 'Speed'               : 'Kecepatan',
+        time:           () => isEn() ? 'Time'                : 'Waktu',
+        location:       () => isEn() ? 'Location'            : 'Lokasi',
+        detail:         () => isEn() ? 'Vehicle Detail'      : 'Detail Kendaraan',
+        noDriver:       () => isEn() ? 'No driver'           : 'Tanpa sopir',
+        loadingHistory: () => isEn() ? 'Loading history...'  : 'Memuat history...',
+        noHistory:      () => isEn() ? 'No engine history yet.' : 'Belum ada history mesin.',
+        historyTitle:   () => isEn() ? 'Engine History (last 20):' : 'History Mesin (20 terakhir):',
+        historyFail:    () => isEn() ? 'Failed to load history.'  : 'Gagal memuat history.',
+        connecting:     () => isEn() ? 'Connecting...'                  : 'Menghubungkan...',
+        connected:      () => isEn() ? 'Connected (Live)'               : 'Terhubung (Live)',
+        disconnected:   () => isEn() ? 'Disconnected — Reconnecting...' : 'Terputus — Reconnecting...',
+        gpsError:       () => isEn() ? 'GPS configuration error'        : 'Error konfigurasi GPS',
+    };
+
     // ── Leaflet Map ─────────────────────────────────────────────────────────
     function initMap() {
         map = L.map('gps-map', { zoomControl: true }).setView([-2.5, 118.0], 5);
@@ -50,47 +72,68 @@
 
     // ── Marker ──────────────────────────────────────────────────────────────
     function makeIcon(acc) {
-        const color     = acc ? '#16a34a' : '#dc2626';
-        const bodyColor = acc ? '#15803d' : '#b91c1c';
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="52" height="32" viewBox="0 0 52 32">
-            <!-- Bak dump truck -->
-            <rect x="2" y="4" width="28" height="16" rx="2" fill="${color}" stroke="white" stroke-width="1"/>
-            <!-- Hidrolik bak -->
-            <line x1="8" y1="20" x2="14" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-            <!-- Kabin -->
-            <rect x="30" y="8" width="18" height="12" rx="2" fill="${bodyColor}" stroke="white" stroke-width="1"/>
-            <!-- Kaca kabin -->
-            <rect x="38" y="10" width="8" height="6" rx="1" fill="#bfdbfe" opacity="0.9"/>
-            <!-- Bumper depan -->
-            <rect x="47" y="14" width="3" height="6" rx="1" fill="${bodyColor}" stroke="white" stroke-width="0.5"/>
-            <!-- Chassis -->
-            <rect x="2" y="20" width="46" height="4" rx="1" fill="#374151"/>
+        // Warna solid vivid — kontras di peta terang maupun gelap
+        // Background putih + drop shadow supaya icon tidak menyatu dengan peta
+        const bak     = acc ? '#22c55e' : '#ef4444';   // green-500 / red-500
+        const kabin   = acc ? '#16a34a' : '#dc2626';   // green-600 / red-600
+        const outline = acc ? '#14532d' : '#7f1d1d';   // outline gelap = kontras maksimal
+        const label   = acc ? '#bbf7d0' : '#fee2e2';   // teks label badge
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="42" viewBox="0 0 64 42">
+            <defs>
+                <filter id="sh${acc?'1':'0'}" x="-15%" y="-15%" width="130%" height="150%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.5)"/>
+                </filter>
+            </defs>
+            <!-- Background putih — supaya tidak menyatu dgn peta -->
+            <rect x="1" y="1" width="58" height="28" rx="4"
+                  fill="white" stroke="${outline}" stroke-width="1" opacity="0.92"/>
+            <g filter="url(#sh${acc?'1':'0'})">
+                <!-- Bak dump truck -->
+                <rect x="3" y="4" width="29" height="16" rx="2"
+                      fill="${bak}" stroke="${outline}" stroke-width="1.5"/>
+                <!-- Hidrolik bak -->
+                <line x1="9" y1="20" x2="15" y2="11"
+                      stroke="${outline}" stroke-width="2" stroke-linecap="round"/>
+                <!-- Kabin -->
+                <rect x="32" y="8" width="22" height="12" rx="2"
+                      fill="${kabin}" stroke="${outline}" stroke-width="1.5"/>
+                <!-- Kaca kabin -->
+                <rect x="41" y="10" width="10" height="6" rx="1.5"
+                      fill="#bae6fd" stroke="${outline}" stroke-width="0.8"/>
+                <!-- Bumper -->
+                <rect x="53" y="13" width="4" height="7" rx="1"
+                      fill="${kabin}" stroke="${outline}" stroke-width="1"/>
+                <!-- Chassis -->
+                <rect x="3" y="20" width="52" height="4" rx="1" fill="#334155"/>
+                <!-- Lampu depan -->
+                <circle cx="56" cy="11" r="2" fill="#fde68a" stroke="${outline}" stroke-width="0.5"/>
+            </g>
             <!-- Roda depan -->
-            <circle cx="42" cy="26" r="4" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
-            <circle cx="42" cy="26" r="2" fill="#4b5563"/>
+            <circle cx="46" cy="30" r="5.5" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+            <circle cx="46" cy="30" r="2.5"  fill="#64748b"/>
             <!-- Roda belakang 1 -->
-            <circle cx="28" cy="26" r="4" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
-            <circle cx="28" cy="26" r="2" fill="#4b5563"/>
+            <circle cx="32" cy="30" r="5.5" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+            <circle cx="32" cy="30" r="2.5"  fill="#64748b"/>
             <!-- Roda belakang 2 -->
-            <circle cx="18" cy="26" r="4" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
-            <circle cx="18" cy="26" r="2" fill="#4b5563"/>
-            <!-- Lampu depan -->
-            <rect x="49" y="10" width="2" height="2" rx="0.5" fill="#fef08a"/>
+            <circle cx="18" cy="30" r="5.5" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+            <circle cx="18" cy="30" r="2.5"  fill="#64748b"/>
         </svg>`;
-        return L.divIcon({ html: svg, className: '', iconSize: [52, 32], iconAnchor: [26, 30], popupAnchor: [0, -32] });
+        return L.divIcon({ html: svg, className: '', iconSize: [64, 42], iconAnchor: [32, 38], popupAnchor: [0, -40] });
     }
 
     function popupContent(fleet, frame) {
-        const acc   = frame.acc ? '<span class="badge bg-success">ON</span>' : '<span class="badge bg-danger">OFF</span>';
+        const acc   = frame.acc
+            ? '<span class="badge bg-success">ON</span>'
+            : '<span class="badge bg-danger">OFF</span>';
         const speed = frame.speed !== undefined ? `${frame.speed} km/h` : '-';
         return `<div style="min-width:220px;font-size:13px">
             <strong>${fleet.police_number ?? fleet.vehicle_code}</strong><br>
             <small class="text-muted">${fleet.brand ?? ''} ${fleet.type ?? ''}</small><br>
             <hr class="my-1">
-            <b>Mesin:</b> ${acc} &nbsp; <b>Kecepatan:</b> ${speed}<br>
-            <b>Waktu:</b> ${frame.tdate ?? '-'}<br>
-            <b>Lokasi:</b> <small>${frame.address ?? '-'}</small><br>
-            <a href="${fleet.show_url}" class="btn btn-sm btn-outline-primary mt-1" target="_blank">Detail Kendaraan</a>
+            <b>${T.engine()}:</b> ${acc} &nbsp; <b>${T.speed()}:</b> ${speed}<br>
+            <b>${T.time()}:</b> ${frame.tdate ?? '-'}<br>
+            <b>${T.location()}:</b> <small>${frame.address ?? '-'}</small><br>
+            <a href="${fleet.show_url}" class="btn btn-sm btn-outline-primary mt-1" target="_blank">${T.detail()}</a>
         </div>`;
     }
 
@@ -117,7 +160,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                   <div>
                     <strong class="d-block" style="font-size:13px">${f.police_number ?? f.vehicle_code}</strong>
-                    <small class="text-muted">${f.driver ?? 'Tanpa sopir'}</small>
+                    <small class="text-muted">${f.driver ?? T.noDriver()}</small>
                   </div>
                   <span class="badge rounded-pill bg-secondary fleet-status" id="status-${f.gps_tracker_id}">—</span>
                 </div>
@@ -160,16 +203,16 @@
     }
 
     function loadHistory(gpsTrackerId, el) {
-        el.innerHTML = '<div class="text-muted">Memuat history...</div>';
+        el.innerHTML = `<div class="text-muted">${T.loadingHistory()}</div>`;
         const url = HISTORY_URL.replace('__ID__', gpsTrackerId);
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(r => r.json())
             .then(json => {
                 if (!json.success || !json.data.length) {
-                    el.innerHTML = '<div class="text-muted fst-italic">Belum ada history mesin.</div>';
+                    el.innerHTML = `<div class="text-muted fst-italic">${T.noHistory()}</div>`;
                     return;
                 }
-                el.innerHTML = '<div class="fw-semibold mb-1 text-muted">History Mesin (20 terakhir):</div>' +
+                el.innerHTML = '<div class="fw-semibold mb-1 text-muted">' + T.historyTitle() + '</div>' +
                     json.data.map(row => {
                         const icon  = row.event === 'on' ? '🟢' : '🔴';
                         const label = row.event === 'on' ? 'ON' : 'OFF';
@@ -182,7 +225,7 @@
                         </div>`;
                     }).join('');
             })
-            .catch(() => { el.innerHTML = '<div class="text-danger">Gagal memuat history.</div>'; });
+            .catch(() => { el.innerHTML = `<div class="text-danger">${T.historyFail()}</div>`; });
     }
 
     // ── Engine event logger ──────────────────────────────────────────────────
@@ -305,14 +348,14 @@
     function setConnectionStatus(status) {
         const el = document.getElementById('gps-connection-status');
         if (!el) return;
-        const map = {
-            connecting:   ['Menghubungkan...', 'text-warning'],
-            connected:    ['Terhubung (Live)', 'text-success'],
-            disconnected: ['Terputus — Reconnecting...', 'text-danger'],
-            error:        ['Error konfigurasi GPS', 'text-danger'],
+        const statusMap = {
+            connecting:   [T.connecting,   'text-warning'],
+            connected:    [T.connected,    'text-success'],
+            disconnected: [T.disconnected, 'text-danger'],
+            error:        [T.gpsError,     'text-danger'],
         };
-        const [text, cls] = map[status] ?? ['—', 'text-muted'];
-        el.textContent = text;
+        const [textFn, cls] = statusMap[status] ?? [() => '—', 'text-muted'];
+        el.textContent = textFn();
         el.className   = `fw-semibold ${cls}`;
     }
 
