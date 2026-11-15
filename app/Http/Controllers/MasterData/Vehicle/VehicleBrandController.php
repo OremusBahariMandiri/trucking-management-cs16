@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\MasterData\Vehicle;
 
+use App\Actions\MasterData\Vehicle\VehicleBrand\CreateVehicleBrand;
+use App\Actions\MasterData\Vehicle\VehicleBrand\DeleteVehicleBrand;
+use App\Actions\MasterData\Vehicle\VehicleBrand\UpdateVehicleBrand;
+use App\Exports\MasterData\Vehicle\VehicleBrandExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Vehicle\VehicleBrand\StoreVehicleBrandRequest;
 use App\Http\Requests\MasterData\Vehicle\VehicleBrand\UpdateVehicleBrandRequest;
@@ -9,48 +13,36 @@ use App\Models\MasterData\Vehicle\VehicleBrand;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Exports\MasterData\Vehicle\VehicleBrandExport;
 
 class VehicleBrandController extends Controller
 {
+    public function __construct(
+        private readonly CreateVehicleBrand $createVehicleBrand,
+        private readonly UpdateVehicleBrand $updateVehicleBrand,
+        private readonly DeleteVehicleBrand $deleteVehicleBrand,
+    ) {}
+
     public function index(Request $request)
     {
-        // ── Export ─────────────────────────────────────────────────
-        $filters = [
-            'q' => $request->input('q'),
-            'status' => $request->input('status'),
-        ];
+        $filters = ['q' => $request->input('q'), 'status' => $request->input('status')];
 
         if ($request->input('export') === 'pdf') {
             $items = (new VehicleBrandExport($filters))->collection();
-            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView(
-                'exports.master-data.vehicle-brand',
-                compact('items')
-            )->setPaper('a4', 'landscape');
-
+            $pdf   = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.master-data.vehicle-brand', compact('items'))->setPaper('a4', 'landscape');
             return $pdf->stream('merek-kendaraan-' . now()->format('Ymd') . '.pdf');
         }
 
         if ($request->input('export') === 'excel') {
-            return \Maatwebsite\Excel\Facades\Excel::download(
-                new VehicleBrandExport($filters),
-                'merek-kendaraan-' . now()->format('Ymd') . '.xlsx'
-            );
+            return \Maatwebsite\Excel\Facades\Excel::download(new VehicleBrandExport($filters), 'merek-kendaraan-' . now()->format('Ymd') . '.xlsx');
         }
 
-        // ── Normal index ────────────────────────────────────────────
         $vehicleBrands = VehicleBrand::query()
             ->withCount('models')
             ->when($request->input('q'), fn($q, $s) =>
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('country_of_origin', 'like', "%{$s}%")
+                $q->where('name', 'like', "%{$s}%")->orWhere('country_of_origin', 'like', "%{$s}%")
             )
-            ->when($request->filled('status'), fn($q) =>
-                $q->where('is_active', $request->input('status'))
-            )
-            ->latest()
-            ->paginate(15)
-            ->withQueryString();
+            ->when($request->filled('status'), fn($q) => $q->where('is_active', $request->input('status')))
+            ->latest()->get();
 
         $statCounts = [
             'total'    => VehicleBrand::count(),
@@ -68,11 +60,9 @@ class VehicleBrandController extends Controller
 
     public function store(StoreVehicleBrandRequest $request): RedirectResponse
     {
-        VehicleBrand::create($request->validated());
+        $this->createVehicleBrand->execute($request->validated());
 
-        return redirect()
-            ->route('master-data.vehicle-brands.index')
-            ->with('success', 'Merek kendaraan berhasil ditambahkan.');
+        return redirect()->route('master-data.vehicle-brands.index')->with('success', 'Merek kendaraan berhasil ditambahkan.');
     }
 
     public function edit(VehicleBrand $vehicleBrand): View
@@ -82,20 +72,16 @@ class VehicleBrandController extends Controller
 
     public function update(UpdateVehicleBrandRequest $request, VehicleBrand $vehicleBrand): RedirectResponse
     {
-        $vehicleBrand->update($request->validated());
+        $this->updateVehicleBrand->execute($vehicleBrand, $request->validated());
 
-        return redirect()
-            ->route('master-data.vehicle-brands.index')
-            ->with('success', 'Merek kendaraan berhasil diperbarui.');
+        return redirect()->route('master-data.vehicle-brands.index')->with('success', 'Merek kendaraan berhasil diperbarui.');
     }
 
     public function destroy(VehicleBrand $vehicleBrand): RedirectResponse
     {
-        $vehicleBrand->delete();
+        $this->deleteVehicleBrand->execute($vehicleBrand);
 
-        return redirect()
-            ->route('master-data.vehicle-brands.index')
-            ->with('success', 'Merek kendaraan berhasil dihapus.');
+        return redirect()->route('master-data.vehicle-brands.index')->with('success', 'Merek kendaraan berhasil dihapus.');
     }
 
     public function toggle(VehicleBrand $vehicleBrand): RedirectResponse

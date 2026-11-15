@@ -105,9 +105,15 @@
                                 <td>
                                     <div class="d-flex justify-content-end gap-1 pe-1">
                                         <a href="{{ route('user-management.roles.show', $role) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Detail & Permission">
+                                            class="btn btn-sm btn-outline-secondary" title="Detail Role">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @hasPermission('user-management.roles.edit')
+                                            <a href="{{ route('user-management.roles.manage-permissions', $role) }}"
+                                                class="btn btn-sm btn-outline-warning" title="Kelola Permission">
+                                                <i class="fas fa-lock"></i>
+                                            </a>
+                                        @endhasPermission
                                         @hasPermission('user-management.roles.update')
                                             <a href="{{ route('user-management.roles.edit', $role) }}"
                                                 class="btn btn-sm btn-outline-primary" title="Edit">
@@ -172,6 +178,12 @@
                                class="btn btn-sm btn-outline-secondary">
                                 <i class="fas fa-eye me-1"></i><span data-en="Detail">Detail</span>
                             </a>
+                            @hasPermission('user-management.roles.edit')
+                                <a href="{{ route('user-management.roles.manage-permissions', $role) }}"
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-lock me-1"></i><span>Permission</span>
+                                </a>
+                            @endhasPermission
                             @hasPermission('user-management.roles.update')
                                 <a href="{{ route('user-management.roles.edit', $role) }}"
                                    class="btn btn-sm btn-outline-primary">

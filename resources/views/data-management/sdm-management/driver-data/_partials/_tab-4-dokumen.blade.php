@@ -112,7 +112,7 @@
             </button>
         </div>
         <div class="row g-2">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm">
                     <span data-en="Document Name">Nama Dokumen</span> <span class="text-danger">*</span>
                 </label>
@@ -120,17 +120,17 @@
                        class="form-control form-control-sm" required
                        placeholder="SIM, SKCK, dll.">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Number">Nomor</label>
                 <input type="text" name="documents[__IDX__][document_number]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Issued">Terbit</label>
                 <input type="date" name="documents[__IDX__][issued_date]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Expiry">Kadaluarsa</label>
                 <input type="date" name="documents[__IDX__][expiry_date]"
                        class="form-control form-control-sm">

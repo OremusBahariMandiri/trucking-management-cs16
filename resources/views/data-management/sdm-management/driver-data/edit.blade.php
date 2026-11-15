@@ -11,7 +11,6 @@
 <div class="drv-page-header mb-3">
     <div>
         <div class="drv-title">
-            <i class="fas fa-user-edit"></i>
             <span data-en="Edit Driver">Edit Supir</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -29,11 +28,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('data-management.sdm-management.driver-data.show', $driver) }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i>
-        <span data-en="Back">Kembali</span>
-    </a>
 </div>
 
 <form method="POST"

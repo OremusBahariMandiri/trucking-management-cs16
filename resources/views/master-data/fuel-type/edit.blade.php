@@ -22,11 +22,6 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('master-data.fuel-types.index') }}"
-            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-            <i class="fas fa-arrow-left"></i>
-            <span data-en="Back">Kembali</span>
-        </a>
     </div>
 
     <form method="POST" action="{{ route('master-data.fuel-types.update', $fuelType) }}" novalidate>
@@ -68,13 +63,13 @@
 
 
 
-                {-- Description --}
+                {{-- Description --}}
                 <div class="col-12">
                     <label class="form-label" data-en="Description">Deskripsi</label>
                     <textarea name="description" id="description"
                               class="form-control @error('description') is-invalid @enderror"
                               rows="3"
-                              placeholder="Deskripsi singkat (opsional)…">{ old('description', $fuelType->description) }</textarea>
+                              placeholder="Deskripsi singkat (opsional)…">{{ old('description', $fuelType->description) }}</textarea>
                     @error('description')
                         <div class="invalid-feedback">{ $message }</div>
                     @enderror
@@ -95,7 +90,7 @@
                 </div>
             </div>
             <div class="lkp-form-actions">
-                <a href="{{ route('master-data.fuel-types.index') }}" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ route('master-data.fuel-types.index') }}" class="btn btn-secondary btn-sm">
                     <i class="fas fa-times me-1"></i>
                     <span data-en="Cancel">Batal</span>
                 </a>

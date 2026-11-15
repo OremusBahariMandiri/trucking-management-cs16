@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 
 class CreateDriver
 {
-    public function handle(array $data, array $documents = [], array $certificates = []): Driver
+    public function handle(array $data, array $documents = [], array $certificates = [], array $emergencyContacts = []): Driver
     {
-        return DB::transaction(function () use ($data, $documents, $certificates) {
+        return DB::transaction(function () use ($data, $documents, $certificates, $emergencyContacts) {
 
             // ── Foto profil ────────────────────────────────────
             if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
@@ -72,6 +72,32 @@ class CreateDriver
                     'expiry_date'        => $cert['expiry_date']        ?? null,
                     'description'        => $cert['description']        ?? null,
                     'file_path'          => $filePath,
+                ]);
+            }
+
+            // ── Kontak Darurat ─────────────────────────────────
+            foreach ($emergencyContacts as $contact) {
+                if (empty($contact['full_name']) || empty($contact['phone_primary'])) continue;
+
+                $driver->emergencyContacts()->create([
+                    'contact_type'      => $contact['contact_type']      ?? 'orang_tua',
+                    'contact_status'    => $contact['contact_status']    ?? 'aktif',
+                    'full_name'         => $contact['full_name'],
+                    'nik'               => $contact['nik']               ?? null,
+                    'birth_place'       => $contact['birth_place']       ?? null,
+                    'birth_date'        => $contact['birth_date']        ?? null,
+                    'gender'            => $contact['gender']            ?? 'male',
+                    'religion'          => $contact['religion']          ?? null,
+                    'marital_status'    => $contact['marital_status']    ?? null,
+                    'phone_primary'     => $contact['phone_primary'],
+                    'phone_alternative' => $contact['phone_alternative'] ?? null,
+                    'province'          => $contact['province']          ?? null,
+                    'city'              => $contact['city']              ?? null,
+                    'district'          => $contact['district']          ?? null,
+                    'village'           => $contact['village']           ?? null,
+                    'rt_rw'             => $contact['rt_rw']             ?? null,
+                    'postal_code'       => $contact['postal_code']       ?? null,
+                    'full_address'      => $contact['full_address']      ?? null,
                 ]);
             }
 

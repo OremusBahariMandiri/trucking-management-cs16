@@ -53,6 +53,8 @@ class FleetService
             'model',
             'fuelType',
             'bodyType',
+            'axisConfiguration',
+            'ownershipStatus',
             'driver',
             'photos',
             'documents',

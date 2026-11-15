@@ -11,7 +11,6 @@
 <div class="emp-page-header mb-3">
     <div>
         <div class="emp-title">
-            <i class="fas fa-user-plus"></i>
             <span data-en="Add Employee">Tambah Karyawan</span>
         </div>
         <nav aria-label="breadcrumb">
@@ -25,11 +24,6 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('data-management.sdm-management.employee-data.index') }}"
-       class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-        <i class="fas fa-arrow-left"></i>
-        <span data-en="Back">Kembali</span>
-    </a>
 </div>
 
 <form method="POST"

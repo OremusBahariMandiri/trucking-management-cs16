@@ -80,6 +80,7 @@ function initDomicileToggle() {
         domicile_city:        'ktp_city',
         domicile_province:    'ktp_province',
         domicile_postal_code: 'ktp_postal_code',
+            domicile_rt_rw:        'ktp_rt_rw',
     };
 
     function syncFromKtp() {
@@ -127,7 +128,7 @@ function buildDocumentRow(idx) {
             </button>
         </div>
         <div class="row g-2">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm">
                     <span data-en="Document Name">Nama Dokumen</span>
                     <span class="text-danger">*</span>
@@ -138,19 +139,19 @@ function buildDocumentRow(idx) {
                        required
                        placeholder="SIM, SKCK, dll.">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Number">Nomor</label>
                 <input type="text"
                        name="documents[${idx}][document_number]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Issued">Terbit</label>
                 <input type="date"
                        name="documents[${idx}][issued_date]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Expiry">Kadaluarsa</label>
                 <input type="date"
                        name="documents[${idx}][expiry_date]"
@@ -183,7 +184,7 @@ function buildCertificateRow(idx) {
             </button>
         </div>
         <div class="row g-2">
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <label class="form-label form-label-sm">
                     <span data-en="Certificate Name">Nama Sertifikat</span>
                     <span class="text-danger">*</span>
@@ -194,32 +195,32 @@ function buildCertificateRow(idx) {
                        required
                        placeholder="SIM B2, Sertifikat Keselamatan, dll.">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Certificate Number">Nomor</label>
                 <input type="text"
                        name="certificates[${idx}][certificate_number]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Issuer">Penerbit</label>
                 <input type="text"
                        name="certificates[${idx}][issuer]"
                        class="form-control form-control-sm"
                        placeholder="Instansi penerbit">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Issued">Tanggal Terbit</label>
                 <input type="date"
                        name="certificates[${idx}][issued_date]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label class="form-label form-label-sm" data-en="Expiry">Kadaluarsa</label>
                 <input type="date"
                        name="certificates[${idx}][expiry_date]"
                        class="form-control form-control-sm">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <label class="form-label form-label-sm" data-en="Description">Keterangan</label>
                 <input type="text"
                        name="certificates[${idx}][description]"
@@ -524,4 +525,150 @@ document.addEventListener('DOMContentLoaded', () => {
         try { fn(); }
         catch (e) { console.error(`[driver.js] ${fn.name || 'anonymous'}:`, e); }
     });
+});
+// ============================================================
+// DRIVER INDEX — DataTables + Mobile Responsive
+// ============================================================
+
+/**
+ * Sync visibility of mobile cards dengan halaman DataTables saat ini.
+ * Cards yg row-indexnya tidak di halaman ini disembunyikan.
+ */
+function syncMobileCards(api) {
+    const pageInfo  = api.page.info();
+    const start     = pageInfo.start;
+    const end       = pageInfo.end;          // exclusive
+    const allCards  = document.querySelectorAll('.lkp-mob-card');
+
+    allCards.forEach(card => {
+        const idx = parseInt(card.dataset.row, 10);
+        card.style.display = (idx >= start && idx < end) ? '' : 'none';
+    });
+
+    // Update pagination info text
+    const infoEl = document.querySelector('.lkp-mob-pagination-info');
+    if (infoEl) {
+        infoEl.textContent = pageInfo.recordsTotal
+            ? `Menampilkan ${start + 1}–${Math.min(end, pageInfo.recordsDisplay)} dari ${pageInfo.recordsDisplay} data`
+            : 'Tidak ada data';
+    }
+
+    // Update page number
+    const pageNumEl = document.querySelector('.lkp-mob-page-num');
+    if (pageNumEl) {
+        pageNumEl.textContent = `${pageInfo.page + 1} / ${pageInfo.pages}`;
+    }
+
+    // Enable/disable prev-next
+    const prevBtn = document.querySelector('.lkp-mob-prev');
+    const nextBtn = document.querySelector('.lkp-mob-next');
+    if (prevBtn) prevBtn.disabled = (pageInfo.page === 0);
+    if (nextBtn) nextBtn.disabled = (pageInfo.page >= pageInfo.pages - 1);
+}
+
+function initMobilePaginationButtons(dtApi) {
+    const prevBtn = document.querySelector('.lkp-mob-prev');
+    const nextBtn = document.querySelector('.lkp-mob-next');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            dtApi.page('previous').draw('page');
+        });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            dtApi.page('next').draw('page');
+        });
+    }
+}
+
+function initDriverTable() {
+    const tableEl = document.getElementById('driverTable');
+    if (!tableEl || !window.$ || !$.fn || !$.fn.DataTable) return;
+
+    const colTargetsRaw = tableEl.dataset.colTargets;
+    const ordDisabled   = tableEl.dataset.noOrder;
+    const columnDefs    = [];
+
+    if (colTargetsRaw) {
+        try {
+            const targets = JSON.parse(colTargetsRaw);
+            columnDefs.push({ orderable: false, searchable: false, targets });
+        } catch (e) { /* ignore */ }
+    }
+
+    const dtApi = $(tableEl).DataTable({
+        dom: '<"dt-top-bar"lf>rt<"dt-bottom-bar"ip>',
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        language: {
+            lengthMenu:    'Tampilkan _MENU_ data',
+            search:        '',
+            searchPlaceholder: 'Cari supir…',
+            info:          'Menampilkan _START_–_END_ dari _TOTAL_ data',
+            infoEmpty:     'Tidak ada data',
+            infoFiltered:  '(difilter dari _MAX_ total data)',
+            paginate: {
+                first:    '«',
+                last:     '»',
+                next:     '›',
+                previous: '‹',
+            },
+            emptyTable:    'Tidak ada data supir.',
+            zeroRecords:   'Data tidak ditemukan.',
+        },
+        columnDefs,
+        drawCallback(settings) {
+            const api = this.api();
+            // Re-number row pertama (No)
+            api.column(0, { page: 'current', search: 'applied' }).nodes().each((td, i) => {
+                td.textContent = api.page.info().start + i + 1;
+            });
+            syncMobileCards(api);
+        },
+    });
+
+    initMobilePaginationButtons(dtApi);
+
+    // Expand / collapse mobile cards
+    document.querySelectorAll('.lkp-mob-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const card    = header.closest('.lkp-mob-card');
+            const details = card.querySelector('.lkp-mob-details');
+            const chevron = card.querySelector('.lkp-mob-chevron');
+            const open    = details.style.display !== 'none' && details.style.display !== '';
+            details.style.display = open ? 'none' : 'block';
+            if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
+        });
+    });
+
+    // Photo preview via show.bs.modal (Bootstrap data-API)
+    const photoModal = document.getElementById('drvPhotoModal');
+    if (photoModal) {
+        photoModal.addEventListener('show.bs.modal', function (e) {
+            const trigger = e.relatedTarget;
+            if (!trigger) return;
+            const img  = document.getElementById('drvPhotoModalImg');
+            const name = document.getElementById('drvPhotoModalName');
+            if (img)  img.src        = trigger.dataset.previewSrc  || '';
+            if (name) name.textContent = trigger.dataset.previewName || '';
+        });
+    }
+
+    // Delete confirmation
+    document.querySelectorAll('.drv-delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = this.dataset.name || 'supir ini';
+            if (confirm(`Hapus data "${name}"? Tindakan ini tidak dapat dibatalkan.`)) {
+                this.submit();
+            }
+        });
+    });
+}
+
+// Tambahkan initDriverTable ke dalam DOMContentLoaded yang sudah ada
+// (fungsi ini dipanggil terpisah lewat event listener sendiri agar aman)
+document.addEventListener('DOMContentLoaded', () => {
+    try { initDriverTable(); }
+    catch (e) { console.error('[driver.js] initDriverTable:', e); }
 });

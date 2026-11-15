@@ -67,6 +67,12 @@ class Fleet extends Model
         'gps_tracker_id',
         'gps_provider',
         'gps_status',
+        'gps_last_lat',
+        'gps_last_lng',
+        'gps_last_speed',
+        'gps_last_acc',
+        'gps_last_seen',
+        'gps_last_address',
 
         // Tab 5: Dokumen & Legalitas
         'stnk_number',
@@ -107,6 +113,11 @@ class Fleet extends Model
         'tax_expiry_date'           => 'date',
         'kir_expiry_date'           => 'date',
         'insurance_expiry_date'     => 'date',
+        'gps_last_lat'              => 'decimal:7',
+        'gps_last_lng'              => 'decimal:7',
+        'gps_last_speed'            => 'integer',
+        'gps_last_acc'              => 'integer',
+        'gps_last_seen'             => 'datetime',
     ];
 
     // ── Relasi ke lookup ──────────────────────────────────────────────────────

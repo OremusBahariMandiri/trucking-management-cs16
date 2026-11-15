@@ -146,9 +146,9 @@
     </div>
     <div class="d-flex gap-2">
         <a href="{{ $isEdit
-               ? route('data-management.sdm-management.employee-data.show', $employee)
+               ? route('data-management.sdm-management.employee-data.index', $employee)
                : route('data-management.sdm-management.employee-data.index') }}"
-           class="btn btn-outline-secondary btn-sm">
+           class="btn-cancel-emp">
             <span data-en="Cancel">Batal</span>
         </a>
         <button type="submit" class="btn-save-emp" id="btnSubmit">

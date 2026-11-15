@@ -137,6 +137,16 @@ class UpdateFleet
         $fleet->photos()->where('id', $photoId)->update(['is_primary' => true]);
     }
 
+    public function updatePhotoMeta(Fleet $fleet, int $photoId, string $category, ?string $caption): void
+    {
+        $fleet->photos()
+              ->findOrFail($photoId)
+              ->update([
+                  'category' => $category,
+                  'caption'  => $caption,
+              ]);
+    }
+
     // ── Document file helper ────────────────────────────────────────────────
 
     /**

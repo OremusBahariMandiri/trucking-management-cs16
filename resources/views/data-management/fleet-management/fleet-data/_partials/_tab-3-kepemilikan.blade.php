@@ -33,9 +33,15 @@
             <label class="form-label" data-en="Acquisition Value (IDR)">Nilai Perolehan (Rp)</label>
             <div class="input-group">
                 <span class="input-group-text">Rp</span>
-                <input type="number" name="acquisition_value" class="form-control {{ $hasErr('acquisition_value') }}"
-                    value="{{ $old('acquisition_value') }}" min="0" step="1000000" placeholder="500000000">
+                <input type="text" id="acquisition_value_display"
+                    class="form-control {{ $hasErr('acquisition_value') }}"
+                    value="{{ $old('acquisition_value') ? number_format((int)$old('acquisition_value'), 2, ',', '.') : '' }}"
+                    placeholder="500.000.000" inputmode="numeric"
+                    data-format="rupiah">
+                <input type="hidden" name="acquisition_value"
+                    value="{{ $old('acquisition_value') }}">
             </div>
+            <div class="invalid-feedback">{{ $err('acquisition_value') }}</div>
         </div>
 
         {{-- Perusahaan Leasing --}}
